@@ -6,18 +6,34 @@ import Home from "./routes/home";
 import Profile from "./routes/profile";
 import SignUp from "./routes/signUp";
 import { ChakraProvider } from "@chakra-ui/react";
+import { HashRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ChakraProvider>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="feed" element={<App />} />
-        <Route path="signup" element={<SignUp />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="/profile/:userName" element={<Profile />} />
+        <Route
+          path="http://kVarunkk.github.io/Twitter-Frontend/"
+          element={<Home />}
+        />
+        <Route
+          path="http://kVarunkk.github.io/Twitter-Frontend/feed"
+          element={<App />}
+        />
+        <Route
+          path="http://kVarunkk.github.io/Twitter-Frontend/signup"
+          element={<SignUp />}
+        />
+        <Route
+          path="http://kVarunkk.github.io/Twitter-Frontend/profile"
+          element={<Profile />}
+        />
+        <Route
+          path="http://kVarunkk.github.io/Twitter-Frontend/profile/:userName"
+          element={<Profile />}
+        />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </ChakraProvider>
 );
