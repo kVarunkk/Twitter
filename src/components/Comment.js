@@ -103,7 +103,7 @@ function Comment(props) {
           className="tweet-avatar"
           src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.body.postedBy.avatar}`}
         ></img>
-        <Link to={`/profile/${props.body.postedBy.username}`}>
+        <Link to={`/Twitter-Frontend/profile/${props.body.postedBy.username}`}>
           <div style={{ marginBottom: "5px" }} className="flex-introduction">
             <div className="postedBy">{props.body.postedBy.username}</div>.
             <div className="time">{props.body.postedCommentTime}</div>
@@ -176,7 +176,7 @@ function Comment(props) {
         )}
       </div>
 
-      <Link to={`/profile/${props.tweetBy}`}>
+      <Link to={`/Twitter-Frontend/profile/${props.tweetBy}`}>
         <div className="flex-introduction">
           Replying to
           <div className="postedBy" style={{ color: "#1DA1F2" }}>

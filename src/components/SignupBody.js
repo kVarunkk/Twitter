@@ -46,7 +46,7 @@ function SignupBody() {
         if (data.status === "ok") {
           successToast();
           setTimeout(() => {
-            navigate("/");
+            navigate("/Twitter-Frontend/");
           }, 600);
         }
       })
@@ -103,7 +103,7 @@ function SignupBody() {
           </button>
         </form>
         <div className="homeContainer-signup">
-          Already have an account? <Link to="/">Sign in</Link>
+          Already have an account? <Link to="/Twitter-Frontend/">Sign in</Link>
         </div>
       </div>
     </div>

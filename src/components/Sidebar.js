@@ -100,25 +100,25 @@ function Sidebar() {
       <ul className="sidebar-menu">
         <li className="sidebar-menu-items">
           <div className="title">
-            <Link to="/feed">
+            <Link to="/Twitter-Frontend/feed">
               <BsTwitter />
             </Link>
           </div>
         </li>
         <li className="sidebar-menu-items">
-          <Link to="/feed">
+          <Link to="/Twitter-Frontend/feed">
             <BiHome />
             <div>Home</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
-          <Link to={`/profile/${activeUser}`}>
+          <Link to={`/Twitter-Frontend/profile/${activeUser}`}>
             <CgProfile />
             <div>Profile</div>
           </Link>
         </li>
         <li onClick={logout} className="sidebar-menu-items">
-          <Link to="/">
+          <Link to="/Twitter-Frontend/">
             <GrLogout />
             <div>Logout</div>
           </Link>
