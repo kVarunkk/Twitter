@@ -59,7 +59,8 @@ function HomeBody() {
           successToast();
 
           setTimeout(() => {
-            window.location.href = "/Twitter-Frontend/feed";
+            // window.location.href = "/Twitter-Frontend/feed";
+            navigate("/Twitter-Frontend/feed");
           }, 600);
         } else {
           errorToast();
