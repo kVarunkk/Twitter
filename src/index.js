@@ -13,9 +13,9 @@ root.render(
     <BrowserRouter>
       <Routes>
         <Route path="/Twitter-Frontend/" element={<Home />} />
-        <Route path="/feed" element={<App />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/Twitter-Frontend/feed" element={<App />} />
+        <Route path="/Twitter-Frontend/signup" element={<SignUp />} />
+        <Route path="/Twitter-Frontend/profile" element={<Profile />} />
         <Route
           path="/Twitter-Frontend/profile/:userName"
           element={<Profile />}
