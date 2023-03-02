@@ -10,7 +10,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <ChakraProvider>
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/Twitter-Frontend/" element={<Home />} />
         <Route path="/Twitter-Frontend/feed" element={<App />} />
@@ -21,6 +21,6 @@ root.render(
           element={<Profile />}
         />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   </ChakraProvider>
 );
