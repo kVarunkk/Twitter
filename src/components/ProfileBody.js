@@ -81,6 +81,7 @@ function ProfileBody() {
       if (!user) {
         localStorage.removeItem("token");
       } else {
+        console.log("i dont see a problem");
         populateUserData();
       }
     } else navigate("/Twitter-Frontend/");
