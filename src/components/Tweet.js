@@ -38,11 +38,14 @@ function Tweet(props) {
   };
 
   async function populateComments() {
-    const req = await fetch(`http://localhost:5000/feed/comments/${tweetId}`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+    const req = await fetch(
+      `https://dark-pink-wasp-boot.cyclic.app/feed/comments/${tweetId}`,
+      {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      }
+    );
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -237,7 +240,7 @@ function Tweet(props) {
             <div className="parent-flex-introduction">
               <img
                 className="tweet-avatar"
-                src={`http://localhost:5000/images/${props.body.postedBy.avatar}`}
+                src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.body.postedBy.avatar}`}
               ></img>
               <Link to={`/profile/${props.body.postedBy.username}`}>
                 <div className="flex-introduction">
@@ -263,7 +266,7 @@ function Tweet(props) {
                       <li>
                         <form
                           onSubmit={deleteTweet}
-                          action={`http://localhost:5000/deleteTweet/${tweetId}`}
+                          action={`https://dark-pink-wasp-boot.cyclic.app/deleteTweet/${tweetId}`}
                           style={{ marginBottom: "0", color: "#F75D59" }}
                         >
                           <button className="delete-btn">
@@ -289,7 +292,7 @@ function Tweet(props) {
                                   editTweet(e);
                                   close();
                                 }}
-                                action={`http://localhost:5000/editTweet/${tweetId}`}
+                                action={`https://dark-pink-wasp-boot.cyclic.app/editTweet/${tweetId}`}
                               >
                                 <input
                                   required
@@ -320,7 +323,7 @@ function Tweet(props) {
             {props.body.image !== undefined && (
               <img
                 className="tweetImage"
-                src={`http://localhost:5000/tweetImages/${props.body.image}`}
+                src={`https://dark-pink-wasp-boot.cyclic.app/tweetImages/${props.body.image}`}
               ></img>
             )}
             <div className="icons">
@@ -329,7 +332,7 @@ function Tweet(props) {
                   onSubmit={handleSubmit}
                   style={{ marginBottom: "0" }}
                   className="likeForm"
-                  action={`http://localhost:5000/post/${props.user}/like/${tweetId}`}
+                  action={`https://dark-pink-wasp-boot.cyclic.app/post/${props.user}/like/${tweetId}`}
                   method="post"
                 >
                   <button>
@@ -343,7 +346,7 @@ function Tweet(props) {
                   onSubmit={handleRetweetSubmit}
                   style={{ marginBottom: "0" }}
                   className="retweetForm"
-                  action={`http://localhost:5000/post/${props.user}/retweet/${tweetId}`}
+                  action={`https://dark-pink-wasp-boot.cyclic.app/post/${props.user}/retweet/${tweetId}`}
                 >
                   <button>
                     <AiOutlineRetweet />
@@ -381,7 +384,7 @@ function Tweet(props) {
                         close();
                       }}
                       method="post"
-                      action={`http://localhost:5000/feed/comment/${tweetId}`}
+                      action={`https://dark-pink-wasp-boot.cyclic.app/feed/comment/${tweetId}`}
                     >
                       <input
                         autoFocus

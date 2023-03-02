@@ -29,7 +29,7 @@ function Feed() {
   const checkInput = input || isImageSelected;
 
   async function populateTweets() {
-    const req = await fetch("http://localhost:5000/feed", {
+    const req = await fetch("https://dark-pink-wasp-boot.cyclic.app/feed", {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
@@ -49,11 +49,14 @@ function Feed() {
 
   async function addTweets(e) {
     e.preventDefault();
-    const req = await fetch(`http://localhost:5000/feed?t=${tweetCount}`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+    const req = await fetch(
+      `https://dark-pink-wasp-boot.cyclic.app/feed?t=${tweetCount}`,
+      {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      }
+    );
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -137,14 +140,14 @@ function Feed() {
         <img
           className="tweet-avatar"
           style={{ marginBottom: "0" }}
-          src={`http://localhost:5000/images/${userAvatar}`}
+          src={`https://dark-pink-wasp-boot.cyclic.app/images/${userAvatar}`}
         ></img>
 
         <form
           onSubmit={handleSubmit}
           method="post"
           encType="multipart/form-data"
-          action="http://localhost:5000/feed"
+          action="https://dark-pink-wasp-boot.cyclic.app/feed"
           className="tweet-form"
           id="form"
         >

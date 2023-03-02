@@ -101,7 +101,7 @@ function Comment(props) {
       <div className="parent-flex-introduction">
         <img
           className="tweet-avatar"
-          src={`http://localhost:5000/images/${props.body.postedBy.avatar}`}
+          src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.body.postedBy.avatar}`}
         ></img>
         <Link to={`/profile/${props.body.postedBy.username}`}>
           <div style={{ marginBottom: "5px" }} className="flex-introduction">
@@ -126,7 +126,7 @@ function Comment(props) {
               <li>
                 <form
                   onSubmit={deleteComment}
-                  action={`http://localhost:5000/deleteComment/${commentId}`}
+                  action={`https://dark-pink-wasp-boot.cyclic.app/deleteComment/${commentId}`}
                   style={{ marginBottom: "0", color: "#F75D59" }}
                 >
                   <button className="delete-btn">
@@ -150,7 +150,7 @@ function Comment(props) {
                       onSubmit={(e) => {
                         editComment(e);
                       }}
-                      action={`http://localhost:5000/editComment/${commentId}`}
+                      action={`https://dark-pink-wasp-boot.cyclic.app/editComment/${commentId}`}
                     >
                       <input
                         required
@@ -191,7 +191,7 @@ function Comment(props) {
             onSubmit={handleSubmit}
             style={{ marginBottom: "0" }}
             className="likeForm"
-            action={`http://localhost:5000/comment/${props.user}/like/${commentId}`}
+            action={`https://dark-pink-wasp-boot.cyclic.app/comment/${props.user}/like/${commentId}`}
             method="post"
           >
             <button>

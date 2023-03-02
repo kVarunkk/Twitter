@@ -37,7 +37,7 @@ function Sidebar() {
   };
 
   async function populateUser() {
-    const req = await fetch("http://localhost:5000/feed", {
+    const req = await fetch("https://dark-pink-wasp-boot.cyclic.app/feed", {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
@@ -139,7 +139,7 @@ function Sidebar() {
                 }}
                 method="post"
                 encType="multipart/form-data"
-                action="http://localhost:5000/feed"
+                action="https://dark-pink-wasp-boot.cyclic.app/feed"
                 className="tweet-form"
                 id="form1"
               >

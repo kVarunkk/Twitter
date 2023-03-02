@@ -30,12 +30,15 @@ function ProfileBody() {
   const handleFollow = (e) => {
     e.preventDefault();
 
-    fetch(`http://localhost:5000/user/${activeUser}/follow/${userName}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(
+      `https://dark-pink-wasp-boot.cyclic.app/user/${activeUser}/follow/${userName}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
       .then((response) => {
         return response.json();
       })
@@ -49,11 +52,14 @@ function ProfileBody() {
   };
 
   async function populateUserData() {
-    const req = await fetch(`http://localhost:5000/profile/${userName}`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+    const req = await fetch(
+      `https://dark-pink-wasp-boot.cyclic.app/profile/${userName}`,
+      {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      }
+    );
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -96,13 +102,13 @@ function ProfileBody() {
       <div className="flex-avatar">
         <img
           className="profile-avatar"
-          src={`http://localhost:5000/images/${avatar}`}
+          src={`https://dark-pink-wasp-boot.cyclic.app/images/${avatar}`}
         ></img>
         {isActiveUser && (
           <form
             className="avatar-form"
             onSubmit={handleSubmitAvatar}
-            action={`http://localhost:5000/avatar/${activeUser}`}
+            action={`https://dark-pink-wasp-boot.cyclic.app/avatar/${activeUser}`}
             encType="multipart/form-data"
             id="form"
           >
@@ -152,7 +158,7 @@ function ProfileBody() {
       {!isActiveUser && (
         <div className="followBtn-div">
           <form
-            action={`http://localhost:5000/user/${activeUser}/follow/${userName}`}
+            action={`https://dark-pink-wasp-boot.cyclic.app/user/${activeUser}/follow/${userName}`}
             method="POST"
             className="follow-form"
             onSubmit={handleFollow}
