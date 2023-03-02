@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/Twitter-Frontend/static/css/main.a6b3f524.css",
-    "main.js": "/Twitter-Frontend/static/js/main.51df51e0.js",
+    "main.js": "/Twitter-Frontend/static/js/main.7e0d24e9.js",
     "index.html": "/Twitter-Frontend/index.html",
     "main.a6b3f524.css.map": "/Twitter-Frontend/static/css/main.a6b3f524.css.map",
-    "main.51df51e0.js.map": "/Twitter-Frontend/static/js/main.51df51e0.js.map"
+    "main.7e0d24e9.js.map": "/Twitter-Frontend/static/js/main.7e0d24e9.js.map"
   },
   "entrypoints": [
     "static/css/main.a6b3f524.css",
-    "static/js/main.51df51e0.js"
+    "static/js/main.7e0d24e9.js"
   ]
 }
