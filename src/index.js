@@ -17,7 +17,7 @@ root.render(
         <Route path="/Twitter-Frontend/signup" element={<SignUp />} />
         <Route path="/Twitter-Frontend/profile" element={<Profile />} />
         <Route
-          path="/#/Twitter-Frontend/profile/:userName"
+          path="/Twitter-Frontend/profile/:userName"
           element={<Profile />}
         />
       </Routes>
