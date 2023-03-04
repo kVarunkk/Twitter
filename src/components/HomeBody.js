@@ -94,10 +94,10 @@ function HomeBody() {
           <h2>Sign in to Twitter</h2>
         </div>
 
-        <a className="googleSignIn" href="#">
+        {/* <a className="googleSignIn" href="#">
           <FcGoogle style={{ fontSize: "1.3rem" }} />
           <div> Sign in with Google</div>
-        </a>
+        </a> */}
         <div className="homeContainer-hr">
           <hr></hr>
           <span>or</span>
