@@ -84,7 +84,7 @@ function SignupBody() {
             required
             className="homeContainer-input"
             type="text"
-            placeholder="Enter Username"
+            placeholder="Enter Username in lowercase"
             value={userName}
             onChange={handleChangeUserName}
           ></input>
