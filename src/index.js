@@ -5,6 +5,7 @@ import App from "./App";
 import Home from "./routes/home";
 import Profile from "./routes/profile";
 import SignUp from "./routes/signUp";
+import Search from "./routes/search";
 import { ChakraProvider } from "@chakra-ui/react";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
