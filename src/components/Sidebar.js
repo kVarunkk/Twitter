@@ -4,7 +4,7 @@ import { BsTwitter } from "react-icons/bs";
 import { BiHome } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { AiFillCamera } from "react-icons/ai";
-import { AiFillCamera, AiOutlineSearch } from "react-icons/ai";
+import { AiOutlineSearch } from "react-icons/ai";
 import { GrLogout } from "react-icons/gr";
 import { useToast } from "@chakra-ui/toast";
 import Popup from "reactjs-popup";
