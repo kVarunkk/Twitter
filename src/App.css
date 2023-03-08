@@ -416,8 +416,8 @@ input:focus {
 
 .flex-avatar {
     display: flex;
-    gap: 70px;
-    justify-content: space-evenly;
+    gap: 60px;
+    /* justify-content: space-evenly; */
     padding-bottom: 20px;
     margin-bottom: 20px;
     align-items: center;
@@ -606,9 +606,26 @@ input:focus {
 .profile-avatar {
     height: 100px;
     width: 100px;
-    margin-right: auto;
+    /* margin-right: auto; */
     object-fit: cover;
     object-position: 25% 25%;
+    border-radius: 50%;
+    box-shadow: 0px 10px 25px rgba(191, 191, 191, 0.625);
+}
+
+.choose-avatar-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    gap: 20px;
+}
+
+.choose-profile-avatar {
+    height: 140px;
+    width: 140px;
+    object-fit: cover;
+    cursor: pointer;
     border-radius: 50%;
     box-shadow: 0px 10px 25px rgba(191, 191, 191, 0.625);
 }
