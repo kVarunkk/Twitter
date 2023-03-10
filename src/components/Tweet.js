@@ -94,16 +94,12 @@ function Tweet(props) {
       .then((data) => {
         setCommentCount(data.comments);
       })
-      .then((data) => {
-        console.log(data);
-        setComments(data.docs);
-      })
       // .then(
       //   setComments((prevValue) => {
       //     return [comment, ...prevValue];
       //   })
       // )
-      // .then(setLoading(true))
+      .then(setLoading(true))
       // .then(
       //   setTimeout(() => {
       //     setLoading(false);
@@ -392,8 +388,8 @@ function Tweet(props) {
                     </Link>
                     <form
                       style={{ marginBottom: "10px" }}
-                      onSubmit={() => {
-                        handleCommentSubmit();
+                      onSubmit={(e) => {
+                        handleCommentSubmit(e);
                         close();
                       }}
                       method="post"
