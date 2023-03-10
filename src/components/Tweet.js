@@ -95,7 +95,7 @@ function Tweet(props) {
         setCommentCount(data.comments);
       })
       .then((data) => {
-        console.log(data.docs);
+        console.log(data);
         setComments(data.docs);
       })
       // .then(
