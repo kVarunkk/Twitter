@@ -392,8 +392,8 @@ function Tweet(props) {
                     </Link>
                     <form
                       style={{ marginBottom: "10px" }}
-                      onSubmit={(e) => {
-                        handleCommentSubmit(e);
+                      onSubmit={() => {
+                        handleCommentSubmit;
                         close();
                       }}
                       method="post"
