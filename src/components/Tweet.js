@@ -94,22 +94,25 @@ function Tweet(props) {
       .then((data) => {
         setCommentCount(data.comments);
       })
+      .then((data) => {
+        setComments(data.docs);
+      })
       // .then(
       //   setComments((prevValue) => {
       //     return [comment, ...prevValue];
       //   })
       // )
-      .then(setLoading(true))
+      // .then(setLoading(true))
       // .then(
       //   setTimeout(() => {
       //     setLoading(false);
       //   }, 1000)
       // )
-      .then(
-        setTimeout(() => {
-          populateComments();
-        }, 500)
-      )
+      // .then(
+      //   setTimeout(() => {
+      //     populateComments();
+      //   }, 500)
+      // )
       .catch((error) => {
         console.log(error);
       });
