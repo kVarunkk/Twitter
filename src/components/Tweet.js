@@ -393,7 +393,7 @@ function Tweet(props) {
                     <form
                       style={{ marginBottom: "10px" }}
                       onSubmit={() => {
-                        handleCommentSubmit;
+                        handleCommentSubmit();
                         close();
                       }}
                       method="post"
