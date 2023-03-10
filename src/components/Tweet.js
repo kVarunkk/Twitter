@@ -53,7 +53,7 @@ function Tweet(props) {
         setComments(data.tweet[0].comments);
         setTimeout(() => {
           setLoading(false);
-        }, 300);
+        }, 500);
       } else setComments([]);
     } else {
       alert(data.error);
@@ -105,7 +105,11 @@ function Tweet(props) {
       //     setLoading(false);
       //   }, 500)
       // )
-      .then(populateComments())
+      .then(
+        setTimeout(() => {
+          populateComments();
+        }, 300)
+      )
       .catch((error) => {
         console.log(error);
       });
