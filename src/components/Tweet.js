@@ -99,12 +99,12 @@ function Tweet(props) {
           return [comment, ...prevValue];
         })
       )
-      // .then(setLoading(true))
-      // .then(
-      //   setTimeout(() => {
-      //     setLoading(false);
-      //   }, 500)
-      // )
+      .then(setLoading(true))
+      .then(
+        setTimeout(() => {
+          setLoading(false);
+        }, 500)
+      )
       // .then(
       //   setTimeout(() => {
       //     populateComments();
