@@ -103,7 +103,7 @@ function Tweet(props) {
       .then(
         setTimeout(() => {
           setLoading(false);
-        }, 500)
+        }, 1000)
       )
       // .then(
       //   setTimeout(() => {
