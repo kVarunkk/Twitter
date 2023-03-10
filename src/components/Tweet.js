@@ -100,11 +100,11 @@ function Tweet(props) {
       //   })
       // )
       .then(setLoading(true))
-      .then(
-        setTimeout(() => {
-          setLoading(false);
-        }, 1000)
-      )
+      // .then(
+      //   setTimeout(() => {
+      //     setLoading(false);
+      //   }, 1000)
+      // )
       // .then(
       //   setTimeout(() => {
       //     populateComments();
