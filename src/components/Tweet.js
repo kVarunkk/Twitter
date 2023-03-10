@@ -60,9 +60,9 @@ function Tweet(props) {
     }
   }
 
-  useEffect(() => {
-    populateComments();
-  }, [loading]);
+  // useEffect(() => {
+  //   populateComments();
+  // }, [loading]);
 
   const handleChange = (e) => {
     setCommentInput(e.target.value);
@@ -105,11 +105,11 @@ function Tweet(props) {
       //     setLoading(false);
       //   }, 1000)
       // )
-      // .then(
-      //   setTimeout(() => {
-      //     populateComments();
-      //   }, 500)
-      // )
+      .then(
+        setTimeout(() => {
+          populateComments();
+        }, 500)
+      )
       .catch((error) => {
         console.log(error);
       });
