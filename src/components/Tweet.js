@@ -60,9 +60,9 @@ function Tweet(props) {
     }
   }
 
-  // useEffect(() => {
-  //   populateComments();
-  // }, [loading]);
+  useEffect(() => {
+    populateComments();
+  }, [loading]);
 
   const handleChange = (e) => {
     setCommentInput(e.target.value);
