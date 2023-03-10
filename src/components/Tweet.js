@@ -94,17 +94,17 @@ function Tweet(props) {
       .then((data) => {
         setCommentCount(data.comments);
       })
-      // .then(
-      //   setComments((prevValue) => {
-      //     return [comment, ...prevValue];
-      //   })
-      // )
-      .then(setLoading(true))
       .then(
-        setTimeout(() => {
-          setLoading(false);
-        }, 500)
+        setComments((prevValue) => {
+          return [comment, ...prevValue];
+        })
       )
+      .then(setLoading(true))
+      // .then(
+      //   setTimeout(() => {
+      //     setLoading(false);
+      //   }, 500)
+      // )
       .catch((error) => {
         console.log(error);
       });
