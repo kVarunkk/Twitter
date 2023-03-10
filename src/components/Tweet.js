@@ -94,11 +94,11 @@ function Tweet(props) {
       .then((data) => {
         setCommentCount(data.comments);
       })
-      .then(
-        setComments((prevValue) => {
-          return [comment, ...prevValue];
-        })
-      )
+      // .then(
+      //   setComments((prevValue) => {
+      //     return [comment, ...prevValue];
+      //   })
+      // )
       .then(setLoading(true))
       .then(
         setTimeout(() => {
