@@ -99,17 +99,13 @@ function Tweet(props) {
       //     return [comment, ...prevValue];
       //   })
       // )
-      // .then(setLoading(true))
+      .then(setLoading(true))
       // .then(
       //   setTimeout(() => {
       //     setLoading(false);
       //   }, 500)
       // )
-      .then(
-        setTimeout(() => {
-          populateComments();
-        }, 300)
-      )
+      .then(populateComments())
       .catch((error) => {
         console.log(error);
       });
