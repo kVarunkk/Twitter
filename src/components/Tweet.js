@@ -105,7 +105,11 @@ function Tweet(props) {
       //     setLoading(false);
       //   }, 500)
       // )
-      .then(populateComments())
+      .then(
+        setTimeout(() => {
+          populateComments();
+        }, 500)
+      )
       .catch((error) => {
         console.log(error);
       });
