@@ -328,10 +328,7 @@ function Tweet(props) {
 
             <div className="content">{props.body.content}</div>
             {props.body.image !== undefined && (
-              <img
-                className="tweetImage"
-                src={`https://drab-hare-zipper.cyclic.app/tweetImages/${props.body.image}`}
-              ></img>
+              <img className="tweetImage" src={`${props.body.image}`}></img>
             )}
             <div className="icons">
               <div style={{ color: btnColor }} className="icon">
