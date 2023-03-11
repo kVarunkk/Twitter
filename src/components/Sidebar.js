@@ -32,7 +32,7 @@ function Sidebar() {
   };
 
   async function populateUser() {
-    const req = await fetch("https://dark-pink-wasp-boot.cyclic.app/feed", {
+    const req = await fetch("https://drab-hare-zipper.cyclic.app/feed", {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
@@ -137,7 +137,7 @@ function Sidebar() {
                 }}
                 method="post"
                 encType="multipart/form-data"
-                action="https://dark-pink-wasp-boot.cyclic.app/feed"
+                action="https://drab-hare-zipper.cyclic.app/feed"
                 className="tweet-form"
                 id="form1"
               >

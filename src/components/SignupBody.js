@@ -34,7 +34,7 @@ function SignupBody() {
       password: password,
     };
 
-    fetch("https://dark-pink-wasp-boot.cyclic.app/signup", {
+    fetch("https://drab-hare-zipper.cyclic.app/signup", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -76,7 +76,7 @@ function SignupBody() {
         </div>
         <form
           className="homeContainer-form"
-          action="https://dark-pink-wasp-boot.cyclic.app/signup"
+          action="https://drab-hare-zipper.cyclic.app/signup"
           method="post"
           onSubmit={handleSubmit}
         >

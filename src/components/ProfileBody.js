@@ -31,7 +31,7 @@ function ProfileBody() {
     e.preventDefault();
 
     fetch(
-      `https://dark-pink-wasp-boot.cyclic.app/user/${activeUser}/follow/${userName}`,
+      `https://drab-hare-zipper.cyclic.app/user/${activeUser}/follow/${userName}`,
       {
         method: "POST",
         headers: {
@@ -53,7 +53,7 @@ function ProfileBody() {
 
   async function populateUserData() {
     const req = await fetch(
-      `https://dark-pink-wasp-boot.cyclic.app/profile/${userName}`,
+      `https://drab-hare-zipper.cyclic.app/profile/${userName}`,
       {
         headers: {
           "x-access-token": localStorage.getItem("token"),
@@ -88,7 +88,7 @@ function ProfileBody() {
 
   const handleSubmitAvatar = (e) => {
     axios
-      .post(`https://dark-pink-wasp-boot.cyclic.app/avatar/${activeUser}`, {
+      .post(`https://drab-hare-zipper.cyclic.app/avatar/${activeUser}`, {
         avatar: `Avatar-${e.target.id}.png`,
       })
       .then((response) => {
@@ -101,7 +101,7 @@ function ProfileBody() {
       <div className="flex-avatar">
         <img
           className="profile-avatar"
-          src={`https://dark-pink-wasp-boot.cyclic.app/images/${avatar}`}
+          src={`https://drab-hare-zipper.cyclic.app/images/${avatar}`}
         ></img>
         {isActiveUser && (
           <Popup
@@ -118,7 +118,7 @@ function ProfileBody() {
                   }}
                   id="1"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-1.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-1.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -127,7 +127,7 @@ function ProfileBody() {
                   }}
                   id="2"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-2.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-2.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -136,7 +136,7 @@ function ProfileBody() {
                   }}
                   id="3"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-3.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-3.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -145,7 +145,7 @@ function ProfileBody() {
                   }}
                   id="4"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-4.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-4.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -154,7 +154,7 @@ function ProfileBody() {
                   }}
                   id="5"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-5.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-5.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -163,7 +163,7 @@ function ProfileBody() {
                   }}
                   id="6"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-6.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-6.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -172,7 +172,7 @@ function ProfileBody() {
                   }}
                   id="7"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-7.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-7.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -181,7 +181,7 @@ function ProfileBody() {
                   }}
                   id="8"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-8.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-8.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -190,7 +190,7 @@ function ProfileBody() {
                   }}
                   id="9"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-9.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-9.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -199,7 +199,7 @@ function ProfileBody() {
                   }}
                   id="10"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-10.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-10.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -208,7 +208,7 @@ function ProfileBody() {
                   }}
                   id="11"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-11.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-11.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -217,7 +217,7 @@ function ProfileBody() {
                   }}
                   id="12"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-12.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-12.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -226,7 +226,7 @@ function ProfileBody() {
                   }}
                   id="13"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-13.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-13.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -235,7 +235,7 @@ function ProfileBody() {
                   }}
                   id="14"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-14.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-14.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -244,7 +244,7 @@ function ProfileBody() {
                   }}
                   id="15"
                   className="choose-profile-avatar"
-                  src={`https://dark-pink-wasp-boot.cyclic.app/images/Avatar-15.png`}
+                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-15.png`}
                 ></img>
               </div>
             )}
@@ -262,7 +262,7 @@ function ProfileBody() {
       {!isActiveUser && (
         <div className="followBtn-div">
           <form
-            action={`https://dark-pink-wasp-boot.cyclic.app/user/${activeUser}/follow/${userName}`}
+            action={`https://drab-hare-zipper.cyclic.app/user/${activeUser}/follow/${userName}`}
             method="POST"
             className="follow-form"
             onSubmit={handleFollow}

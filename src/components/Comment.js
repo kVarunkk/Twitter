@@ -101,7 +101,7 @@ function Comment(props) {
       <div className="parent-flex-introduction">
         <img
           className="tweet-avatar"
-          src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.body.postedBy.avatar}`}
+          src={`https://drab-hare-zipper.cyclic.app/images/${props.body.postedBy.avatar}`}
         ></img>
         <Link to={`/Twitter-Frontend/profile/${props.body.postedBy.username}`}>
           <div style={{ marginBottom: "5px" }} className="flex-introduction">
@@ -126,7 +126,7 @@ function Comment(props) {
               <li>
                 <form
                   onSubmit={deleteComment}
-                  action={`https://dark-pink-wasp-boot.cyclic.app/deleteComment/${commentId}`}
+                  action={`https://drab-hare-zipper.cyclic.app/deleteComment/${commentId}`}
                   style={{ marginBottom: "0", color: "#F75D59" }}
                 >
                   <button className="delete-btn">
@@ -150,7 +150,7 @@ function Comment(props) {
                       onSubmit={(e) => {
                         editComment(e);
                       }}
-                      action={`https://dark-pink-wasp-boot.cyclic.app/editComment/${commentId}`}
+                      action={`https://drab-hare-zipper.cyclic.app/editComment/${commentId}`}
                     >
                       <input
                         required
@@ -191,7 +191,7 @@ function Comment(props) {
             onSubmit={handleSubmit}
             style={{ marginBottom: "0" }}
             className="likeForm"
-            action={`https://dark-pink-wasp-boot.cyclic.app/comment/${props.user}/like/${commentId}`}
+            action={`https://drab-hare-zipper.cyclic.app/comment/${props.user}/like/${commentId}`}
             method="post"
           >
             <button>

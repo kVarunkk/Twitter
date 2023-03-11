@@ -8,7 +8,7 @@ function Usercard(props) {
         <div className="card-img">
           <img
             className="tweet-avatar"
-            src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.avatar}`}
+            src={`https://drab-hare-zipper.cyclic.app/images/${props.avatar}`}
           ></img>
         </div>
         <div className="card-text">

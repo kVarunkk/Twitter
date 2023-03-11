@@ -39,7 +39,7 @@ function Tweet(props) {
 
   async function populateComments() {
     const req = await fetch(
-      `https://dark-pink-wasp-boot.cyclic.app/feed/comments/${tweetId}`,
+      `https://drab-hare-zipper.cyclic.app/feed/comments/${tweetId}`,
       {
         headers: {
           "x-access-token": localStorage.getItem("token"),
@@ -245,7 +245,7 @@ function Tweet(props) {
             <div className="parent-flex-introduction">
               <img
                 className="tweet-avatar"
-                src={`https://dark-pink-wasp-boot.cyclic.app/images/${props.body.postedBy.avatar}`}
+                src={`https://drab-hare-zipper.cyclic.app/images/${props.body.postedBy.avatar}`}
               ></img>
               <Link
                 to={`/Twitter-Frontend/profile/${props.body.postedBy.username}`}
@@ -273,7 +273,7 @@ function Tweet(props) {
                       <li>
                         <form
                           onSubmit={deleteTweet}
-                          action={`https://dark-pink-wasp-boot.cyclic.app/deleteTweet/${tweetId}`}
+                          action={`https://drab-hare-zipper.cyclic.app/deleteTweet/${tweetId}`}
                           style={{ marginBottom: "0", color: "#F75D59" }}
                         >
                           <button className="delete-btn">
@@ -299,7 +299,7 @@ function Tweet(props) {
                                   editTweet(e);
                                   close();
                                 }}
-                                action={`https://dark-pink-wasp-boot.cyclic.app/editTweet/${tweetId}`}
+                                action={`https://drab-hare-zipper.cyclic.app/editTweet/${tweetId}`}
                               >
                                 <input
                                   required
@@ -330,7 +330,7 @@ function Tweet(props) {
             {props.body.image !== undefined && (
               <img
                 className="tweetImage"
-                src={`https://dark-pink-wasp-boot.cyclic.app/tweetImages/${props.body.image}`}
+                src={`https://drab-hare-zipper.cyclic.app/tweetImages/${props.body.image}`}
               ></img>
             )}
             <div className="icons">
@@ -339,7 +339,7 @@ function Tweet(props) {
                   onSubmit={handleSubmit}
                   style={{ marginBottom: "0" }}
                   className="likeForm"
-                  action={`https://dark-pink-wasp-boot.cyclic.app/post/${props.user}/like/${tweetId}`}
+                  action={`https://drab-hare-zipper.cyclic.app/post/${props.user}/like/${tweetId}`}
                   method="post"
                 >
                   <button>
@@ -353,7 +353,7 @@ function Tweet(props) {
                   onSubmit={handleRetweetSubmit}
                   style={{ marginBottom: "0" }}
                   className="retweetForm"
-                  action={`https://dark-pink-wasp-boot.cyclic.app/post/${props.user}/retweet/${tweetId}`}
+                  action={`https://drab-hare-zipper.cyclic.app/post/${props.user}/retweet/${tweetId}`}
                 >
                   <button>
                     <AiOutlineRetweet />
@@ -393,7 +393,7 @@ function Tweet(props) {
                         close();
                       }}
                       method="post"
-                      action={`https://dark-pink-wasp-boot.cyclic.app/feed/comment/${tweetId}`}
+                      action={`https://drab-hare-zipper.cyclic.app/feed/comment/${tweetId}`}
                     >
                       <input
                         autoFocus

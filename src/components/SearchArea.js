@@ -30,7 +30,7 @@ function SearchArea() {
         className="search-form"
         onSubmit={handleSubmit}
         method="GET"
-        action={`https://dark-pink-wasp-boot.cyclic.app/search/${text}`}
+        action={`https://drab-hare-zipper.cyclic.app/search/${text}`}
       >
         <input
           autoFocus
