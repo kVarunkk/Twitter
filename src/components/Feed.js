@@ -113,11 +113,11 @@ function Feed() {
       .then(setImg(""))
       .then(setIsImageSelected(false))
       .then(console.log((e.target[1].value = "")))
-      // .then(
-      //   setTweets((prevTweets) => {
-      //     return [tweet, ...prevTweets];
-      //   })
-      // )
+      .then(
+        setTweets((prevTweets) => {
+          return [tweet, ...prevTweets];
+        })
+      )
       .then(setLoading(true))
       .then(
         setTimeout(() => {
