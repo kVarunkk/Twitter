@@ -122,7 +122,7 @@ function Feed() {
       .then(
         setTimeout(() => {
           setLoading(false);
-        }, 300)
+        }, 600)
       )
       .catch((error) => {
         console.log(error);
