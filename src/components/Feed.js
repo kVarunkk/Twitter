@@ -119,11 +119,11 @@ function Feed() {
         })
       )
       .then(setLoading(true))
-      .then(
-        setTimeout(() => {
-          setLoading(false);
-        }, 600)
-      )
+      // .then(
+      //   setTimeout(() => {
+      //     setLoading(false);
+      //   }, 600)
+      // )
       .catch((error) => {
         console.log(error);
       });
