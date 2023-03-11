@@ -131,7 +131,7 @@ function Feed() {
 
   return (
     <div>
-      <div className="form-flex">
+      {/* <div className="form-flex">
         <img
           className="tweet-avatar"
           style={{ marginBottom: "0" }}
@@ -181,7 +181,7 @@ function Feed() {
           </div>
           <img className="tweet-preview" src={img} alt="" />
         </form>
-      </div>
+      </div> */}
 
       <div className="tweets">
         <ul className="tweet-list">

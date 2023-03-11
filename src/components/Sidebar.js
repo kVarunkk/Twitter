@@ -26,6 +26,7 @@ function Sidebar() {
   const successToast = () => {
     toast({
       title: `Tweet sent`,
+      description: `${(<Link to={"/Twitter-Frontend/"}>View</Link>)}`,
       position: "top",
       isClosable: true,
     });
@@ -143,7 +144,7 @@ function Sidebar() {
               >
                 <input
                   autoFocus
-                  placeholder="What's happening?"
+                  placeholder="What's good?"
                   type="text"
                   value={input}
                   onChange={handleChange}
