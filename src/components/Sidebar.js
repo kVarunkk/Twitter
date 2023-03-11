@@ -26,7 +26,7 @@ function Sidebar() {
   const successToast = () => {
     toast({
       title: `Tweet sent`,
-      description: <Link to={"/Twitter-Frontend/"}>View</Link>,
+      // description: <Link to={"/Twitter-Frontend/"}>View</Link>,
       position: "top",
       isClosable: true,
     });
