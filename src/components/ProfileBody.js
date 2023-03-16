@@ -83,7 +83,7 @@ function ProfileBody() {
       } else {
         populateUserData();
       }
-    } else navigate("/Twitter-Frontend/");
+    } else navigate("/");
   }, []);
 
   const handleSubmitAvatar = (e) => {

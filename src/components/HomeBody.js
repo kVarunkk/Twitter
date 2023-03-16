@@ -59,8 +59,8 @@ function HomeBody() {
           successToast();
 
           setTimeout(() => {
-            // window.location.href = "/Twitter-Frontend/feed";
-            navigate("/Twitter-Frontend/feed");
+            // window.location.href = "/feed";
+            navigate("/feed");
           }, 600);
         } else {
           errorToast();
@@ -78,7 +78,7 @@ function HomeBody() {
       if (user.exp <= Date.now() / 1000) {
         localStorage.removeItem("token");
       } else {
-        navigate("/Twitter-Frontend/feed");
+        navigate("/feed");
       }
     }
   }, []);
@@ -133,8 +133,7 @@ function HomeBody() {
           </button>
         </form>
         <div className="homeContainer-signup">
-          Don't have an account?{" "}
-          <Link to="/Twitter-Frontend/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
       </div>
     </div>

@@ -247,9 +247,7 @@ function Tweet(props) {
                 className="tweet-avatar"
                 src={`https://drab-hare-zipper.cyclic.app/images/${props.body.postedBy.avatar}`}
               ></img>
-              <Link
-                to={`/Twitter-Frontend/profile/${props.body.postedBy.username}`}
-              >
+              <Link to={`/profile/${props.body.postedBy.username}`}>
                 <div className="flex-introduction">
                   <div className="postedBy">{props.body.postedBy.username}</div>
                   .<div className="time">{props.body.postedTweetTime}</div>
@@ -373,9 +371,7 @@ function Tweet(props) {
               >
                 {(close) => (
                   <div className="comment-modal">
-                    <Link
-                      to={`/Twitter-Frontend/profile/${props.body.postedBy.username}`}
-                    >
+                    <Link to={`/profile/${props.body.postedBy.username}`}>
                       <div className="flex-introduction">
                         Replying to
                         <div className="postedBy" style={{ color: "#1DA1F2" }}>

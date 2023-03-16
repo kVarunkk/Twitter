@@ -26,7 +26,7 @@ function Sidebar() {
   const successToast = () => {
     toast({
       title: `Tweet sent`,
-      // description: <Link to={"/Twitter-Frontend/"}>View</Link>,
+      // description: <Link to={"/"}>View</Link>,
       position: "top",
       isClosable: true,
     });
@@ -93,31 +93,31 @@ function Sidebar() {
       <ul className="sidebar-menu">
         <li className="sidebar-menu-items">
           <div className="title">
-            <Link to="/Twitter-Frontend/feed">
+            <Link to="/feed">
               <BsTwitter />
             </Link>
           </div>
         </li>
         <li className="sidebar-menu-items">
-          <Link to="/Twitter-Frontend/feed">
+          <Link to="/feed">
             <BiHome />
             <div>Home</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
-          <Link to={`/Twitter-Frontend/profile/${activeUser}`}>
+          <Link to={`/profile/${activeUser}`}>
             <CgProfile />
             <div>Profile</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
-          <Link to={`/Twitter-Frontend/search`}>
+          <Link to={`/search`}>
             <AiOutlineSearch />
             <div>Search</div>
           </Link>
         </li>
         <li onClick={logout} className="sidebar-menu-items">
-          <Link to="/Twitter-Frontend/">
+          <Link to="/">
             <GrLogout />
             <div>Logout</div>
           </Link>

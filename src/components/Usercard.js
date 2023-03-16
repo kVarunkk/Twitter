@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Usercard(props) {
   return (
-    <Link to={`/Twitter-Frontend/profile/${props.username}`}>
+    <Link to={`/profile/${props.username}`}>
       <div className="card">
         <div className="card-img">
           <img

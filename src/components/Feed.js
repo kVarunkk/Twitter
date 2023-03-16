@@ -37,7 +37,7 @@ function Feed() {
       setLoading(false);
     } else {
       alert(data.error);
-      navigate("/Twitter-Frontend/");
+      navigate("/");
     }
   }
 
@@ -62,7 +62,7 @@ function Feed() {
       });
     } else {
       alert(data.error);
-      navigate("/Twitter-Frontend/");
+      navigate("/");
     }
   }
 
@@ -75,7 +75,7 @@ function Feed() {
       } else {
         populateTweets();
       }
-    } else navigate("/Twitter-Frontend/");
+    } else navigate("/");
   }, [loading]);
 
   const handleChange = (e) => {
