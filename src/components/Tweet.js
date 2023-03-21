@@ -11,6 +11,7 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import moment from "moment";
 import { useToast } from "@chakra-ui/toast";
+import { Tag } from "@chakra-ui/react";
 
 function Tweet(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -328,6 +329,9 @@ function Tweet(props) {
             {props.body.image !== undefined && (
               <img className="tweetImage" src={`${props.body.image}`}></img>
             )}
+            <div className="tagArea1">
+              <Tag>{props.body.tag}</Tag>
+            </div>
             <div className="icons">
               <div style={{ color: btnColor }} className="icon">
                 <form

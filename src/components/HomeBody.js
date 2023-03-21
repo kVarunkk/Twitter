@@ -29,7 +29,7 @@ function HomeBody() {
   };
 
   const handleChangeUserName = (e) => {
-    setUserName(e.target.value);
+    setUserName(e.target.value.toLowerCase());
   };
 
   const handleChangePassword = (e) => {
@@ -93,17 +93,6 @@ function HomeBody() {
         <div className="homeContainer-header">
           <h2>Sign in to Twitter</h2>
         </div>
-
-        {/* <a className="googleSignIn" href="#">
-          <FcGoogle style={{ fontSize: "1.3rem" }} />
-          <div> Sign in with Google</div>
-        </a> */}
-        <div className="homeContainer-hr">
-          <hr></hr>
-          <span>or</span>
-          <hr></hr>
-        </div>
-
         <form
           className="homeContainer-form"
           action="https://drab-hare-zipper.cyclic.app/signup"

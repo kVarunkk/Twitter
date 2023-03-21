@@ -694,8 +694,31 @@ input:focus {
     gap: 10px;
 }
 
+/* tagArea */
+.tagArea {
+    padding: 20px;
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid rgb(217, 217, 217);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.tagArea1 {
+    margin-bottom: 10px;
+}
+
+.css-1f26lr9 {
+    cursor: pointer !important;
+}
+
 
 @media only screen and (max-device-width: 480px) {
+
+    .loadingio-spinner-rolling-uzhdebhewyj {
+        margin-left: 60px !important;
+    }
+
     .homeContainer {
         width: 90%;
     }

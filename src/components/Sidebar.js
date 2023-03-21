@@ -5,8 +5,10 @@ import { BiHome } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
 import { AiFillCamera } from "react-icons/ai";
 import { AiOutlineSearch } from "react-icons/ai";
+import { BiChevronsRight } from "react-icons/bi";
 import { GrLogout } from "react-icons/gr";
 import { useToast } from "@chakra-ui/toast";
+import { Tag } from "@chakra-ui/react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import moment from "moment";
@@ -20,6 +22,19 @@ function Sidebar() {
   const toast = useToast();
   const [img, setImg] = useState("");
   const [isImageSelected, setIsImageSelected] = useState(false);
+  const [tag, setTag] = useState("");
+  const [index1, setIndex1] = useState("");
+
+  const tags = [
+    "Sports",
+    "Politics",
+    "Love",
+    "Education",
+    "Tech",
+    "Finance",
+    "Gaming",
+    "Entertainment",
+  ];
 
   const checkInput = input || img;
 
@@ -66,6 +81,7 @@ function Sidebar() {
         username: activeUser,
       },
       image: "",
+      tag: tag,
       likes: [],
       retweets: [],
       comments: [],
@@ -88,6 +104,10 @@ function Sidebar() {
       });
   };
 
+  const handleSubmitTag = (e) => {
+    setTag(e.target.innerText);
+  };
+
   return (
     <div className="sidebar">
       <ul className="sidebar-menu">
@@ -102,6 +122,12 @@ function Sidebar() {
           <Link to="/feed">
             <BiHome />
             <div>Home</div>
+          </Link>
+        </li>
+        <li className="sidebar-menu-items">
+          <Link to="/topic/Sports">
+            <BiChevronsRight />
+            <div>Topics</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
@@ -174,6 +200,37 @@ function Sidebar() {
                     {" "}
                     Tweet
                   </button>
+                </div>
+                <div className="tagArea">
+                  {tags.map((tag, index) => {
+                    return index1 === index ? (
+                      // <Link to={`/topic/${tag}`}>
+                      <Tag
+                        onClick={(e) => {
+                          handleSubmitTag(e);
+                          setIndex1(index);
+                        }}
+                        size={"lg"}
+                        variant="solid"
+                        colorScheme="cyan"
+                      >
+                        {tag}
+                      </Tag>
+                    ) : (
+                      // </Link>
+                      // <Link to={`/topic/${tag}`}>
+                      <Tag
+                        onClick={(e) => {
+                          handleSubmitTag(e);
+                          setIndex1(index);
+                        }}
+                        size={"lg"}
+                      >
+                        {tag}
+                      </Tag>
+                      // </Link>
+                    );
+                  })}
                 </div>
                 <img className="tweet-preview" src={img} alt="" />
               </form>
