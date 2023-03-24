@@ -13,6 +13,8 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import moment from "moment";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+import { Box } from "@chakra-ui/react";
 
 import jwtDecode from "jwt-decode";
 
@@ -39,11 +41,29 @@ function Sidebar() {
   const checkInput = input || img;
 
   const successToast = () => {
+    // toast({
+    //   title: `Tweet sent`,
+    //   // description: <Link to={"/"}>View</Link>,
+    //   position: "top",
+    //   isClosable: true,
+    // });
+
+    // toast.custom(
+    //   <span>
+    //     Tweet sent successfully <Link to={"/"}>View</Link>
+    //   </span>
+    // );
+
     toast({
-      title: `Tweet sent`,
-      // description: <Link to={"/"}>View</Link>,
       position: "top",
-      isClosable: true,
+      render: () => (
+        <Box borderRadius="lg" color="white" p={3} bg="blue.500">
+          Tweet sent{" "}
+          <a href="/" style={{ textDecoration: "underline" }}>
+            View
+          </a>
+        </Box>
+      ),
     });
   };
 
