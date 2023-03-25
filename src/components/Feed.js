@@ -23,11 +23,17 @@ function Feed() {
   const checkInput = input || img;
 
   async function populateTweets() {
-    const req = await fetch("https://drab-hare-zipper.cyclic.app/feed", {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
+    const req = await fetch(
+      "https://drab-hare-zipper.cyclic.app/feed",
+      {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
       },
-    });
+      {
+        mode: "cors",
+      }
+    );
 
     const data = await req.json();
     if (data.status === "ok") {
