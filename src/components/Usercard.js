@@ -1,14 +1,18 @@
+import { useContext } from "react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { urlContext } from "../index";
 
 function Usercard(props) {
+  const url = useContext(urlContext);
+
   return (
     <Link to={`/profile/${props.username}`}>
       <div className="card">
         <div className="card-img">
           <img
             className="tweet-avatar"
-            src={`https://drab-hare-zipper.cyclic.app/images/${props.avatar}`}
+            src={`${url}/images/${props.avatar}`}
           ></img>
         </div>
         <div className="card-text">

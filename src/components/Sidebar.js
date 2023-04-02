@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { BsTwitter } from "react-icons/bs";
 import { BiHome } from "react-icons/bi";
@@ -15,6 +15,7 @@ import moment from "moment";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { Box } from "@chakra-ui/react";
+import { urlContext } from "../index";
 
 import jwtDecode from "jwt-decode";
 
@@ -26,6 +27,7 @@ function Sidebar() {
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [tag, setTag] = useState("");
   const [index1, setIndex1] = useState("");
+  const url = useContext(urlContext);
 
   const tags = [
     "Sports",
@@ -68,7 +70,7 @@ function Sidebar() {
   };
 
   async function populateUser() {
-    const req = await fetch("https://drab-hare-zipper.cyclic.app/feed", {
+    const req = await fetch(`${url}/feed`, {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },
@@ -184,7 +186,7 @@ function Sidebar() {
                 }}
                 method="post"
                 encType="multipart/form-data"
-                action="https://drab-hare-zipper.cyclic.app/feed"
+                action={`${url}/feed`}
                 className="tweet-form"
                 id="form1"
               >

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Comment from "./Comment";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import "reactjs-popup/dist/index.css";
 import moment from "moment";
 import { useToast } from "@chakra-ui/toast";
 import { Tag } from "@chakra-ui/react";
+import { urlContext } from "../index";
 
 function Tweet(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -29,6 +30,8 @@ function Tweet(props) {
   const tweetId = props.body.postedTweetTime;
   const isUserActive = props.body.postedBy.username === props.user;
   const toast = useToast();
+  const url = useContext(urlContext);
+
   const errorToast = () => {
     toast({
       title: `An error occured while posting`,
@@ -39,14 +42,11 @@ function Tweet(props) {
   };
 
   async function populateComments() {
-    const req = await fetch(
-      `https://drab-hare-zipper.cyclic.app/feed/comments/${tweetId}`,
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      }
-    );
+    const req = await fetch(`${url}/feed/comments/${tweetId}`, {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    });
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -246,7 +246,7 @@ function Tweet(props) {
             <div className="parent-flex-introduction">
               <img
                 className="tweet-avatar"
-                src={`https://drab-hare-zipper.cyclic.app/images/${props.body.postedBy.avatar}`}
+                src={`${url}/images/${props.body.postedBy.avatar}`}
               ></img>
               <Link to={`/profile/${props.body.postedBy.username}`}>
                 <div className="flex-introduction">
@@ -272,7 +272,7 @@ function Tweet(props) {
                       <li>
                         <form
                           onSubmit={deleteTweet}
-                          action={`https://drab-hare-zipper.cyclic.app/deleteTweet/${tweetId}`}
+                          action={`${url}/deleteTweet/${tweetId}`}
                           style={{ marginBottom: "0", color: "#F75D59" }}
                         >
                           <button className="delete-btn">
@@ -298,7 +298,7 @@ function Tweet(props) {
                                   editTweet(e);
                                   close();
                                 }}
-                                action={`https://drab-hare-zipper.cyclic.app/editTweet/${tweetId}`}
+                                action={`${url}/editTweet/${tweetId}`}
                               >
                                 <input
                                   required
@@ -338,7 +338,7 @@ function Tweet(props) {
                   onSubmit={handleSubmit}
                   style={{ marginBottom: "0" }}
                   className="likeForm"
-                  action={`https://drab-hare-zipper.cyclic.app/post/${props.user}/like/${tweetId}`}
+                  action={`${url}/post/${props.user}/like/${tweetId}`}
                   method="post"
                 >
                   <button>
@@ -352,7 +352,7 @@ function Tweet(props) {
                   onSubmit={handleRetweetSubmit}
                   style={{ marginBottom: "0" }}
                   className="retweetForm"
-                  action={`https://drab-hare-zipper.cyclic.app/post/${props.user}/retweet/${tweetId}`}
+                  action={`${url}/post/${props.user}/retweet/${tweetId}`}
                 >
                   <button>
                     <AiOutlineRetweet />
@@ -390,7 +390,7 @@ function Tweet(props) {
                         close();
                       }}
                       method="post"
-                      action={`https://drab-hare-zipper.cyclic.app/feed/comment/${tweetId}`}
+                      action={`${url}/feed/comment/${tweetId}`}
                     >
                       <input
                         autoFocus

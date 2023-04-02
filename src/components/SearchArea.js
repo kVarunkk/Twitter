@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Usercard from "./Usercard";
+import { urlContext } from "../index";
 const axios = require("axios");
 
 function SearchArea() {
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
+  const url = useContext(urlContext);
+
   const handleChange = (e) => {
     setText(e.target.value);
   };
@@ -30,7 +33,7 @@ function SearchArea() {
         className="search-form"
         onSubmit={handleSubmit}
         method="GET"
-        action={`https://drab-hare-zipper.cyclic.app/search/${text}`}
+        action={`${url}/search/${text}`}
       >
         <input
           autoFocus

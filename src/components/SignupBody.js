@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { BsTwitter } from "react-icons/bs";
 import { useToast } from "@chakra-ui/toast";
+import { urlContext } from "../index";
 
 function SignupBody() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const url = useContext(urlContext);
+
   const toast = useToast();
   const successToast = () => {
     toast({
@@ -34,7 +37,7 @@ function SignupBody() {
       password: password,
     };
 
-    fetch("https://drab-hare-zipper.cyclic.app/signup", {
+    fetch(`${url}/signup`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -66,7 +69,7 @@ function SignupBody() {
         </div>
         <form
           className="homeContainer-form"
-          action="https://drab-hare-zipper.cyclic.app/signup"
+          action={`${url}/signup`}
           method="post"
           onSubmit={handleSubmit}
         >

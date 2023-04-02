@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useParams } from "react-router";
 import { AiFillCamera } from "react-icons/ai";
@@ -7,6 +7,7 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import { urlContext } from "../index";
 
 function ProfileBody() {
   const [loading, setLoading] = useState(true);
@@ -20,6 +21,7 @@ function ProfileBody() {
   let { userName } = useParams();
   const isActiveUser = activeUser === userName;
   const [img, setImg] = useState();
+  const url = useContext(urlContext);
 
   const onImageChange = (e) => {
     const [file] = e.target.files;
@@ -30,15 +32,12 @@ function ProfileBody() {
   const handleFollow = (e) => {
     e.preventDefault();
 
-    fetch(
-      `https://drab-hare-zipper.cyclic.app/user/${activeUser}/follow/${userName}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    fetch(`${url}/user/${activeUser}/follow/${userName}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((response) => {
         return response.json();
       })
@@ -52,14 +51,11 @@ function ProfileBody() {
   };
 
   async function populateUserData() {
-    const req = await fetch(
-      `https://drab-hare-zipper.cyclic.app/profile/${userName}`,
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      }
-    );
+    const req = await fetch(`${url}/profile/${userName}`, {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    });
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -88,7 +84,7 @@ function ProfileBody() {
 
   const handleSubmitAvatar = (e) => {
     axios
-      .post(`https://drab-hare-zipper.cyclic.app/avatar/${activeUser}`, {
+      .post(`${url}/avatar/${activeUser}`, {
         avatar: `Avatar-${e.target.id}.png`,
       })
       .then((response) => {
@@ -99,10 +95,7 @@ function ProfileBody() {
   return (
     <div className="container">
       <div className="flex-avatar">
-        <img
-          className="profile-avatar"
-          src={`https://drab-hare-zipper.cyclic.app/images/${avatar}`}
-        ></img>
+        <img className="profile-avatar" src={`${url}/images/${avatar}`}></img>
         {isActiveUser && (
           <Popup
             position="center"
@@ -118,7 +111,7 @@ function ProfileBody() {
                   }}
                   id="1"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-1.png`}
+                  src={`${url}/images/Avatar-1.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -127,7 +120,7 @@ function ProfileBody() {
                   }}
                   id="2"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-2.png`}
+                  src={`${url}/images/Avatar-2.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -136,7 +129,7 @@ function ProfileBody() {
                   }}
                   id="3"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-3.png`}
+                  src={`${url}/images/Avatar-3.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -145,7 +138,7 @@ function ProfileBody() {
                   }}
                   id="4"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-4.png`}
+                  src={`${url}/images/Avatar-4.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -154,7 +147,7 @@ function ProfileBody() {
                   }}
                   id="5"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-5.png`}
+                  src={`${url}/images/Avatar-5.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -163,7 +156,7 @@ function ProfileBody() {
                   }}
                   id="6"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-6.png`}
+                  src={`${url}/images/Avatar-6.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -172,7 +165,7 @@ function ProfileBody() {
                   }}
                   id="7"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-7.png`}
+                  src={`${url}/images/Avatar-7.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -181,7 +174,7 @@ function ProfileBody() {
                   }}
                   id="8"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-8.png`}
+                  src={`${url}/images/Avatar-8.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -190,7 +183,7 @@ function ProfileBody() {
                   }}
                   id="9"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-9.png`}
+                  src={`${url}/images/Avatar-9.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -199,7 +192,7 @@ function ProfileBody() {
                   }}
                   id="10"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-10.png`}
+                  src={`${url}/images/Avatar-10.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -208,7 +201,7 @@ function ProfileBody() {
                   }}
                   id="11"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-11.png`}
+                  src={`${url}/images/Avatar-11.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -217,7 +210,7 @@ function ProfileBody() {
                   }}
                   id="12"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-12.png`}
+                  src={`${url}/images/Avatar-12.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -226,7 +219,7 @@ function ProfileBody() {
                   }}
                   id="13"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-13.png`}
+                  src={`${url}/images/Avatar-13.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -235,7 +228,7 @@ function ProfileBody() {
                   }}
                   id="14"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-14.png`}
+                  src={`${url}/images/Avatar-14.png`}
                 ></img>
                 <img
                   onClick={(e) => {
@@ -244,7 +237,7 @@ function ProfileBody() {
                   }}
                   id="15"
                   className="choose-profile-avatar"
-                  src={`https://drab-hare-zipper.cyclic.app/images/Avatar-15.png`}
+                  src={`${url}/images/Avatar-15.png`}
                 ></img>
               </div>
             )}
@@ -262,7 +255,7 @@ function ProfileBody() {
       {!isActiveUser && (
         <div className="followBtn-div">
           <form
-            action={`https://drab-hare-zipper.cyclic.app/user/${activeUser}/follow/${userName}`}
+            action={`${url}/user/${activeUser}/follow/${userName}`}
             method="POST"
             className="follow-form"
             onSubmit={handleFollow}

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Tag } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Tweet from "./Tweet";
 import { Link } from "react-router-dom";
+import { urlContext } from "../index";
 const axios = require("axios");
 
 function TopicArea() {
@@ -13,6 +14,7 @@ function TopicArea() {
   const [tweetCount, setTweetCount] = useState("20");
   const [tag, setTag] = useState("Sports");
   const [index1, setIndex1] = useState(0);
+  const url = useContext(urlContext);
 
   const navigate = useNavigate();
 
@@ -32,14 +34,11 @@ function TopicArea() {
   }, [tag]);
 
   const handleClick = async () => {
-    const req = await fetch(
-      `https://drab-hare-zipper.cyclic.app/topic/${tag}`,
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      }
-    );
+    const req = await fetch(`${url}/topic/${tag}`, {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    });
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -55,14 +54,11 @@ function TopicArea() {
 
   async function addTweets(e) {
     e.preventDefault();
-    const req = await fetch(
-      `https://drab-hare-zipper.cyclic.app/topic/${tag}?t=${tweetCount}`,
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      }
-    );
+    const req = await fetch(`${url}/topic/${tag}?t=${tweetCount}`, {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    });
 
     const data = await req.json();
     if (data.status === "ok") {

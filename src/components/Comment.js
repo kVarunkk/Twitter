@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { Link } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
@@ -6,6 +6,7 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import { AiFillEdit } from "react-icons/ai";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import { urlContext } from "../index";
 
 function Comment(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -14,6 +15,7 @@ function Comment(props) {
   const [isEdited, setIsEdited] = useState(props.body.isEdited);
   const commentId = props.body.postedCommentTime;
   const isUserActive = props.body.postedBy.username === props.user;
+  const url = useContext(urlContext);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -101,7 +103,7 @@ function Comment(props) {
       <div className="parent-flex-introduction">
         <img
           className="tweet-avatar"
-          src={`https://drab-hare-zipper.cyclic.app/images/${props.body.postedBy.avatar}`}
+          src={`${url}/images/${props.body.postedBy.avatar}`}
         ></img>
         <Link to={`/profile/${props.body.postedBy.username}`}>
           <div style={{ marginBottom: "5px" }} className="flex-introduction">
@@ -126,7 +128,7 @@ function Comment(props) {
               <li>
                 <form
                   onSubmit={deleteComment}
-                  action={`https://drab-hare-zipper.cyclic.app/deleteComment/${commentId}`}
+                  action={`${url}/deleteComment/${commentId}`}
                   style={{ marginBottom: "0", color: "#F75D59" }}
                 >
                   <button className="delete-btn">
@@ -150,7 +152,7 @@ function Comment(props) {
                       onSubmit={(e) => {
                         editComment(e);
                       }}
-                      action={`https://drab-hare-zipper.cyclic.app/editComment/${commentId}`}
+                      action={`${url}/editComment/${commentId}`}
                     >
                       <input
                         required
@@ -191,7 +193,7 @@ function Comment(props) {
             onSubmit={handleSubmit}
             style={{ marginBottom: "0" }}
             className="likeForm"
-            action={`https://drab-hare-zipper.cyclic.app/comment/${props.user}/like/${commentId}`}
+            action={`${url}/comment/${props.user}/like/${commentId}`}
             method="post"
           >
             <button>

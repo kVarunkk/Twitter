@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Tweet from "./Tweet";
 import { useNavigate } from "react-router-dom";
 import { AiFillCamera } from "react-icons/ai";
@@ -7,6 +7,7 @@ import jwtDecode from "jwt-decode";
 import moment from "moment";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import { urlContext } from "../index";
 
 function Feed() {
   const [input, setInput] = useState("");
@@ -19,12 +20,13 @@ function Feed() {
   const [img, setImg] = useState("");
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [tweetCount, setTweetCount] = useState("20");
+  const url = useContext(urlContext);
 
   const checkInput = input || img;
 
   async function populateTweets() {
     const req = await fetch(
-      "https://drab-hare-zipper.cyclic.app/feed",
+      `${url}/feed`,
       {
         headers: {
           "x-access-token": localStorage.getItem("token"),
@@ -49,14 +51,11 @@ function Feed() {
 
   async function addTweets(e) {
     e.preventDefault();
-    const req = await fetch(
-      `https://drab-hare-zipper.cyclic.app/feed?t=${tweetCount}`,
-      {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      }
-    );
+    const req = await fetch(`${url}/feed?t=${tweetCount}`, {
+      headers: {
+        "x-access-token": localStorage.getItem("token"),
+      },
+    });
 
     const data = await req.json();
     if (data.status === "ok") {
@@ -136,58 +135,6 @@ function Feed() {
 
   return (
     <div>
-      {/* <div className="form-flex">
-        <img
-          className="tweet-avatar"
-          style={{ marginBottom: "0" }}
-          src={`https://drab-hare-zipper.cyclic.app/images/${userAvatar}`}
-        ></img>
-
-        <form
-          onSubmit={handleSubmit}
-          method="post"
-          encType="multipart/form-data"
-          action="https://drab-hare-zipper.cyclic.app/feed"
-          className="tweet-form"
-          id="form"
-        >
-          <input
-            autoFocus
-            placeholder="What's happening?"
-            type="text"
-            value={input}
-            onChange={handleChange}
-          ></input>
-          <div className="tweet-flex">
-            <div>
-              <AiFillCamera
-                style={{
-                  color: "#1DA1F2",
-                  fontSize: "1.5rem",
-                }}
-              />
-            </div>
-
-            <input
-              className="image-input"
-              type="text"
-              placeholder="Enter an image url here"
-              value={img}
-              onChange={(e) => setImg(e.target.value)}
-            ></input>
-            <button
-              className={checkInput ? "tweetBtn" : "disabled"}
-              disabled={!checkInput}
-              type="submit"
-            >
-              {" "}
-              Tweet
-            </button>
-          </div>
-          <img className="tweet-preview" src={img} alt="" />
-        </form>
-      </div> */}
-
       <div className="tweets">
         <ul className="tweet-list">
           {loading ? (

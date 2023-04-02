@@ -1,13 +1,15 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useContext } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router-dom";
 import { BsTwitter } from "react-icons/bs";
 import { useToast } from "@chakra-ui/toast";
 import jwtDecode from "jwt-decode";
+import { urlContext } from "../index";
 
 function HomeBody() {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const url = useContext(urlContext);
 
   const toast = useToast();
 
@@ -46,7 +48,7 @@ function HomeBody() {
       password: password,
     };
 
-    fetch("https://drab-hare-zipper.cyclic.app/", {
+    fetch(`${url}/`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(oldPerson),
@@ -95,7 +97,7 @@ function HomeBody() {
         </div>
         <form
           className="homeContainer-form"
-          action="https://drab-hare-zipper.cyclic.app/signup"
+          action={`${url}/signup`}
           method="post"
           onSubmit={handleSubmit}
         >
