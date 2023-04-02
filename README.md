@@ -41,8 +41,8 @@ $ npm install
 $ npm start
 ```
 
-> Currently all the requests are made to the following url: <https://drab-hare-zipper.cyclic.app>
-> If you also wish to run the server locally, refer [here](https://github.com/kVarunkk/Twitter-Backend)
+> Currently all the requests are made to the following url: <https://drab-hare-zipper.cyclic.app><br/>
+> To be able to send requests to the _local server_ which is running at <http://localhost:5000>, you need to configure the ` index.js` file and change the value of the ` useContext Provider` to <http://localhost:5000>
 
 ## License
 
