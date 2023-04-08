@@ -14,7 +14,7 @@ export const urlContext = createContext("");
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <urlContext.Provider value="https://drab-hare-zipper.cyclic.app">
+  <urlContext.Provider value="">
     <ChakraProvider>
       <BrowserRouter>
         <Routes>
