@@ -1,7 +1,7 @@
 {
   "name": "client",
   "version": "0.1.0",
-  "proxy": "https://drab-hare-zipper.cyclic.app",
+  
   "private": true,
   "dependencies": {
   "@chakra-ui/react": "^2.2.6",

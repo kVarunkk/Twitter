@@ -48,7 +48,7 @@ function HomeBody() {
       password: password,
     };
 
-    fetch(`/`, {
+    fetch(`${url}/`, {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify(oldPerson),

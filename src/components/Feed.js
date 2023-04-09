@@ -26,7 +26,7 @@ function Feed() {
 
   async function populateTweets() {
     const req = await fetch(
-      `/feed`,
+      `${url}/feed`,
       {
         headers: {
           "x-access-token": localStorage.getItem("token"),
