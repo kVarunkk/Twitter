@@ -8,7 +8,7 @@ import { GoComment } from "react-icons/go";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { AiFillEdit } from "react-icons/ai";
 import moment from "moment";
-import { useToast } from "@chakra-ui/toast";
+// import { useToast } from "@chakra-ui/toast";
 import { UrlContext } from "../context/urlContext";
 import {
   DropdownMenu,
@@ -42,7 +42,7 @@ function Tweet(props) {
   const tweetId = props.body.postedTweetTime;
   const [isImageLoading, setIsImageLoading] = useState(true); // Track image loading state
   const isUserActive = props.body.postedBy?.username === props.user;
-  const toast = useToast();
+  // const toast = useToast();
   const url = useContext(UrlContext);
   const router = useRouter();
 

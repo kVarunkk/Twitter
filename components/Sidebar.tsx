@@ -9,14 +9,14 @@ import { AiFillCamera } from "react-icons/ai";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiChevronsRight } from "react-icons/bi";
 import { GrLogout } from "react-icons/gr";
-import { useToast } from "@chakra-ui/toast";
-import { Tag } from "@chakra-ui/react";
+// import { useToast } from "@chakra-ui/toast";
+// import { Tag } from "@chakra-ui/react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import moment from "moment";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import { Box } from "@chakra-ui/react";
+// import { Box } from "@chakra-ui/react";
 import "../app/globals.css";
 
 import jwtDecode from "jwt-decode";

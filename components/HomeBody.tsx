@@ -2,12 +2,12 @@
 
 import { useState, useEffect, useContext } from "react";
 import { BsTwitter } from "react-icons/bs";
-import { useToast } from "@chakra-ui/toast";
+// import { useToast } from "@chakra-ui/toast";
 import jwtDecode from "jwt-decode";
 import { UrlContext } from "../context/urlContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Spinner } from "@chakra-ui/react";
+// import { Spinner } from "@chakra-ui/react";
 import "../app/globals.css";
 import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";

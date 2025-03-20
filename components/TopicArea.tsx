@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useContext } from "react";
-import { Tag } from "@chakra-ui/react";
+// import { Tag } from "@chakra-ui/react";
 import Tweet from "./Tweet";
 import { UrlContext } from "../context/urlContext";
 import Link from "next/link";
