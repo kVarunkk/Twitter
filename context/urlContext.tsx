@@ -8,7 +8,7 @@ export const UrlProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <UrlContext.Provider value="http://localhost:5000">
+    <UrlContext.Provider value="https://twitter-backend-ilpr.onrender.com">
       {children}
     </UrlContext.Provider>
   );
