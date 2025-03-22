@@ -4,7 +4,7 @@ export const formatContentWithLinks = (content: string) => {
   // Updated regex to allow periods but exclude trailing commas and other punctuation
   const urlRegex = /(https?:\/\/[^\s,!?()]+(?:\.[^\s,!?()]+)*)/g;
 
-  return content.split(urlRegex).map((part: string, index: number) =>
+  return content?.split(urlRegex)?.map((part: string, index: number) =>
     urlRegex.test(part) ? (
       <a
         key={index}
