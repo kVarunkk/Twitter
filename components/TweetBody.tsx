@@ -13,10 +13,11 @@ export default function TweetBody(props) {
         <button
           type="button"
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             router.push(`/profile/${props.body.retweetedByUser}`);
           }}
-          className="cursor-pointer flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
+          className="stop-link cursor-pointer flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
         >
           <AiOutlineRetweet className="text-gray-500 mr-2" />
           <span className="text-gray-500 text-sm font-semibold">Retweeted</span>
@@ -26,10 +27,11 @@ export default function TweetBody(props) {
       <div className="flex items-center mb-2">
         <button
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             router.push(`/profile/${props.body.postedBy.username}`);
           }}
-          className="cursor-pointer shrink-0"
+          className="stop-link cursor-pointer shrink-0"
         >
           <img
             className="w-16 h-16 rounded-full !p-2"
@@ -39,10 +41,11 @@ export default function TweetBody(props) {
         </button>
         <button
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             router.push(`/profile/${props.body.postedBy.username}`);
           }}
-          className="cursor-pointer !p-2"
+          className="stop-link cursor-pointer !p-2"
         >
           <div className="flex flex-col items-start">
             <div className="font-bold text-gray-800">
@@ -106,10 +109,11 @@ export default function TweetBody(props) {
       {props.body.tag && (
         <button
           onClick={(e) => {
+            e.preventDefault();
             e.stopPropagation();
             router.push(`/topic/${props.body.tag}`);
           }}
-          className=" !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white"
+          className="stop-link !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white"
         >
           {props.body.tag}
         </button>
