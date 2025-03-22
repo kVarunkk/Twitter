@@ -30,7 +30,7 @@ import {
   DialogTrigger,
 } from "./components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "./ToastComponent";
 
 function Sidebar() {
@@ -42,9 +42,9 @@ function Sidebar() {
   const [index1, setIndex1] = useState<number | null>(null);
   const url = useContext(UrlContext);
   const pathname = usePathname();
-
+  const router = useRouter();
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  let lastScrollY = 0;
+  let lastScrollY = 10;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,17 +79,35 @@ function Sidebar() {
   const checkInput = input || img;
 
   async function populateUser() {
-    const req = await fetch(`${url}/feed`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+    try {
+      const req = await fetch(`${url}/api/feed`, {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      });
 
-    const data = await req.json();
-    if (data.status === "ok") {
-      setActiveUser(data.activeUser);
-    } else {
-      alert(data.error);
+      const data = await req.json();
+
+      if (data.status === "ok") {
+        setActiveUser(data.activeUser);
+      } else {
+        // Handle invalid token or authentication failure
+        // console.error("Error fetching user data:", data.error);
+        showToast({
+          heading: "Error",
+          message: "Session expired. Please log in again.",
+          type: "error",
+        });
+        localStorage.removeItem("token"); // Clear the invalid token
+        router.push("/"); // Redirect to the home page
+      }
+    } catch (error) {
+      // console.error("Error fetching user data:", error);
+      showToast({
+        heading: "Error",
+        message: "Failed to fetch user data. Please try again later.",
+        type: "error",
+      });
     }
   }
 
@@ -118,7 +136,7 @@ function Sidebar() {
     };
 
     try {
-      const response = await axios.post(`${url}/feed`, payload, {
+      const response = await axios.post(`${url}/api/feed`, payload, {
         headers: {
           "Content-Type": "application/json",
           "x-access-token": localStorage.getItem("token"),
@@ -152,7 +170,7 @@ function Sidebar() {
         });
       }
     } catch (error) {
-      console.error("Error posting tweet:", error);
+      // console.error("Error posting tweet:", error);
       showToast({
         heading: "Error",
         message: "Something went wrong. Please try again.",
@@ -187,7 +205,7 @@ function Sidebar() {
             className={pathname === "/feed" ? "sidebar-active" : ""}
           >
             <BiHome />
-            <div>Home</div>
+            <div className="hidden sm:block">Home</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
@@ -196,7 +214,7 @@ function Sidebar() {
             className={pathname.startsWith("/topic") ? "sidebar-active" : ""}
           >
             <BiChevronsRight />
-            <div>Topics</div>
+            <div className="hidden sm:block">Topics</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
@@ -207,7 +225,7 @@ function Sidebar() {
             }
           >
             <CgProfile />
-            <div>Profile</div>
+            <div className="hidden sm:block">Profile</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
@@ -216,13 +234,13 @@ function Sidebar() {
             className={pathname === "/search" ? "sidebar-active" : ""}
           >
             <AiOutlineSearch />
-            <div>Search</div>
+            <div className="hidden sm:block">Search</div>
           </Link>
         </li>
         <li onClick={logout} className="sidebar-menu-items">
           <Link href="/">
             <GrLogout />
-            <div>Logout</div>
+            <div className="hidden sm:block">Logout</div>
           </Link>
         </li>
         <li className="sidebar-menu-items tweet-list-item">
@@ -241,7 +259,7 @@ function Sidebar() {
                 }}
                 method="post"
                 encType="multipart/form-data"
-                action={`${url}/feed`}
+                action={`${url}/api/feed`}
                 className="tweet-form flex flex-col gap-4 flex-grow"
                 id="form1"
               >

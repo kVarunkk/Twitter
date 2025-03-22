@@ -38,7 +38,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
   const fetchTweets = async (tag: string) => {
     setLoading(true);
     try {
-      const req = await fetch(`${url}/topic/${tag}`, {
+      const req = await fetch(`${url}/api/topic/${tag}`, {
         headers: {
           "x-access-token": localStorage.getItem("token") || "",
         },
@@ -63,11 +63,14 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
   const loadMoreTweets = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const req = await fetch(`${url}/topic/${currentTag}?t=${tweetCount}`, {
-        headers: {
-          "x-access-token": localStorage.getItem("token") || "",
-        },
-      });
+      const req = await fetch(
+        `${url}/api/topic/${currentTag}?t=${tweetCount}`,
+        {
+          headers: {
+            "x-access-token": localStorage.getItem("token") || "",
+          },
+        }
+      );
 
       const data = await req.json();
       if (data.status === "ok") {

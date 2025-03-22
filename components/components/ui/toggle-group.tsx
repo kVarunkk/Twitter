@@ -61,13 +61,13 @@ function ToggleGroup({
   }, []);
 
   return (
-    <div className="relative flex items-center">
+    <div className="relative flex items-center group">
       {/* Left Arrow */}
       {canScrollLeft && (
         <button
           type="button"
           onClick={scrollLeft}
-          className="hover:bg-gray-100 cursor-pointer text-gray-800 absolute  z-10 !p-3 rounded-full"
+          className="sm:hidden group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute  z-10 !p-3 rounded-full"
         >
           <ArrowLeft />
         </button>
@@ -99,7 +99,7 @@ function ToggleGroup({
         <button
           type="button"
           onClick={scrollRight}
-          className="hover:bg-gray-100 cursor-pointer text-gray-800 absolute right-0 z-10 !p-3 rounded-full "
+          className="sm:hidden group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute right-0 z-10 !p-3 rounded-full "
         >
           <ArrowRight />
         </button>

@@ -17,7 +17,7 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
 
   const fetchTweet = async () => {
     try {
-      const response = await fetch(`${url}/tweet/${tweetId}`, {
+      const response = await fetch(`${url}/api/tweet/${tweetId}`, {
         headers: {
           "x-access-token": localStorage.getItem("token"),
         },

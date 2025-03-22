@@ -27,11 +27,15 @@ import Link from "next/link";
 import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
 import { useRouter } from "next/navigation";
+import { formatContentWithLinks } from "utils/utils";
+import TweetBody from "./TweetBody";
+import { Share } from "lucide-react";
 
 function Tweet(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
   const [commentCount, setCommentCount] = useState(props.body.comments.length);
   const [retweetCount, setRetweetCount] = useState(props.body.retweets.length);
+  const [shareCount, setShareCount] = useState(props.body?.shares ?? 0);
   const [retweetBtnColor, setRetweetBtnColor] = useState(props.body.retweetBtn);
   const [btnColor, setBtnColor] = useState(props.body.likeTweetBtn);
   const [comments, setComments] = useState([]);
@@ -60,7 +64,7 @@ function Tweet(props) {
   // Fetch comments for the tweet
   const populateComments = async () => {
     try {
-      const req = await fetch(`${url}/feed/comments/${tweetId}`, {
+      const req = await fetch(`${url}/api/feed/comments/${tweetId}`, {
         headers: {
           "x-access-token": localStorage.getItem("token") || "",
         },
@@ -89,7 +93,7 @@ function Tweet(props) {
 
     e.preventDefault();
     try {
-      const req = await fetch(`${url}/post/${props.user}/like/${tweetId}`, {
+      const req = await fetch(`${url}/api/post/${props.user}/like/${tweetId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -112,13 +116,16 @@ function Tweet(props) {
     e.stopPropagation();
     e.preventDefault();
     try {
-      const req = await fetch(`${url}/post/${props.user}/retweet/${tweetId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
-        },
-      });
+      const req = await fetch(
+        `${url}/api/post/${props.user}/retweet/${tweetId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("token") || "",
+          },
+        }
+      );
 
       const data = await req.json();
       if (data.status === "ok") {
@@ -160,7 +167,7 @@ function Tweet(props) {
     };
 
     try {
-      const req = await fetch(`${url}/feed/comment/${tweetId}`, {
+      const req = await fetch(`${url}/api/feed/comment/${tweetId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -194,13 +201,46 @@ function Tweet(props) {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const req = await fetch(
+        `${url}/api/post/${props.user}/share/${tweetId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("token") || "",
+          },
+        }
+      );
+
+      const data = await req.json();
+      if (data.status === "ok") {
+        setShareCount(data.shareCount);
+
+        // Copy the tweet link to the clipboard
+        const tweetLink = `${window.location.origin}/tweet/${tweetId}`;
+        await navigator.clipboard.writeText(tweetLink);
+
+        // Show a toast notification
+        showToast({
+          heading: "Link Copied 🎉",
+          message: "Tweet link copied to clipboard!",
+          type: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing tweet:", error);
+    }
+  };
+
   // Handle tweet deletion
   const deleteTweet = async (e) => {
     e.stopPropagation();
     e.preventDefault();
 
     try {
-      const req = await fetch(`${url}/deleteTweet/${tweetId}`, {
+      const req = await fetch(`${url}/api/deleteTweet/${tweetId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -247,7 +287,7 @@ function Tweet(props) {
     e.preventDefault();
 
     try {
-      const req = await fetch(`${url}/editTweet/${tweetId}`, {
+      const req = await fetch(`${url}/api/editTweet/${tweetId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -306,114 +346,27 @@ function Tweet(props) {
   return (
     <div className="bg-white    text-lg">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
-        <Link href={`/tweet/${tweetId}`}>
-          <li className=" flex flex-col ">
-            {props.body.isRetweeted && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/profile/${props.body.retweetedByUser}`);
-                }}
-                className="cursor-pointer flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
-              >
-                <AiOutlineRetweet className="text-gray-500 mr-2" />
-                <span className="text-gray-500 text-sm font-semibold">
-                  Retweeted
-                </span>
-              </button>
-            )}
-
-            <div className="flex items-center mb-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/profile/${props.body.postedBy.username}`);
-                }}
-                className="cursor-pointer"
-              >
-                <img
-                  className="w-13 h-13 rounded-full !mr-3"
-                  src={`${url}/images/${props.body.postedBy.avatar}`}
-                  alt="Avatar"
-                />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/profile/${props.body.postedBy.username}`);
-                }}
-                className="cursor-pointer"
-              >
-                <div className="flex flex-col items-start">
-                  <span className="font-bold text-gray-800">
-                    {props.body.postedBy.username}
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {props.body.postedTweetTime}
-                    {isEdited && <span className="ml-1 italic">(edited)</span>}
-                  </span>
-                </div>
-              </button>
-            </div>
-
-            <div className="text-gray-800 !mb-3">{props.body.content}</div>
-            {props.body.image && (
-              <div
-                className={`relative w-full ${
-                  isImageLoading ? "h-64" : ""
-                } border border-border rounded-md !mb-3 flex items-center justify-center bg-gray-100`}
-                style={!isImageLoading ? { height: "auto" } : {}}
-                id={`image-container-${tweetId}`} // Add a unique ID for the container
-              >
-                {/* Loader */}
-                {isImageLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <AppLoader />
-                  </div>
-                )}
-
-                {/* Image */}
-                <img
-                  className={`w-full rounded-md ${
-                    isImageLoading ? "hidden" : "block"
-                  }`} // Hide the image while loading
-                  src={props.body.image}
-                  alt="Image"
-                  onLoad={() => {
-                    setIsImageLoading(false); // Hide loader when image loads
-                  }}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = "none"; // Hide the image if it fails to load
-                    setIsImageLoading(false); // Hide the loader if the image fails to load
-
-                    // Set the parent container's height to 0
-                    const container = document.getElementById(
-                      `image-container-${tweetId}`
-                    );
-                    if (container) {
-                      container.style.height = "0";
-                      container.style.padding = "0"; // Optional: Remove padding if needed
-                      container.style.border = "none"; // Optional: Remove border if needed
-                    }
-                  }}
-                />
-              </div>
-            )}
-            {props.body.tag && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  router.push(`/topic/${props.body.tag}`);
-                }}
-                className=" !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white"
-              >
-                {props.body.tag}
-              </button>
-            )}
-          </li>
-        </Link>
+        {!window.location.pathname.startsWith("/tweet") ? (
+          <Link href={`/tweet/${tweetId}`}>
+            <TweetBody
+              body={props.body}
+              isImageLoading={isImageLoading}
+              setIsImageLoading={setIsImageLoading}
+              tweetId={tweetId}
+              isEdited={isEdited}
+              url={url}
+            />
+          </Link>
+        ) : (
+          <TweetBody
+            body={props.body}
+            isImageLoading={isImageLoading}
+            setIsImageLoading={setIsImageLoading}
+            tweetId={tweetId}
+            isEdited={isEdited}
+            url={url}
+          />
+        )}
         {isUserActive && (
           <Dialog>
             <DropdownMenu>
@@ -482,70 +435,81 @@ function Tweet(props) {
             </DialogContent>
           </Dialog>
         )}
-        <div className="flex items-center !mt-3 !space-x-4">
-          <button
-            className={`cursor-pointer flex items-center gap-1  ${
-              btnColor === "deeppink" ? "text-pink-500" : "text-gray-500"
-            }`}
-            onClick={stopPropagation(handleLike)}
-          >
-            <AiOutlineLike className="mr-1" />
-            <span>{likeCount}</span>
-          </button>
-          <button
-            className={`cursor-pointer flex items-center gap-1  ${
-              retweetBtnColor === "green" ? "text-green-500" : "text-gray-500"
-            }`}
-            onClick={stopPropagation(handleRetweet)}
-          >
-            <AiOutlineRetweet className="mr-1" />
-            <span>{retweetCount}</span>
-          </button>
-          <Dialog>
-            <DialogTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()} // Prevents triggering the link
-                className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700"
-              >
-                <GoComment className="mr-1" />
-                <span>{comments?.length > 0 && comments?.length}</span>
-              </button>
-            </DialogTrigger>
-            <DialogContent className="!p-4">
-              <DialogHeader>
-                <DialogTitle>
-                  Replying to{" "}
-                  <Link
-                    className="text-[#1DA1F2]"
-                    href={`/profile/${props.body.postedBy.username}`}
-                  >
-                    @{props.body.postedBy.username}
-                  </Link>
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleCommentSubmit}>
-                <input
-                  onClick={(e) => e.stopPropagation()} // Prevents event bubbling
-                  name="commentInput"
-                  placeholder="Tweet your reply"
-                  className="!w-full !border-b !border-border !p-2 !mb-4"
-                  required
-                />
+        <div className="flex items-center !mt-3 !justify-between">
+          <div className="flex items-center !space-x-4">
+            <button
+              className={`cursor-pointer flex items-center gap-1  ${
+                btnColor === "deeppink" ? "text-pink-500" : "text-gray-500"
+              }`}
+              onClick={stopPropagation(handleLike)}
+            >
+              <AiOutlineLike className="mr-1" />
+              <span>{likeCount}</span>
+            </button>
+            <button
+              className={`cursor-pointer flex items-center gap-1  ${
+                retweetBtnColor === "green" ? "text-green-500" : "text-gray-500"
+              }`}
+              onClick={stopPropagation(handleRetweet)}
+            >
+              <AiOutlineRetweet className="mr-1" />
+              <span>{retweetCount}</span>
+            </button>
+            <Dialog>
+              <DialogTrigger asChild>
                 <button
-                  onClick={(e) => e.stopPropagation()} // Prevents event bubbling
-                  type="submit"
-                  className="tweetBtn"
+                  onClick={(e) => e.stopPropagation()} // Prevents triggering the link
+                  className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700"
                 >
-                  Reply
+                  <GoComment className="mr-1" />
+                  <span>{comments?.length > 0 && comments?.length}</span>
                 </button>
-              </form>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="!p-4">
+                <DialogHeader>
+                  <DialogTitle>
+                    Replying to{" "}
+                    <Link
+                      className="text-[#1DA1F2]"
+                      href={`/profile/${props.body.postedBy.username}`}
+                    >
+                      @{props.body.postedBy.username}
+                    </Link>
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleCommentSubmit}>
+                  <input
+                    onClick={(e) => e.stopPropagation()} // Prevents event bubbling
+                    name="commentInput"
+                    placeholder="Tweet your reply"
+                    className="!w-full !border-b !border-border !p-2 !mb-4"
+                    required
+                  />
+                  <button
+                    onClick={(e) => e.stopPropagation()} // Prevents event bubbling
+                    type="submit"
+                    className="tweetBtn"
+                  >
+                    Reply
+                  </button>
+                </form>
+              </DialogContent>
+            </Dialog>{" "}
+          </div>
+
+          <button
+            className={`cursor-pointer flex items-center gap-1  text-gray-500
+            `}
+            onClick={stopPropagation(handleShare)}
+          >
+            <Share strokeWidth={1.2} size={20} />
+            <span>{shareCount}</span>
+          </button>
         </div>
       </div>
       <div className="flex">
-        <div className="!w-1/8 !border-r !border-border shrink-0 "></div>
-        <div className="w-7/8 shrink-0">
+        {/* <div className=" !border-r !border-border "></div> */}
+        <div className=" flex-1">
           {loading ? (
             <div className=" !p-4 text-center ">
               <AppLoader size="sm" />

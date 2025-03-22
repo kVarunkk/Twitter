@@ -40,7 +40,7 @@ function SearchArea() {
         className="search-form"
         onSubmit={handleSubmit}
         method="GET"
-        action={`${url}/search/${text}`}
+        action={`${url}/api/search/${text}`}
       >
         <input
           autoFocus

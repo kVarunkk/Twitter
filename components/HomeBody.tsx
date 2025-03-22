@@ -38,7 +38,7 @@ function HomeBody() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${url}/`, {
+      const response = await fetch(`${url}/api/signin`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

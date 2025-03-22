@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "./components/ui/dialog";
 import { showToast } from "./ToastComponent";
+import { formatContentWithLinks } from "utils/utils";
 
 function ProfileBody({ userName }: { userName: string }) {
   const [loading, setLoading] = useState(true);
@@ -37,7 +38,7 @@ function ProfileBody({ userName }: { userName: string }) {
     setError(false);
 
     try {
-      const req = await fetch(`${url}/profile/${userName}`, {
+      const req = await fetch(`${url}/api/profile/${userName}`, {
         headers: {
           "x-access-token": localStorage.getItem("token"),
         },
@@ -85,11 +86,14 @@ function ProfileBody({ userName }: { userName: string }) {
     e.preventDefault();
 
     try {
-      const req = await fetch(`${url}/profile/${userName}?t=${tweets.length}`, {
-        headers: {
-          "x-access-token": localStorage.getItem("token"),
-        },
-      });
+      const req = await fetch(
+        `${url}/api/profile/${userName}?t=${tweets.length}`,
+        {
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        }
+      );
 
       const data = await req.json();
 
@@ -138,11 +142,12 @@ function ProfileBody({ userName }: { userName: string }) {
 
     try {
       const response = await fetch(
-        `${url}/user/${activeUser}/follow/${userName}`,
+        `${url}/api/user/${activeUser}/follow/${userName}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("token") || "",
           },
         }
       );
@@ -172,7 +177,7 @@ function ProfileBody({ userName }: { userName: string }) {
   const handleSubmitAvatar = async (e: React.MouseEvent<HTMLImageElement>) => {
     try {
       const avatarId = e.currentTarget.id;
-      const response = await axios.post(`${url}/avatar/${activeUser}`, {
+      const response = await axios.post(`${url}/api/avatar/${activeUser}`, {
         avatar: `Avatar-${avatarId}.png`,
       });
 
@@ -203,7 +208,7 @@ function ProfileBody({ userName }: { userName: string }) {
   const handleProfileUpdate = async (field, value) => {
     try {
       const response = await axios.post(
-        `${url}/update-profile/${activeUser}`,
+        `${url}/api/update-profile/${activeUser}`,
         {
           field: field,
           value: value,
@@ -285,7 +290,7 @@ function ProfileBody({ userName }: { userName: string }) {
           />
           <div className="flex flex-col gap-1">
             <div className="!px-4 userName">{userName}</div>
-            <div className="!px-4 text-lg">{bio}</div>
+            <div className="!px-4 text-lg">{formatContentWithLinks(bio)}</div>
             <div className="!px-4 followFollowing">
               <div>
                 <b>{followers}</b> Followers
@@ -308,7 +313,7 @@ function ProfileBody({ userName }: { userName: string }) {
                   <span className="text-gray-700">Click to change avatar</span>
                   <img
                     className="profile-avatar cursor-pointer"
-                    src={`${url}/images/${avatar}`}
+                    src={`/images/${avatar}`}
                     alt="Avatar"
                     onClick={(e) => {
                       e.stopPropagation();

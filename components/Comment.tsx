@@ -24,6 +24,7 @@ import { showToast } from "./ToastComponent";
 import { GoComment } from "react-icons/go";
 import { Reply } from "lucide-react";
 import debounce from "lodash.debounce"; // Import lodash debounce
+import { formatContentWithLinks } from "utils/utils";
 
 function Comment(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -50,11 +51,12 @@ function Comment(props) {
     e.preventDefault();
     try {
       const req = await fetch(
-        `${url}/comment/${props.user}/like/${commentId}`,
+        `${url}/api/comment/${props.user}/like/${commentId}`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "x-access-token": localStorage.getItem("token"),
           },
         }
       );
@@ -73,10 +75,11 @@ function Comment(props) {
   const deleteComment = async (e) => {
     e.preventDefault();
     try {
-      const req = await fetch(`${url}/comment/delete/${commentId}`, {
+      const req = await fetch(`${url}/api/comment/delete/${props.body._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -91,9 +94,19 @@ function Comment(props) {
         props.setCommentCount((prevCount) => prevCount - 1); // Decrease the comment count
       } else {
         console.error("Failed to delete comment:", data.message);
+        showToast({
+          heading: "Error",
+          message: "Failed to delete comment",
+          type: "error",
+        });
       }
     } catch (error) {
       console.error("Error deleting comment:", error);
+      showToast({
+        heading: "Error",
+        message: "Failed to delete comment",
+        type: "error",
+      });
     }
   };
 
@@ -101,10 +114,11 @@ function Comment(props) {
   const editComment = async (e) => {
     e.preventDefault();
     try {
-      const req = await fetch(`${url}/comment/edit/${commentId}`, {
+      const req = await fetch(`${url}/api/comment/edit/${commentId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-access-token": localStorage.getItem("token"),
         },
         body: JSON.stringify({ content: commentContent }),
       });
@@ -129,22 +143,28 @@ function Comment(props) {
     <li className="flex items-center w-full">
       <div className="!w-[10%] shrink-0 border-b border-border"></div>
       <div className="hover:bg-gray-100 border-b border-l border-border !p-4 flex-1">
-        <div className="flex items-start">
-          <Link href={`/profile/${props.body.postedBy.username}`}>
+        <div className="flex ">
+          <Link
+            className="shrink-0 !p-1"
+            href={`/profile/${props.body.postedBy.username}`}
+          >
             <img
-              className="w-13 h-13 rounded-full mr-3"
+              className="w-13 h-13 rounded-full"
               src={`${url}/images/${props.body.postedBy.avatar}`}
               alt="Avatar"
             />
           </Link>
-          <div className="flex-1">
+          <div className="!shrink !flex-1 !min-w-0">
             <div className="flex items-center justify-between ">
-              <Link href={`/profile/${props.body.postedBy.username}`}>
-                <div>
+              <Link
+                className="!p-1"
+                href={`/profile/${props.body.postedBy.username}`}
+              >
+                <div className="flex flex-col gap-1">
                   <span className="font-bold text-gray-800">
                     {props.body.postedBy.username}
                   </span>
-                  <span className="text-sm text-gray-500 !ml-2">
+                  <span className="text-sm text-gray-500 ">
                     {props.body.postedCommentTime}
                     {isEdited && <span className="ml-1 italic">(edited)</span>}
                   </span>
@@ -195,7 +215,10 @@ function Comment(props) {
                 </Dialog>
               )}
             </div>
-            <div className="text-gray-800 mt-2">{props.body.content}</div>
+            <div className="text-gray-800 mt-2 break-words">
+              {" "}
+              {formatContentWithLinks(props.body.content)}
+            </div>
           </div>
         </div>
         <div className="flex items-center !mt-3 !space-x-4">

@@ -28,7 +28,7 @@ function Feed() {
 
   async function populateTweets() {
     try {
-      const req = await fetch(`${url}/feed`, {
+      const req = await fetch(`${url}/api/feed`, {
         headers: {
           "x-access-token": localStorage.getItem("token"),
         },
@@ -69,7 +69,7 @@ function Feed() {
 
   async function addTweets(e) {
     e.preventDefault();
-    const req = await fetch(`${url}/feed?t=${tweetCount}`, {
+    const req = await fetch(`${url}/api/feed?t=${tweetCount}`, {
       headers: {
         "x-access-token": localStorage.getItem("token"),
       },

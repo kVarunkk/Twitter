@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, useContext, useCallback } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import { BsTwitter } from "react-icons/bs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
 import { showToast } from "./ToastComponent";
 import { UrlContext } from "../context/urlContext";
+import jwtDecode from "jwt-decode";
 
 function SignupBody() {
   const [userName, setUserName] = useState("");
@@ -18,6 +19,18 @@ function SignupBody() {
   }); // State for validation errors
   const url = useContext(UrlContext);
   const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const user = jwtDecode(token);
+      if ((user as any).exp > Date.now() / 1000) {
+        router.push("/feed");
+      } else {
+        localStorage.removeItem("token");
+      }
+    }
+  }, []);
 
   const handleChangeUserName = (e) => {
     setUserName(e.target.value.toLowerCase());
@@ -36,7 +49,7 @@ function SignupBody() {
       setErrors({ username: "", password: "" }); // Clear previous errors
 
       try {
-        const response = await fetch(`${url}/signup`, {
+        const response = await fetch(`${url}/api/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: userName, password }),
