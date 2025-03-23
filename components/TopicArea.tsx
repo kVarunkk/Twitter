@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import AppLoader from "./AppLoader";
+import Header from "./Header";
 
 function TopicArea({ tag: initialTag }: { tag: string }) {
   const [tweets, setTweets] = useState([]);
@@ -93,6 +94,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
 
   return (
     <div className="HeaderAndFeed">
+      <Header title="Topics" />
       {/* Tag Area */}
       <div className="tagArea">
         <ToggleGroup type="single" className="inline-flex gap-2">
@@ -135,12 +137,20 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
         </div>
       </div>
 
+      {tweets.length === 0 && !loading && (
+        <div className="text-center text-gray-500 !mt-20">
+          No tweets found for this topic.
+        </div>
+      )}
+
       {/* Load More Button */}
-      <form className="showMore-form !mb-10" onSubmit={loadMoreTweets}>
-        <button className="showMore" type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Show more tweets"}
-        </button>
-      </form>
+      {tweets.length > 0 && !loading && (
+        <form className="showMore-form !mb-10" onSubmit={loadMoreTweets}>
+          <button className="showMore" type="submit" disabled={loading}>
+            Show More Tweets
+          </button>
+        </form>
+      )}
     </div>
   );
 }

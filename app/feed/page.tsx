@@ -7,7 +7,7 @@ export default function FeedPage() {
     <div className="App">
       <Sidebar />
       <div className="HeaderAndFeed">
-        {/* <Header /> */}
+        <Header title="Feed" />
         <Feed />
       </div>
     </div>

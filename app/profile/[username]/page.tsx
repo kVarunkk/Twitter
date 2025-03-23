@@ -14,7 +14,7 @@ export default async function UserProfile({
     <div className="App">
       <Sidebar />
       <div className="HeaderAndFeed">
-        <Header />
+        <Header title="Profile" />
         <ProfileBody userName={username} />
       </div>
       <ScrollToTop />

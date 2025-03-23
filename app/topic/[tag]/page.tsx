@@ -14,7 +14,9 @@ export default async function TagTopic({
   return (
     <div className="App">
       <Sidebar />
+
       <TopicArea tag={tag} />
+
       <ScrollToTop />
     </div>
   );
