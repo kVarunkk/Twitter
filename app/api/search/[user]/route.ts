@@ -12,10 +12,10 @@ if (!global.mongoose) {
 
 export async function GET(
   req: Request,
-  { params }: { params: { user: string } }
+  { params }: { params: Promise<{ user: string }> }
 ) {
   try {
-    const { user } = params;
+    const { user } = await params;
     const url = new URL(req.url);
     const tweetsToSkip = parseInt(url.searchParams.get("skip") || "0"); // Pagination: Number of tweets to skip
     const tweetsLimit = parseInt(url.searchParams.get("limit") || "10"); // Pagination: Number of tweets to fetch per request
