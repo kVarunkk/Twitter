@@ -1,25 +1,21 @@
 # Twitter-Frontend
 
-Frontend for Twitter clone made using React
-
-![twitter-pic](twitter-pic.png)
+Opensource Twitter built using Nextjs 15.2.2
 
 ## Features
 
 - Fully responsive
 - Sign up/ Sign in via JWT Token
-- Customize account
+- Customize profile(avatar, banner, bio, etc)
 - Tweet
 - Comment
 - Retweet
 - Follow user
-- Like tweets and comments
-- Edit tweets and comments
-- Delete tweets and comments
+- Like, Edit & Delete tweets and comments
 - Tweets filtered according to "Topics"
-- Add custom avatars
 - Tweet images by easily adding Image URLs
 - No character limit on tweets
+- Global Search
 
 ## Contribute
 
@@ -35,15 +31,13 @@ Frontend for Twitter clone made using React
 $ npm install
 ```
 
+> **Note**: Use the `--force` flag only if `npm install` fails without it. This forces the installation of dependencies but may lead to potential issues with incompatible packages.
+
 ### Run the app
 
 ```
-$ npm start
+$ npm run dev
 ```
-
-> Currently all the requests are made to the following url: <https://drab-hare-zipper.cyclic.app><br/>
-> To be able to send requests to the _local server_ which is running at <http://localhost:5000>, you need to configure the ` index.js` file and change the value of the ` useContext Provider` to <http://localhost:5000><br/>
-> Link to the [server](https://github.com/kVarunkk/Twitter-Backend) repo
 
 ## License
 
