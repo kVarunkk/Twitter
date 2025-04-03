@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { arrayBufferToBase64 } from "./cryptoHelpers";
 const { User, Tweet, Comment } = require("utils/models/File");
 export const formatContentWithLinks = (content: string) => {
   // Updated regex to allow periods but exclude trailing commas and other punctuation
@@ -7,6 +8,9 @@ export const formatContentWithLinks = (content: string) => {
   return content?.split(urlRegex)?.map((part: string, index: number) =>
     urlRegex.test(part) ? (
       <a
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
         key={index}
         href={part}
         target="_blank"
@@ -51,6 +55,22 @@ export async function validateToken(req) {
     console.error("Token validation error:", error);
     return { status: "error", message: "Invalid or expired token", user: null };
   }
+}
+
+export async function encryptPrivateKey(
+  privateKey: string,
+  derivedKey: CryptoKey
+) {
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    derivedKey,
+    new TextEncoder().encode(privateKey)
+  );
+  return {
+    encryptedPrivateKey: arrayBufferToBase64(encrypted),
+    iv: arrayBufferToBase64(iv.buffer),
+  };
 }
 
 export const MONGODB_URI = process.env.MONGO_URI;

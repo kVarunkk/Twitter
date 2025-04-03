@@ -84,6 +84,8 @@ export async function GET(
       avatar: profileUser.avatar,
       bio: profileUser.bio,
       banner: profileUser.banner,
+      publicKey: profileUser.publicKey,
+      id: profileUser._id,
     });
   } catch (err) {
     console.error("Error fetching profile:", err);

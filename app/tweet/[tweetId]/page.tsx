@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import SingleTweet from "./SingleTweet";
 import ScrollToTop from "@/components/ScrollToTop";
+import Chat from "@/components/Chat";
 
 export default async function TweetPage({
   params,
@@ -19,6 +20,7 @@ export default async function TweetPage({
         <SingleTweet tweetId={tweetId} />
       </div>
       <ScrollToTop />
+      {/* <Chat /> */}
     </div>
   );
 }

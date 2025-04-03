@@ -178,7 +178,7 @@ function Tweet(props) {
 
       const data = await req.json();
       if (data.status === "ok") {
-        console.log(data.comment);
+        //console.log(data.comment);
         // Add the new comment to the state
         setComments((prevComments) => [data.comment, ...prevComments]);
         setCommentCount(data.commentCount);
@@ -336,7 +336,6 @@ function Tweet(props) {
 
   // Utility function to wrap event handlers
   const stopPropagation = (handler?) => (e) => {
-    console.log("here");
     e.stopPropagation(); // Prevent event propagation
     if (handler) {
       handler(e); // Call the original handler
@@ -347,7 +346,10 @@ function Tweet(props) {
     <div className="bg-white    text-lg">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
         {!window.location.pathname.startsWith("/tweet") ? (
-          <Link href={`/tweet/${tweetId}`}>
+          <button
+            className="cursor-pointer text-start w-full"
+            onClick={() => router.push(`/tweet/${tweetId}`)}
+          >
             <TweetBody
               body={props.body}
               isImageLoading={isImageLoading}
@@ -356,7 +358,7 @@ function Tweet(props) {
               isEdited={isEdited}
               url={url}
             />
-          </Link>
+          </button>
         ) : (
           <TweetBody
             body={props.body}

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import AppLoader from "./AppLoader";
 import Header from "./Header";
+import ChatWrapper from "./ChatWrapper";
 
 function TopicArea({ tag: initialTag }: { tag: string }) {
   const [tweets, setTweets] = useState([]);
@@ -16,6 +17,8 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
   const [activeUser, setActiveUser] = useState("");
   const [tweetCount, setTweetCount] = useState(20);
   const [currentTag, setCurrentTag] = useState(initialTag || "Sports");
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const url = useContext(UrlContext);
   const router = useRouter();
 
@@ -151,6 +154,11 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
           </button>
         </form>
       )}
+
+      <ChatWrapper
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+      />
     </div>
   );
 }

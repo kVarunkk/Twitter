@@ -1,3 +1,4 @@
+import Chat from "@/components/Chat";
 import Header from "@/components/Header";
 import ProfileBody from "@/components/ProfileBody";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -18,6 +19,7 @@ export default async function UserProfile({
         <ProfileBody userName={username} />
       </div>
       <ScrollToTop />
+      {/* <Chat /> */}
     </div>
   );
 }

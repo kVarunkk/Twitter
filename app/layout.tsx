@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={roboto.className}>
-      <body className="!mt-20 lg:!mt-0">
+      <body className="!mt-20 md:!mt-0">
         <UrlProvider>
           <Toaster />
           {children}

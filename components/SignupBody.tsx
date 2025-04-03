@@ -8,6 +8,13 @@ import { LoaderCircle } from "lucide-react";
 import { showToast } from "./ToastComponent";
 import { UrlContext } from "../context/urlContext";
 import jwtDecode from "jwt-decode";
+import {
+  arrayBufferToBase64,
+  deriveKeyFromPassword,
+  generateAESKey,
+  generateKeyPair,
+} from "utils/cryptoHelpers";
+import { encryptPrivateKey } from "utils/utils";
 
 function SignupBody() {
   const [userName, setUserName] = useState("");
@@ -42,6 +49,17 @@ function SignupBody() {
     setErrors((prev) => ({ ...prev, password: "" })); // Clear password error on input change
   };
 
+  async function signup(username: string, password: string) {
+    const { publicKey, privateKey } = await generateKeyPair();
+    // const salt = window.crypto.getRandomValues(new Uint8Array(16));
+    // const derivedKey = await deriveKeyFromPassword(password, salt);
+    const derivedKey = await generateAESKey();
+
+    const encryptedPrivateKey = await encryptPrivateKey(privateKey, derivedKey);
+
+    return { publicKey, encryptedPrivateKey, derivedKey, privateKey };
+  }
+
   const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
@@ -49,21 +67,43 @@ function SignupBody() {
       setErrors({ username: "", password: "" }); // Clear previous errors
 
       try {
+        // const { publicKey, privateKey } = await generateKeyPair();
+
+        // // Store the private key securely (client-side)
+        // localStorage.setItem("privateKey", privateKey);
+
+        const { publicKey, encryptedPrivateKey, derivedKey, privateKey } =
+          await signup(userName, password);
+
+        // todo: hash on the frontend
+        // const hashedPassword = await bcrypt.hash(password, 10)
+
         const response = await fetch(`${url}/api/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: userName, password }),
+          body: JSON.stringify({
+            username: userName,
+            password,
+            publicKey,
+            encryptedPrivateKey: encryptedPrivateKey.encryptedPrivateKey,
+            iv: encryptedPrivateKey.iv,
+            // salt: arrayBufferToBase64(salt.buffer),
+            derivedKey: arrayBufferToBase64(
+              await window.crypto.subtle.exportKey("raw", derivedKey)
+            ),
+          }),
         });
 
         const data = await response.json();
 
         if (data.status === "ok") {
+          localStorage.setItem("privateKey", privateKey);
           showToast({
             heading: "Success 🎉",
             message: "Successfully registered, please login",
             type: "success",
           });
-          setTimeout(() => router.push("/"), 600);
+          setTimeout(() => router.push("/"), 300);
           setUserName("");
           setPassword("");
         } else if (data.errors) {

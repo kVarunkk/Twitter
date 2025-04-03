@@ -157,11 +157,11 @@ function Comment(props) {
           <div className="!shrink !flex-1 !min-w-0">
             <div className="flex items-center justify-between ">
               <Link
-                className="!p-1"
+                className="!p-1 group"
                 href={`/profile/${props.body.postedBy.username}`}
               >
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold text-gray-800">
+                  <span className="font-bold text-gray-800 group-hover:underline">
                     {props.body.postedBy.username}
                   </span>
                   <span className="text-sm text-gray-500 ">

@@ -29,7 +29,7 @@ const ScrollToTop = () => {
     showScrollToTop && (
       <button
         onClick={scrollToTop}
-        className="hidden sm:block cursor-pointer text-xl fixed bottom-10 right-10 text-[#1DA1F2] !p-4 rounded-full shadow-lg border-2 border-[#1DA1F2] transition"
+        className="bg-white hidden sm:block cursor-pointer text-xl fixed bottom-20 right-5 text-[#1DA1F2] !p-3 rounded-full shadow-lg border-2 border-[#1DA1F2] transition"
         aria-label="Scroll to Top"
       >
         <ArrowUp strokeWidth={3} />

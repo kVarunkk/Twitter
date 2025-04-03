@@ -412,18 +412,21 @@ input:focus {
     font-size: 1.5rem;
 }
 
-.sidebar-menu a {
+.sidebar-menu a,
+.sidebar-menu button {
     text-decoration: none;
     color: black;
     padding: 10px 15px;
     border-radius: 35px;
     transition: all ease 0.2s;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 10px;
 }
 
-.sidebar-menu a:hover {
+.sidebar-menu a:hover,
+.sidebar-menu button:hover {
     background-color: rgb(229, 230, 231);
 }
 
@@ -796,7 +799,8 @@ input:focus {
         font-size: 1.5rem !important;
     }
 
-    .sidebar-menu-items a {
+    .sidebar-menu-items a,
+    .sidebar-menu-items button {
         font-size: 1.2rem;
     }
 

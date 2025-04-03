@@ -12,6 +12,10 @@ import "../app/globals.css";
 import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";
 import { showToast } from "./ToastComponent";
+import {
+  base64ToArrayBuffer,
+  deriveKeyFromPassword,
+} from "utils/cryptoHelpers";
 
 function HomeBody() {
   const [userName, setUserName] = useState("");
@@ -33,6 +37,54 @@ function HomeBody() {
     }
   }, []);
 
+  async function signin(
+    encryptedPrivateKey: string,
+    derivedKey: string,
+    iv: string
+  ) {
+    try {
+      // const saltBuffer = base64ToArrayBuffer(salt);
+      // if (saltBuffer.byteLength !== 16) {
+      //   throw new Error(
+      //     `Invalid salt length: ${saltBuffer.byteLength}, expected 16 bytes`
+      //   );
+      // }
+
+      // const derivedKey = await deriveKeyFromPassword(password, saltBuffer);
+
+      const keyBuffer = base64ToArrayBuffer(derivedKey);
+      const importedDerivedKey = await window.crypto.subtle.importKey(
+        "raw",
+        keyBuffer,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["decrypt"]
+      );
+      const privateKey = await decryptPrivateKey(
+        encryptedPrivateKey,
+        importedDerivedKey,
+        iv
+      );
+
+      localStorage.setItem("privateKey", privateKey);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function decryptPrivateKey(
+    encryptedPrivateKey: string,
+    derivedKey: CryptoKey,
+    iv: string
+  ) {
+    const decrypted = await window.crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: base64ToArrayBuffer(iv) },
+      derivedKey,
+      base64ToArrayBuffer(encryptedPrivateKey)
+    );
+    return new TextDecoder().decode(decrypted);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -51,6 +103,11 @@ function HomeBody() {
 
       if (data.status === "ok" && data.token) {
         localStorage.setItem("token", data.token);
+        await signin(
+          data.user.encryptedPrivateKey,
+          data.user.derivedKey,
+          data.user.iv
+        );
         // toast.success("Login successful");
         showToast({
           heading: "Success 🎉",
@@ -69,6 +126,7 @@ function HomeBody() {
         });
       }
     } catch (error) {
+      console.error("Error fetching user data:", error);
       // toast.error("Something went wrong");
       showToast({
         heading: "Error",

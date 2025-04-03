@@ -1,3 +1,4 @@
+import Chat from "@/components/Chat";
 import ScrollToTop from "@/components/ScrollToTop";
 import SearchArea from "@/components/SearchArea";
 import Sidebar from "@/components/Sidebar";
@@ -8,6 +9,7 @@ export default function Search() {
       <Sidebar />
       <SearchArea />
       <ScrollToTop />
+      {/* <Chat /> */}
     </div>
   );
 }

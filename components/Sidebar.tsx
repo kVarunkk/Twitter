@@ -32,6 +32,8 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "./ToastComponent";
+import { Mail } from "lucide-react";
+import Chat from "./Chat";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -43,6 +45,7 @@ function Sidebar() {
   const url = useContext(UrlContext);
   const pathname = usePathname();
   const router = useRouter();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   let lastScrollY = 10;
 
@@ -121,6 +124,7 @@ function Sidebar() {
 
   const logout = (e) => {
     localStorage.removeItem("token");
+    localStorage.removeItem("privateKey");
   };
 
   const handleSubmit = async (e) => {
@@ -185,7 +189,7 @@ function Sidebar() {
 
   return (
     <div
-      className={`bg-white sidebar sm:!border-0 !border-b !border-border ${
+      className={`bg-white sidebar  sm:!border-0 !border-b !border-border ${
         isSidebarVisible
           ? "!fixed !top-0 !left-0 !w-full !z-50 sm:static sm:!w-fit sm:!ml-auto sm:!left-auto "
           : "!hidden sm:!block"
@@ -227,6 +231,15 @@ function Sidebar() {
             <CgProfile />
             <div className="hidden sm:block">Profile</div>
           </Link>
+        </li>
+        <li className="sidebar-menu-items md:!hidden">
+          <button
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            className={`cursor-pointer ${isDrawerOpen && "sidebar-active"}`}
+          >
+            <Mail size={19} />
+            <div className="hidden sm:block ">Messages</div>
+          </button>
         </li>
         <li className="sidebar-menu-items">
           <Link
@@ -321,6 +334,7 @@ function Sidebar() {
           </Dialog>
         </li>
       </ul>
+      <Chat isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
     </div>
   );
 }

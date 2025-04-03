@@ -11,11 +11,13 @@ import "reactjs-popup/dist/index.css";
 import { UrlContext } from "../context/urlContext";
 import "../app/globals.css";
 import { useRouter } from "next/navigation";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, ChevronUp } from "lucide-react";
 import toast from "react-hot-toast";
 import ScrollToTop from "./ScrollToTop";
 import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
+import Chat from "./Chat";
+import ChatWrapper from "./ChatWrapper";
 
 function Feed() {
   const [error, setError] = useState(false);
@@ -25,6 +27,7 @@ function Feed() {
   const router = useRouter();
   const [tweetCount, setTweetCount] = useState("20");
   const url = useContext(UrlContext);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   async function populateTweets() {
     try {
@@ -151,6 +154,11 @@ function Feed() {
         </form>
       )}
       <ScrollToTop />
+
+      <ChatWrapper
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+      />
     </div>
   );
 }

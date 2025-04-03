@@ -11,7 +11,14 @@ if (!global.mongoose) {
 
 export async function POST(req: Request) {
   try {
-    const { username, password } = await req.json();
+    const {
+      username,
+      password,
+      publicKey,
+      encryptedPrivateKey,
+      iv,
+      derivedKey,
+    } = await req.json();
 
     const errors: { path: string; msg: string }[] = [];
 
@@ -61,6 +68,11 @@ export async function POST(req: Request) {
       username: username.toLowerCase(),
       password: hashedPassword,
       avatar: "initial-avatar.png",
+      publicKey,
+      encryptedPrivateKey,
+      // salt,
+      derivedKey,
+      iv,
     });
 
     await newUser.save();

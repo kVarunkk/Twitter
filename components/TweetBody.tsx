@@ -12,12 +12,12 @@ export default function TweetBody(props) {
       {props.body.isRetweeted && (
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            router.push(`/profile/${props.body.retweetedByUser}`);
-          }}
-          className="stop-link cursor-pointer flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
+          // onClick={(e) => {
+          //   e.preventDefault();
+          //   e.stopPropagation();
+          //   router.push(`/profile/${props.body.retweetedByUser}`);
+          // }}
+          className="stop-link  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
         >
           <AiOutlineRetweet className="text-gray-500 mr-2" />
           <span className="text-gray-500 text-sm font-semibold">Retweeted</span>
@@ -45,10 +45,10 @@ export default function TweetBody(props) {
             e.stopPropagation();
             router.push(`/profile/${props.body.postedBy.username}`);
           }}
-          className="stop-link cursor-pointer !p-2"
+          className="stop-link cursor-pointer !p-2 group"
         >
           <div className="flex flex-col items-start">
-            <div className="font-bold text-gray-800">
+            <div className="font-bold text-gray-800 group-hover:underline">
               {props.body.postedBy.username}
             </div>
             <div className="text-sm text-gray-500 text-start">

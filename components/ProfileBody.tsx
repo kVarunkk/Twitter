@@ -16,7 +16,13 @@ import {
   DialogTrigger,
 } from "./components/ui/dialog";
 import { showToast } from "./ToastComponent";
-import { formatContentWithLinks } from "utils/utils";
+import { encryptPrivateKey, formatContentWithLinks } from "utils/utils";
+import {
+  arrayBufferToBase64,
+  generateAESKey,
+  generateKeyPair,
+} from "utils/cryptoHelpers";
+import ChatWrapper from "./ChatWrapper";
 
 function ProfileBody({ userName }: { userName: string }) {
   const [loading, setLoading] = useState(true);
@@ -31,6 +37,7 @@ function ProfileBody({ userName }: { userName: string }) {
   const router = useRouter();
   const url = useContext(UrlContext);
   const isActiveUser = activeUser === userName;
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Fetch user data and tweets
   const populateUserData = async () => {
@@ -426,6 +433,11 @@ function ProfileBody({ userName }: { userName: string }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      <ChatWrapper
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+      />
     </div>
   );
 }

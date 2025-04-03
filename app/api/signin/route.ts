@@ -42,6 +42,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       status: "ok",
       token,
+      user,
     });
   } catch (error) {
     console.error("Error during sign-in:", error);

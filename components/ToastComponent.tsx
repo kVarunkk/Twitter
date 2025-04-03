@@ -15,7 +15,7 @@ export const showToast = ({
   heading,
   message,
   type = "success", // Default type is success
-  position = "bottom-right", // Default position is bottom-right
+  position = "bottom-center", // Default position is bottom-right
 }: ToastProps) => {
   const toastOptions: ToastOptions = {
     position,

@@ -7,6 +7,7 @@ import { GoComment } from "react-icons/go";
 import { UrlContext } from "context/urlContext";
 import Tweet from "@/components/Tweet";
 import AppLoader from "@/components/AppLoader";
+import ChatWrapper from "@/components/ChatWrapper";
 
 function SingleTweet({ tweetId }: { tweetId: string }) {
   const [tweet, setTweet] = useState(null);
@@ -14,6 +15,7 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
   const [activeUser, setActiveUser] = useState("");
   const [visibleComments, setVisibleComments] = useState(5); // Show 5 comments initially
   const url = useContext(UrlContext);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const fetchTweet = async () => {
     try {
@@ -63,12 +65,18 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
   }
 
   return (
-    <Tweet
-      updateLoading={setLoading}
-      user={activeUser}
-      body={tweet}
-      setTweet={setTweet}
-    />
+    <>
+      <Tweet
+        updateLoading={setLoading}
+        user={activeUser}
+        body={tweet}
+        setTweet={setTweet}
+      />
+      <ChatWrapper
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+      />
+    </>
   );
 }
 
