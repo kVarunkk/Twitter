@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import Usercard from "./Usercard";
 import { UrlContext } from "../context/urlContext";
 import "../app/globals.css";
@@ -10,17 +10,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { showToast } from "./ToastComponent";
 import AppLoader from "./AppLoader";
 import ChatWrapper from "./ChatWrapper";
+import InfiniteScrolling from "./InfiniteScrolling";
 
 function SearchArea() {
   const [text, setText] = useState("");
   const [users, setUsers] = useState([]);
   const [tweets, setTweets] = useState([]);
   const [skip, setSkip] = useState(0);
-  const [hasMoreTweets, setHasMoreTweets] = useState(true);
+  // const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [activeUser, setActiveUser] = useState("");
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const isFetching = useRef(false);
+  const [hasMoreTweets, setHasMoreTweets] = useState(true);
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -63,19 +66,30 @@ function SearchArea() {
   };
 
   const loadMoreTweets = async () => {
-    const req = await fetch(`${url}/api/search/${text}?skip=${skip}&limit=10`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+    if (isFetching.current) return;
+    isFetching.current = true;
+    try {
+      const req = await fetch(
+        `${url}/api/search/${text}?skip=${skip}&limit=10`,
+        {
+          headers: {
+            "x-access-token": localStorage.getItem("token"),
+          },
+        }
+      );
 
-    const data = await req.json();
-    if (data.status === "ok") {
-      setTweets((prevTweets) => [...prevTweets, ...data.tweets]); // Append new tweets
-      setSkip(skip + 10); // Increment skip for the next batch
-      setHasMoreTweets(data.tweets.length === 10); // Check if more tweets are available
-    } else {
-      //console.log(data.error);
+      const data = await req.json();
+      if (data.status === "ok") {
+        setTweets((prevTweets) => [...prevTweets, ...data.tweets]); // Append new tweets
+        setSkip(skip + 10); // Increment skip for the next batch
+        setHasMoreTweets(data.tweets.length === 10); // Check if more tweets are available
+      } else {
+        //console.log(data.error);
+      }
+    } catch (err) {
+      console.error("Error loading more tweets:", err);
+    } finally {
+      isFetching.current = false;
     }
   };
 
@@ -146,13 +160,8 @@ function SearchArea() {
                   setTweets={setTweets}
                 />
               ))}
-              {hasMoreTweets && tweets.length > 0 && (
-                <button
-                  onClick={loadMoreTweets}
-                  className="!w-full text-center !my-10 showMore"
-                >
-                  Show More Tweets
-                </button>
+              {hasMoreTweets && tweets.length > 0 && hasMoreTweets && (
+                <InfiniteScrolling addTweets={loadMoreTweets} />
               )}
             </TabsContent>
           </Tabs>

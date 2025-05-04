@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { AiFillCamera } from "react-icons/ai";
 import jwtDecode from "jwt-decode";
@@ -23,6 +23,7 @@ import {
   generateKeyPair,
 } from "utils/cryptoHelpers";
 import ChatWrapper from "./ChatWrapper";
+import InfiniteScrolling from "./InfiniteScrolling";
 
 function ProfileBody({ userName }: { userName: string }) {
   const [loading, setLoading] = useState(true);
@@ -38,6 +39,8 @@ function ProfileBody({ userName }: { userName: string }) {
   const url = useContext(UrlContext);
   const isActiveUser = activeUser === userName;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const isFetching = useRef(false);
+  const [hasMoreTweets, setHasMoreTweets] = useState(true);
 
   // Fetch user data and tweets
   const populateUserData = async () => {
@@ -89,8 +92,9 @@ function ProfileBody({ userName }: { userName: string }) {
     }
   };
 
-  const showMoreTweets = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const showMoreTweets = async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
 
     try {
       const req = await fetch(
@@ -110,6 +114,10 @@ function ProfileBody({ userName }: { userName: string }) {
           likeTweetBtn: tweet.likeTweetBtn || "black",
           retweetBtn: tweet.retweetBtn || "black",
         }));
+
+        if (updatedTweets.length < 20) {
+          setHasMoreTweets(false);
+        }
 
         // Append only new tweets to avoid duplicates
         setTweets((prevTweets) => [
@@ -134,6 +142,8 @@ function ProfileBody({ userName }: { userName: string }) {
         message: "Something went wrong while fetching more tweets.",
         type: "error",
       });
+    } finally {
+      isFetching.current = false;
     }
   };
 
@@ -403,12 +413,8 @@ function ProfileBody({ userName }: { userName: string }) {
         </div>
       </div>
 
-      {!loading && !error && tweets.length > 0 && (
-        <form className="showMore-form !mb-10" onSubmit={showMoreTweets}>
-          <button className="showMore" type="submit">
-            Show more tweets
-          </button>
-        </form>
+      {!loading && !error && tweets.length > 0 && hasMoreTweets && (
+        <InfiniteScrolling addTweets={showMoreTweets} />
       )}
       {/* Avatar Selection Dialog */}
       <Dialog>

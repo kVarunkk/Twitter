@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useRef,
+} from "react";
 import Tweet from "./Tweet";
 import { AiFillCamera } from "react-icons/ai";
 import axios from "axios";
@@ -18,6 +24,7 @@ import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
 import Chat from "./Chat";
 import ChatWrapper from "./ChatWrapper";
+import InfiniteScrolling from "./InfiniteScrolling";
 
 function Feed() {
   const [error, setError] = useState(false);
@@ -28,6 +35,8 @@ function Feed() {
   const [tweetCount, setTweetCount] = useState("20");
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const isFetching = useRef(false);
+  const [hasMoreTweets, setHasMoreTweets] = useState(true);
 
   async function populateTweets() {
     try {
@@ -70,26 +79,37 @@ function Feed() {
     }
   }
 
-  async function addTweets(e) {
-    e.preventDefault();
-    const req = await fetch(`${url}/api/feed?t=${tweetCount}`, {
-      headers: {
-        "x-access-token": localStorage.getItem("token"),
-      },
-    });
+  async function addTweets() {
+    if (isFetching.current) return;
+    isFetching.current = true;
 
-    const data = await req.json();
-    if (data.status === "ok") {
-      const updatedTweets = data.tweets.map((tweet) => ({
-        ...tweet,
-        likeTweetBtn: tweet.likeTweetBtn || "black",
-        retweetBtn: tweet.retweetBtn || "black",
-      }));
-      setTweets((prevTweets) => [...prevTweets, ...updatedTweets]);
-      setTweetCount((prevValue) => (parseInt(prevValue) + 20).toString());
-    } else {
-      toast.error(data.message || "Failed to fetch more tweets");
-      router.push("/");
+    try {
+      const req = await fetch(`${url}/api/feed?t=${tweetCount}`, {
+        headers: {
+          "x-access-token": localStorage.getItem("token"),
+        },
+      });
+
+      const data = await req.json();
+      if (data.status === "ok") {
+        const updatedTweets = data.tweets.map((tweet) => ({
+          ...tweet,
+          likeTweetBtn: tweet.likeTweetBtn || "black",
+          retweetBtn: tweet.retweetBtn || "black",
+        }));
+
+        setTweets((prevTweets) => [...prevTweets, ...updatedTweets]);
+        if (updatedTweets.length < 20) {
+          setHasMoreTweets(false);
+        }
+        setTweetCount((prevValue) => (parseInt(prevValue) + 20).toString());
+      } else {
+        toast.error(data.message || "Failed to fetch more tweets");
+      }
+    } catch (error) {
+      console.error("Error adding tweets:", error);
+    } finally {
+      isFetching.current = false;
     }
   }
 
@@ -146,12 +166,8 @@ function Feed() {
           )}
         </ul>
       </div>
-      {!loading && !error && tweets.length > 0 && (
-        <form className="showMore-form !mb-10" onSubmit={addTweets}>
-          <button className="text-lg showMore" type="submit">
-            Show more tweets
-          </button>
-        </form>
+      {!loading && !error && tweets.length > 0 && hasMoreTweets && (
+        <InfiniteScrolling addTweets={addTweets} />
       )}
       <ScrollToTop />
 

@@ -16,6 +16,7 @@ Opensource Twitter built using Nextjs 15.2.2
 - Tweet images by easily adding Image URLs
 - No character limit on tweets
 - Global Search
+- Realtime End-To-End Encrypted Messaging
 
 ## Contribute
 

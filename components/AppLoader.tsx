@@ -1,11 +1,15 @@
 "use client";
 
+import { MutableRefObject } from "react";
+
 interface AppLoaderProps {
   size?: "sm" | "md" | "lg"; // Loader sizes
   color?: "blue" | "white"; // Loader colors
+  ref?: MutableRefObject<HTMLDivElement>;
 }
 
 export default function AppLoader({
+  ref = null,
   size = "md",
   color = "blue",
 }: AppLoaderProps) {
@@ -21,7 +25,7 @@ export default function AppLoader({
   };
 
   return (
-    <div className="flex justify-center items-center h-full">
+    <div ref={ref} className="flex justify-center items-center h-full">
       <div
         className={`rounded-full animate-spin ${sizeClasses[size]} ${colorClasses[color]}`}
       ></div>

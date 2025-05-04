@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 // import { Tag } from "@chakra-ui/react";
 import Tweet from "./Tweet";
 import { UrlContext } from "../context/urlContext";
@@ -10,6 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import AppLoader from "./AppLoader";
 import Header from "./Header";
 import ChatWrapper from "./ChatWrapper";
+import InfiniteScrolling from "./InfiniteScrolling";
 
 function TopicArea({ tag: initialTag }: { tag: string }) {
   const [tweets, setTweets] = useState([]);
@@ -21,7 +22,8 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
 
   const url = useContext(UrlContext);
   const router = useRouter();
-
+  const isFetching = useRef(false);
+  const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const tags = [
     "Sports",
     "Politics",
@@ -64,8 +66,9 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
   };
 
   // Load more tweets
-  const loadMoreTweets = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const loadMoreTweets = async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
     try {
       const req = await fetch(
         `${url}/api/topic/${currentTag}?t=${tweetCount}`,
@@ -79,6 +82,9 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
       const data = await req.json();
       if (data.status === "ok") {
         setTweets((prevTweets) => [...prevTweets, ...data.tweets]);
+        if (data.tweets.length < 20) {
+          setHasMoreTweets(false);
+        }
         setTweetCount((prevCount) => prevCount + 20);
       } else {
         console.error(data.error);
@@ -86,6 +92,8 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
       }
     } catch (error) {
       console.error("Error loading more tweets:", error);
+    } finally {
+      isFetching.current = false;
     }
   };
 
@@ -147,12 +155,8 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
       )}
 
       {/* Load More Button */}
-      {tweets.length > 0 && !loading && (
-        <form className="showMore-form !mb-10" onSubmit={loadMoreTweets}>
-          <button className="showMore" type="submit" disabled={loading}>
-            Show More Tweets
-          </button>
-        </form>
+      {tweets.length > 0 && !loading && hasMoreTweets && (
+        <InfiniteScrolling addTweets={loadMoreTweets} />
       )}
 
       <ChatWrapper
