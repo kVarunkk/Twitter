@@ -15,6 +15,7 @@ import {
   generateKeyPair,
 } from "utils/cryptoHelpers";
 import { encryptPrivateKey } from "utils/utils";
+import { useAuth } from "hooks/useAuth";
 
 function SignupBody() {
   const [userName, setUserName] = useState("");
@@ -27,17 +28,13 @@ function SignupBody() {
   const url = useContext(UrlContext);
   const router = useRouter();
 
+  const { user, loading: load } = useAuth();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      if ((user as any).exp > Date.now() / 1000) {
-        router.push("/feed");
-      } else {
-        localStorage.removeItem("token");
-      }
+    if (!load && user) {
+      router.push("/feed");
     }
-  }, []);
+  }, [user, load]);
 
   const handleChangeUserName = (e) => {
     setUserName(e.target.value.toLowerCase());

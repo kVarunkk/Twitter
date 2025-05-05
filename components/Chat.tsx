@@ -18,6 +18,7 @@ import {
 import { BsThreeDots } from "react-icons/bs";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import AppLoader from "./AppLoader";
+import { useAuth } from "hooks/useAuth";
 
 export default function Chat(props) {
   // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -28,33 +29,26 @@ export default function Chat(props) {
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
 
+  const { user, loading: load } = useAuth();
+
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const user = jwtDecode(token);
-        if (!user) {
-          localStorage.removeItem("token");
-        } else {
-          const res = await fetch(
-            `${url}/api/profile/${(user as any).username}`,
-            {
-              headers: {
-                "x-access-token": localStorage.getItem("token") || "",
-              },
-            }
-          );
-          const data = await res.json();
-          if (data.status === "ok") {
-            setActiveUser(data);
-          } else {
-            console.error("Error fetching user profile");
-          }
-        }
+      const res = await fetch(`${url}/api/profile/${(user as any).username}`, {
+        headers: {
+          //"x-access-token": localStorage.getItem("token") || "",
+        },
+      });
+      const data = await res.json();
+      if (data.status === "ok") {
+        setActiveUser(data);
+      } else {
+        console.error("Error fetching user profile");
       }
     };
-    fetchUser();
-  }, []);
+    if (!load && user) {
+      fetchUser();
+    }
+  }, [user, load]);
 
   useEffect(() => {
     const fetchLastTextedUsers = async () => {
@@ -65,7 +59,7 @@ export default function Chat(props) {
       try {
         const res = await fetch(`/api/chat/getChats?userId=${activeUser.id}`, {
           headers: {
-            "x-access-token": localStorage.getItem("token") || "",
+            //"x-access-token": localStorage.getItem("token") || "",
           },
         });
 
@@ -98,7 +92,7 @@ export default function Chat(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
         body: JSON.stringify({ user1: activeUser.id, user2: user._id }),
       });
@@ -130,7 +124,7 @@ export default function Chat(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
       });
 

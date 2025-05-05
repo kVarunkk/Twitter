@@ -40,7 +40,6 @@ export async function POST(req: Request) {
           },
         }
       );
-      console.log(`Updated user with ID: ${_id}`);
     }
 
     return NextResponse.json(

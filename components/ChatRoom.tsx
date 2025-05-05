@@ -41,7 +41,7 @@ export default function ChatRoom({ activeChat, activeUser }) {
           `/api/chat/getMessages?chatId=${activeChat._id}`,
           {
             method: "GET",
-            headers: { "x-access-token": localStorage.getItem("token") || "" },
+            // headers: { //"x-access-token": localStorage.getItem("token") || "" },
           }
         );
 
@@ -137,7 +137,7 @@ export default function ChatRoom({ activeChat, activeUser }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-access-token": localStorage.getItem("token"),
+            //"x-access-token": localStorage.getItem("token"),
           },
           body: JSON.stringify(message),
         });

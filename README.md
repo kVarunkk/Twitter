@@ -7,6 +7,7 @@ Opensource Twitter built using Nextjs 15.2.2
 - Fully responsive
 - Sign up/ Sign in via JWT Token
 - Customize profile(avatar, banner, bio, etc)
+- Infinite Scrolling
 - Tweet
 - Comment
 - Retweet

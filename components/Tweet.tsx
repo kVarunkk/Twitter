@@ -66,7 +66,7 @@ function Tweet(props) {
     try {
       const req = await fetch(`${url}/api/feed/comments/${tweetId}`, {
         headers: {
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
       });
 
@@ -97,7 +97,7 @@ function Tweet(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
       });
 
@@ -122,7 +122,7 @@ function Tweet(props) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-access-token": localStorage.getItem("token") || "",
+            //"x-access-token": localStorage.getItem("token") || "",
           },
         }
       );
@@ -171,7 +171,7 @@ function Tweet(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
         body: JSON.stringify(comment),
       });
@@ -209,7 +209,7 @@ function Tweet(props) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-access-token": localStorage.getItem("token") || "",
+            //"x-access-token": localStorage.getItem("token") || "",
           },
         }
       );
@@ -244,7 +244,7 @@ function Tweet(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
       });
 
@@ -291,7 +291,7 @@ function Tweet(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
         body: JSON.stringify({ content: tweetContent }),
       });
@@ -416,14 +416,13 @@ function Tweet(props) {
                 <DialogTitle>Edit Tweet</DialogTitle>
               </DialogHeader>
               <form onSubmit={editTweet}>
-                <input
-                  type="text"
+                <textarea
                   value={tweetContent}
                   onChange={(e) => {
                     e.stopPropagation();
                     setTweetContent(e.target.value);
                   }}
-                  className="!w-full !border-b !border-border  !p-2 !mb-4"
+                  className="!w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
                   required
                 />
                 <button
@@ -480,11 +479,11 @@ function Tweet(props) {
                   </DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleCommentSubmit}>
-                  <input
+                  <textarea
                     onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                     name="commentInput"
                     placeholder="Tweet your reply"
-                    className="!w-full !border-b !border-border !p-2 !mb-4"
+                    className="!w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
                     required
                   />
                   <button

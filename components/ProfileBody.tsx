@@ -24,6 +24,7 @@ import {
 } from "utils/cryptoHelpers";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
+import { useAuth } from "hooks/useAuth";
 
 function ProfileBody({ userName }: { userName: string }) {
   const [loading, setLoading] = useState(true);
@@ -50,7 +51,7 @@ function ProfileBody({ userName }: { userName: string }) {
     try {
       const req = await fetch(`${url}/api/profile/${userName}`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -101,7 +102,7 @@ function ProfileBody({ userName }: { userName: string }) {
         `${url}/api/profile/${userName}?t=${tweets.length}`,
         {
           headers: {
-            "x-access-token": localStorage.getItem("token"),
+            //"x-access-token": localStorage.getItem("token"),
           },
         }
       );
@@ -164,7 +165,7 @@ function ProfileBody({ userName }: { userName: string }) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-access-token": localStorage.getItem("token") || "",
+            //"x-access-token": localStorage.getItem("token") || "",
           },
         }
       );
@@ -232,7 +233,7 @@ function ProfileBody({ userName }: { userName: string }) {
         },
         {
           headers: {
-            "x-access-token": localStorage.getItem("token") || "", // Pass the token from localStorage
+            //"x-access-token": localStorage.getItem("token") || "", // Pass the token from localStorage
           },
         }
       );
@@ -271,21 +272,13 @@ function ProfileBody({ userName }: { userName: string }) {
     }
   };
 
-  // Fetch user data on component mount
+  const { user, loading: load } = useAuth();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      if (!user) {
-        localStorage.removeItem("token");
-        router.push("/");
-      } else {
-        populateUserData();
-      }
-    } else {
-      router.push("/");
+    if (!load && user) {
+      populateUserData();
     }
-  }, []); // Add userName as a dependency
+  }, [user, load]);
 
   return (
     <div className="container">

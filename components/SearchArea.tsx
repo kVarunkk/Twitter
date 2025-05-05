@@ -39,7 +39,7 @@ function SearchArea() {
     try {
       const req = await fetch(`${e.target.action}?skip=0&limit=10`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -73,7 +73,7 @@ function SearchArea() {
         `${url}/api/search/${text}?skip=${skip}&limit=10`,
         {
           headers: {
-            "x-access-token": localStorage.getItem("token"),
+            //"x-access-token": localStorage.getItem("token"),
           },
         }
       );

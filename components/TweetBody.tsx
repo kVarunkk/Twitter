@@ -12,11 +12,6 @@ export default function TweetBody(props) {
       {props.body.isRetweeted && (
         <button
           type="button"
-          // onClick={(e) => {
-          //   e.preventDefault();
-          //   e.stopPropagation();
-          //   router.push(`/profile/${props.body.retweetedByUser}`);
-          // }}
           className="stop-link  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
         >
           <AiOutlineRetweet className="text-gray-500 mr-2" />
@@ -59,8 +54,7 @@ export default function TweetBody(props) {
         </button>
       </div>
 
-      <div className="text-gray-800 !mb-3 break-words">
-        {" "}
+      <div className="text-gray-800 !mb-3 break-words whitespace-pre-wrap">
         {formatContentWithLinks(props.body.content)}
       </div>
       {props.body.image && (

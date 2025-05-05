@@ -8,6 +8,7 @@ import { UrlContext } from "context/urlContext";
 import Tweet from "@/components/Tweet";
 import AppLoader from "@/components/AppLoader";
 import ChatWrapper from "@/components/ChatWrapper";
+import { useAuth } from "hooks/useAuth";
 
 function SingleTweet({ tweetId }: { tweetId: string }) {
   const [tweet, setTweet] = useState(null);
@@ -17,11 +18,19 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+  const { user, loading: load } = useAuth();
+
+  useEffect(() => {
+    if (!load && user) {
+      fetchTweet();
+    }
+  }, [user, load]);
+
   const fetchTweet = async () => {
     try {
       const response = await fetch(`${url}/api/tweet/${tweetId}`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
       const data = await response.json();
@@ -45,10 +54,6 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchTweet();
-  }, [tweetId]);
 
   if (loading) {
     return (

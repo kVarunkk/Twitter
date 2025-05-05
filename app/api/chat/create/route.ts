@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import { MONGODB_URI, validateToken } from "utils/utils";
+import { MONGODB_URI } from "utils/utils";
+import { validateToken } from "lib/auth";
 const { Chat } = require("utils/models/File");
 
 if (!global.mongoose) {

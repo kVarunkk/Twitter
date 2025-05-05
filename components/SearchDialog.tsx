@@ -33,7 +33,7 @@ export default function SearchDialog({
         `${url}/api/search/${searchText}?skip=0&limit=0`,
         {
           headers: {
-            "x-access-token": localStorage.getItem("token"),
+            //"x-access-token": localStorage.getItem("token"),
           },
         }
       );

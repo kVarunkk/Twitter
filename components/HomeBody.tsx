@@ -16,6 +16,7 @@ import {
   base64ToArrayBuffer,
   deriveKeyFromPassword,
 } from "utils/cryptoHelpers";
+import { useAuth } from "hooks/useAuth";
 
 function HomeBody() {
   const [userName, setUserName] = useState("");
@@ -23,19 +24,13 @@ function HomeBody() {
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
   const router = useRouter();
-  // const toast = useToast();
+  const { user, loading: load } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      if ((user as any).exp > Date.now() / 1000) {
-        router.push("/feed");
-      } else {
-        localStorage.removeItem("token");
-      }
+    if (!load && user) {
+      router.push("/feed");
     }
-  }, []);
+  }, [user, load]);
 
   async function signin(
     encryptedPrivateKey: string,
@@ -43,15 +38,6 @@ function HomeBody() {
     iv: string
   ) {
     try {
-      // const saltBuffer = base64ToArrayBuffer(salt);
-      // if (saltBuffer.byteLength !== 16) {
-      //   throw new Error(
-      //     `Invalid salt length: ${saltBuffer.byteLength}, expected 16 bytes`
-      //   );
-      // }
-
-      // const derivedKey = await deriveKeyFromPassword(password, saltBuffer);
-
       const keyBuffer = base64ToArrayBuffer(derivedKey);
       const importedDerivedKey = await window.crypto.subtle.importKey(
         "raw",
@@ -94,15 +80,15 @@ function HomeBody() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // "x-access-token": localStorage.getItem("token") || "",
+          // //"x-access-token": localStorage.getItem("token") || "",
         },
         body: JSON.stringify({ username: userName, password }),
       });
 
       const data = await response.json();
 
-      if (data.status === "ok" && data.token) {
-        localStorage.setItem("token", data.token);
+      if (data.status === "ok") {
+        // localStorage.setItem("token", data.token);
         await signin(
           data.user.encryptedPrivateKey,
           data.user.derivedKey,

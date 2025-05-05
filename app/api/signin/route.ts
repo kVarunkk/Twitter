@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 const { User, Tweet, Comment } = require("utils/models/File");
 import { JWT_SECRET, MONGODB_URI } from "utils/utils";
+import { setTokenCookie, signJwt } from "lib/auth";
 
 // Ensure Mongoose connection is established
 if (!global.mongoose) {
@@ -33,17 +34,17 @@ export async function POST(req: Request) {
     }
 
     // Generate a JWT token
-    const payload = { id: user._id, username: user.username };
-    const token = jwt.sign(payload, JWT_SECRET, {
-      expiresIn: "1d",
-    });
+    const payload = { id: user._id.toString(), username: user.username };
+    const token = await signJwt(payload);
 
     // Return the token and success status
-    return NextResponse.json({
+    const response = NextResponse.json({
       status: "ok",
-      token,
+      // token,
       user,
     });
+    setTokenCookie(response, token);
+    return response;
   } catch (error) {
     console.error("Error during sign-in:", error);
     return NextResponse.json(

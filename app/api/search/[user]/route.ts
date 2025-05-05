@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
-import { MONGODB_URI, validateToken } from "utils/utils";
+import { MONGODB_URI } from "utils/utils";
+import { validateToken } from "lib/auth";
+
 const { User, Tweet } = require("utils/models/File");
 
 // Ensure Mongoose connection is established

@@ -56,7 +56,7 @@ function Comment(props) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-access-token": localStorage.getItem("token"),
+            //"x-access-token": localStorage.getItem("token"),
           },
         }
       );
@@ -79,7 +79,7 @@ function Comment(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -118,7 +118,7 @@ function Comment(props) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
         body: JSON.stringify({ content: commentContent }),
       });
@@ -215,8 +215,7 @@ function Comment(props) {
                 </Dialog>
               )}
             </div>
-            <div className="text-gray-800 mt-2 break-words">
-              {" "}
+            <div className="text-gray-800 mt-2 break-words whitespace-pre-wrap">
               {formatContentWithLinks(props.body.content)}
             </div>
           </div>

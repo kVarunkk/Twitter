@@ -85,7 +85,7 @@ function Sidebar() {
     try {
       const req = await fetch(`${url}/api/feed`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -101,7 +101,6 @@ function Sidebar() {
           message: "Session expired. Please log in again.",
           type: "error",
         });
-        localStorage.removeItem("token"); // Clear the invalid token
         router.push("/"); // Redirect to the home page
       }
     } catch (error) {
@@ -122,9 +121,17 @@ function Sidebar() {
     setInput(e.target.value);
   };
 
-  const logout = (e) => {
-    localStorage.removeItem("token");
+  const logout = async () => {
+    await fetch(url + "/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    // Remove any local-only items
     localStorage.removeItem("privateKey");
+
+    // Redirect user
+    router.push("/");
   };
 
   const handleSubmit = async (e) => {
@@ -143,7 +150,7 @@ function Sidebar() {
       const response = await axios.post(`${url}/api/feed`, payload, {
         headers: {
           "Content-Type": "application/json",
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -276,13 +283,12 @@ function Sidebar() {
                 className="tweet-form flex flex-col gap-4 flex-grow"
                 id="form1"
               >
-                <input
+                <textarea
                   autoFocus
                   placeholder="What's good?"
-                  type="text"
                   value={input}
                   onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded-md"
+                  className="w-full !p-2 focus:outline-0  rounded-md"
                 />
                 <div className="tweet-flex flex items-center gap-4">
                   <AiFillCamera

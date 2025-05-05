@@ -25,6 +25,7 @@ import { showToast } from "./ToastComponent";
 import Chat from "./Chat";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
+import { useAuth } from "hooks/useAuth";
 
 function Feed() {
   const [error, setError] = useState(false);
@@ -42,7 +43,7 @@ function Feed() {
     try {
       const req = await fetch(`${url}/api/feed`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -86,7 +87,7 @@ function Feed() {
     try {
       const req = await fetch(`${url}/api/feed?t=${tweetCount}`, {
         headers: {
-          "x-access-token": localStorage.getItem("token"),
+          //"x-access-token": localStorage.getItem("token"),
         },
       });
 
@@ -113,17 +114,13 @@ function Feed() {
     }
   }
 
+  const { user, loading: load } = useAuth();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      if (!user) {
-        localStorage.removeItem("token");
-      } else {
-        populateTweets();
-      }
-    } else router.push("/");
-  }, [loading]);
+    if (!load && user) {
+      populateTweets();
+    }
+  }, [user, load]);
 
   return (
     <div>

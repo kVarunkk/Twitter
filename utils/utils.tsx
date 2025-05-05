@@ -25,38 +25,6 @@ export const formatContentWithLinks = (content: string) => {
   );
 };
 
-export async function validateToken(req) {
-  try {
-    // Get the token from the x-access-token header
-    const token = req.headers.get("x-access-token");
-    if (!token) {
-      return { status: "error", message: "Unauthorized", user: null };
-    }
-
-    // Verify the token
-    const decoded = jwt.verify(token, JWT_SECRET);
-    if (!decoded) {
-      return {
-        status: "error",
-        message: "Invalid or expired token",
-        user: null,
-      };
-    }
-
-    // Find the user associated with the token
-    const user = await User.findById(decoded.id).select("username");
-    if (!user) {
-      return { status: "error", message: "User not found", user: null };
-    }
-
-    // Return the user if validation is successful
-    return { status: "ok", message: "Token is valid", user };
-  } catch (error) {
-    console.error("Token validation error:", error);
-    return { status: "error", message: "Invalid or expired token", user: null };
-  }
-}
-
 export async function encryptPrivateKey(
   privateKey: string,
   derivedKey: CryptoKey

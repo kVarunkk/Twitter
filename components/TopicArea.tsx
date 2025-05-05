@@ -11,6 +11,7 @@ import AppLoader from "./AppLoader";
 import Header from "./Header";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
+import { useAuth } from "hooks/useAuth";
 
 function TopicArea({ tag: initialTag }: { tag: string }) {
   const [tweets, setTweets] = useState([]);
@@ -35,10 +36,13 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
     "Entertainment",
   ];
 
-  // Fetch tweets when the tag changes
+  const { user, loading: load } = useAuth();
+
   useEffect(() => {
-    fetchTweets(currentTag);
-  }, [currentTag]);
+    if (!load && user && currentTag) {
+      fetchTweets(currentTag);
+    }
+  }, [user, load, currentTag]);
 
   // Fetch tweets for the selected topic
   const fetchTweets = async (tag: string) => {
@@ -46,7 +50,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
     try {
       const req = await fetch(`${url}/api/topic/${tag}`, {
         headers: {
-          "x-access-token": localStorage.getItem("token") || "",
+          //"x-access-token": localStorage.getItem("token") || "",
         },
       });
 
@@ -74,7 +78,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
         `${url}/api/topic/${currentTag}?t=${tweetCount}`,
         {
           headers: {
-            "x-access-token": localStorage.getItem("token") || "",
+            //"x-access-token": localStorage.getItem("token") || "",
           },
         }
       );

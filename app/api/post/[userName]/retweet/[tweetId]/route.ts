@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import moment from "moment";
-import { MONGODB_URI, validateToken } from "utils/utils";
+import { MONGODB_URI } from "utils/utils";
+import { validateToken } from "lib/auth";
+
 const { User, Tweet, Comment } = require("utils/models/File");
 // Ensure Mongoose connection is established
 if (!global.mongoose) {
