@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
 import { arrayBufferToBase64 } from "./cryptoHelpers";
-const { User, Tweet, Comment } = require("utils/models/File");
 export const formatContentWithLinks = (content: string) => {
   // Updated regex to allow periods but exclude trailing commas and other punctuation
   const urlRegex = /(https?:\/\/[^\s,!?()]+(?:\.[^\s,!?()]+)*)/g;

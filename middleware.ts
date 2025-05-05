@@ -1,13 +1,13 @@
-import { getTokenFromServer, verifyJwt } from "lib/auth";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { TOKEN_NAME, verifyJwt } from "lib/jwt";
+import { NextRequest, NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   const protectedRoutes = ["/feed", "/profile", "/topic", "/search"];
   const { pathname } = req.nextUrl;
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    const token = await getTokenFromServer();
+    const token = req.cookies.get(TOKEN_NAME)?.value;
     const user = token ? await verifyJwt(token) : null;
     if (!user) {
       return NextResponse.redirect(new URL("/", req.url));
