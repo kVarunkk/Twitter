@@ -225,7 +225,9 @@ function Tweet(props) {
         setShareCount(data.shareCount);
 
         // Copy the tweet link to the clipboard
-        const tweetLink = `${window.location.origin}/tweet/${tweetId}`;
+        const tweetLink = `${window.location.origin}/tweet/${encodeURIComponent(
+          tweetId
+        )}`;
         await navigator.clipboard.writeText(tweetLink);
 
         // Show a toast notification
