@@ -326,7 +326,7 @@ function Sidebar() {
                   onChange={handleChange}
                   className="w-full !p-2 focus:outline-0  rounded-md"
                 />
-                <div className="tweet-flex flex items-center gap-4">
+                <div className="tweet-flex flex-col  items-center gap-4">
                   <AiFillCamera
                     className="shrink-0"
                     style={{
@@ -335,7 +335,7 @@ function Sidebar() {
                     }}
                   />
 
-                  <div className="">
+                  <div className="w-full">
                     <input
                       id="file-upload"
                       type="file"
@@ -346,7 +346,7 @@ function Sidebar() {
 
                     <label
                       htmlFor="file-upload"
-                      className="block cursor-pointer border-2 border-dashed border-gray-400 w-[300px] rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
+                      className="block cursor-pointer border-2 border-dashed border-gray-400 w-full rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
                     >
                       <span className="block text-sm">
                         Click here to upload
@@ -362,7 +362,7 @@ function Sidebar() {
                   <input
                     type="text"
                     placeholder="Enter an image url"
-                    className="flex-grow p-2 border border-gray-300 rounded-md"
+                    className="flex-grow !p-2 !border-b !border-gray-300 !rounded-none focus:outline-0"
                     value={img}
                     onChange={(e) => {
                       setImg(e.target.value);

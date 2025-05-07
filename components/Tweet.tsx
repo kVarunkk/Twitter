@@ -356,7 +356,7 @@ function Tweet(props) {
   };
 
   return (
-    <div className="bg-white    text-lg">
+    <div className="bg-white    ">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
         {!window.location.pathname.startsWith("/tweet") ? (
           <button

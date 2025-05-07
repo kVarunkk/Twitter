@@ -194,7 +194,7 @@ input {
     width: 100%;
     height: 70px;
     margin-bottom: 10px !important;
-    font-size: larger !important;
+    /* font-size: larger !important; */
     padding: 10px !important;
     border-radius: 5px;
     border: 0;
@@ -204,9 +204,7 @@ input:focus {
     outline: none;
 }
 
-.tweet-form {
-    border-bottom: 1px solid rgb(217, 217, 217);
-}
+
 
 .tweet-flex {
     display: flex;
@@ -351,7 +349,7 @@ input:focus {
     padding: 20px;
     margin-bottom: 20px;
     width: 100%;
-    font-size: larger;
+    /* font-size: larger; */
     border-radius: 10px;
 }
 
@@ -362,7 +360,7 @@ input:focus {
     margin-bottom: 20px;
     width: 90%;
     margin-left: auto;
-    font-size: larger;
+    /* font-size: larger; */
     border-radius: 10px;
 }
 
@@ -409,7 +407,7 @@ input:focus {
 
 .sidebar-menu {
     list-style: none;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
 }
 
 .sidebar-menu a,
@@ -748,6 +746,7 @@ input:focus {
 .tagArea {
     padding: 20px;
     overflow-x: scroll;
+    flex-shrink: 0;
     /* display: flex; */
     /* gap: 10px; */
     border-bottom: 1px solid rgb(217, 217, 217);

@@ -361,7 +361,7 @@ function ProfileBody({ userName }: { userName: string }) {
           {/* <img className="profile-avatar" src={avatar} alt="Avatar" /> */}
           <Avatar src={avatar} alt="Avatar" size="lg" />
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center">
               <div className="!px-4 userName">{userName}</div>
 
               <Link
