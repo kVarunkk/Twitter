@@ -363,21 +363,20 @@ function ProfileBody({ userName }: { userName: string }) {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1">
               <div className="!px-4 userName">{userName}</div>
-              {url && (
-                <Link
-                  className="cursor-pointer"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(
-                      `${url}/profile/${userName}`
-                    );
-                    showToast({
-                      heading: "Copied",
-                      message: `Profile link copied to clipboard`,
-                      type: "success",
-                    });
-                  }}
-                ></Link>
-              )}
+
+              <Link
+                className="cursor-pointer"
+                onClick={async () => {
+                  await navigator.clipboard.writeText(
+                    `${window.location.origin}/profile/${userName}`
+                  );
+                  showToast({
+                    heading: "Copied",
+                    message: `Profile link copied to clipboard`,
+                    type: "success",
+                  });
+                }}
+              ></Link>
             </div>
             <div className="!px-4 text-lg">{formatContentWithLinks(bio)}</div>
             <div className="!px-4 followFollowing">
