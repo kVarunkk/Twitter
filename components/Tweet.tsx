@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { formatContentWithLinks } from "utils/utils";
 import TweetBody from "./TweetBody";
 import { Share } from "lucide-react";
+import { set } from "mongoose";
 
 function Tweet(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -46,7 +47,9 @@ function Tweet(props) {
   const tweetId = props.body.postedTweetTime;
   const [isImageLoading, setIsImageLoading] = useState(true); // Track image loading state
   const isUserActive = props.body.postedBy?.username === props.user;
-  // const toast = useToast();
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [replyLoading, setReplyLoading] = useState(false);
   const url = useContext(UrlContext);
   const router = useRouter();
 
@@ -158,6 +161,7 @@ function Tweet(props) {
   const handleCommentSubmit = async (e) => {
     e.stopPropagation();
     e.preventDefault();
+    setReplyLoading(true);
 
     const comment = {
       content: e.target.commentInput.value,
@@ -198,6 +202,8 @@ function Tweet(props) {
         message: "Failed to post comment.",
         type: "error",
       });
+    } finally {
+      setReplyLoading(false);
     }
   };
 
@@ -238,7 +244,7 @@ function Tweet(props) {
   const deleteTweet = async (e) => {
     e.stopPropagation();
     e.preventDefault();
-
+    setDeleteLoading(true);
     try {
       const req = await fetch(`${url}/api/deleteTweet/${tweetId}`, {
         method: "POST",
@@ -278,6 +284,8 @@ function Tweet(props) {
         message: "Failed to delete tweet.",
         type: "error",
       });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -285,6 +293,7 @@ function Tweet(props) {
   const editTweet = async (e) => {
     e.stopPropagation();
     e.preventDefault();
+    setEditLoading(true);
 
     try {
       const req = await fetch(`${url}/api/editTweet/${tweetId}`, {
@@ -331,6 +340,8 @@ function Tweet(props) {
         message: "Failed to edit tweet.",
         type: "error",
       });
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -388,10 +399,18 @@ function Tweet(props) {
                 <DropdownMenuItem onClick={stopPropagation()}>
                   <form onSubmit={deleteTweet}>
                     <button
+                      disabled={deleteLoading}
                       onClick={stopPropagation()}
-                      className="!p-2 flex items-center"
+                      className={`!p-2 flex items-center !justify-between disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
-                      <RiDeleteBin6Fill className="!mr-2" /> Delete
+                      <div className="flex items-center">
+                        <RiDeleteBin6Fill className="!mr-2" /> Delete
+                      </div>
+                      {deleteLoading && (
+                        <div className="ml-auto">
+                          <AppLoader size="sm" />
+                        </div>
+                      )}
                     </button>
                   </form>
                 </DropdownMenuItem>
@@ -428,9 +447,13 @@ function Tweet(props) {
                 <button
                   onClick={stopPropagation()}
                   type="submit"
-                  className="tweetBtn"
+                  className={` ${
+                    editLoading ? "disabled" : "tweetBtn"
+                  } flex items-center gap-2`}
+                  disabled={editLoading}
                 >
                   Save
+                  {editLoading && <AppLoader size="sm" color="white" />}
                 </button>
               </form>
             </DialogContent>
@@ -489,9 +512,13 @@ function Tweet(props) {
                   <button
                     onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                     type="submit"
-                    className="tweetBtn"
+                    disabled={replyLoading}
+                    className={` ${
+                      replyLoading ? "disabled" : "tweetBtn"
+                    } flex items-center gap-2`}
                   >
                     Reply
+                    {replyLoading && <AppLoader size="sm" color="white" />}
                   </button>
                 </form>
               </DialogContent>
@@ -530,6 +557,8 @@ function Tweet(props) {
                   setCommentCount={setCommentCount}
                   populateComments={populateComments}
                   handleCommentSubmit={handleCommentSubmit}
+                  replyLoading={replyLoading}
+                  setReplyLoading={setReplyLoading}
                 />
               );
             })

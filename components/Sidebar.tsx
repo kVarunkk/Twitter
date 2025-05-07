@@ -18,6 +18,7 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 // import { Box } from "@chakra-ui/react";
 import "../app/globals.css";
+import { v4 as uuidv4 } from "uuid";
 
 import jwtDecode from "jwt-decode";
 import { UrlContext } from "../context/urlContext";
@@ -32,8 +33,9 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "./ToastComponent";
-import { Mail } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import Chat from "./Chat";
+import AppLoader from "./AppLoader";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -48,6 +50,16 @@ function Sidebar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   let lastScrollY = 10;
+  const [tweetLoading, setTweetLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setImg(""); // Clear URL input if file is selected
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -137,26 +149,48 @@ function Sidebar() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = {
-      tweet: {
-        content: input,
-        tag: tag,
-        postedTweetTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
-      },
-      image: img || "", // Include the image or an empty string if not provided
-    };
+    setTweetLoading(true);
+
+    let imageUrl = img;
+
+    const tempId = uuidv4();
 
     try {
-      const response = await axios.post(`${url}/api/feed`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          //"x-access-token": localStorage.getItem("token"),
+      if (file) {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("type", "tweet");
+        formData.append("id", tempId);
+        formData.append("contentType", file.type);
+
+        const res = await fetch("/api/upload-image", {
+          method: "POST",
+          body: formData,
+        });
+
+        const { key } = await res.json();
+
+        imageUrl = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
+      }
+
+      const payload = {
+        tweet: {
+          content: input,
+          tag: tag,
+          postedTweetTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
         },
+        image: imageUrl,
+      };
+
+      const response = await axios.post(`${url}/api/feed`, payload, {
+        headers: { "Content-Type": "application/json" },
       });
 
       if (response.data.status === "ok") {
         setInput("");
         setImg("");
+        setFile(null);
+        setTag("");
         setIsImageSelected(false);
         showToast({
           heading: "Success 🎉",
@@ -187,6 +221,8 @@ function Sidebar() {
         message: "Something went wrong. Please try again.",
         type: "error",
       });
+    } finally {
+      setTweetLoading(false);
     }
   };
 
@@ -268,7 +304,7 @@ function Sidebar() {
             <DialogTrigger className="!mx-2 sm:!mx-0" asChild>
               <button className="tweetBtn sidebar-menu-tweetBtn">Tweet</button>
             </DialogTrigger>
-            <DialogContent className="!w-full !max-w-[95%] lg:!max-w-1/2 h-3/4 overflow-hidden !p-4 flex flex-col">
+            <DialogContent className="!w-full !max-w-[95%] lg:!max-w-1/2 h-3/4  !p-4 flex flex-col">
               <DialogHeader>
                 <DialogTitle>New Tweet</DialogTitle>
               </DialogHeader>
@@ -280,7 +316,7 @@ function Sidebar() {
                 method="post"
                 encType="multipart/form-data"
                 action={`${url}/api/feed`}
-                className="tweet-form flex flex-col gap-4 flex-grow"
+                className="tweet-form flex flex-col gap-4 flex-grow overflow-y-scroll"
                 id="form1"
               >
                 <textarea
@@ -292,24 +328,56 @@ function Sidebar() {
                 />
                 <div className="tweet-flex flex items-center gap-4">
                   <AiFillCamera
+                    className="shrink-0"
                     style={{
                       color: "#1DA1F2",
                       fontSize: "1.5rem",
                     }}
                   />
+
+                  <div className="">
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+
+                    <label
+                      htmlFor="file-upload"
+                      className="block cursor-pointer border-2 border-dashed border-gray-400 w-[300px] rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
+                    >
+                      <span className="block text-sm">
+                        Click here to upload
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        (Only images allowed)
+                      </span>
+                    </label>
+                  </div>
+
+                  <span className="text-gray-500 font-bold">OR</span>
+
                   <input
-                    className="image-input flex-grow p-2 border border-gray-300 rounded-md"
                     type="text"
-                    placeholder="Enter an image url here"
+                    placeholder="Enter an image url"
+                    className="flex-grow p-2 border border-gray-300 rounded-md"
                     value={img}
-                    onChange={(e) => setImg(e.target.value)}
+                    onChange={(e) => {
+                      setImg(e.target.value);
+                      setFile(null); // clear local file if URL is typed
+                    }}
                   />
                   <button
-                    className={checkInput ? "tweetBtn" : "disabled"}
-                    disabled={!checkInput}
+                    className={`${
+                      checkInput && !tweetLoading ? "tweetBtn" : "disabled"
+                    }  flex items-center gap-2`}
+                    disabled={!checkInput || tweetLoading}
                     type="submit"
                   >
                     Tweet
+                    {tweetLoading && <AppLoader size="sm" color="white" />}
                   </button>
                 </div>
                 <div className="tagArea overflow-x-auto whitespace-nowrap   ">
@@ -328,12 +396,34 @@ function Sidebar() {
                     ))}
                   </ToggleGroup>
                 </div>
-                {img && (
-                  <img
-                    className="tweet-preview max-h-40 object-contain mt-4"
-                    src={img}
-                    alt="Preview"
-                  />
+
+                {file && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setFile(null)}
+                      className="cursor-pointer absolute -top-2 right-2 !p-3 rounded-full bg-white shadow-lg"
+                    >
+                      <X />
+                    </button>
+                    <img
+                      src={URL.createObjectURL(file)}
+                      className="tweet-preview max-h-60 object-contain mt-4"
+                    />
+                  </div>
+                )}
+                {img && !file && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setImg("")}
+                      className="cursor-pointer absolute -top-2 right-2 !p-3 rounded-full bg-white shadow-lg"
+                    >
+                      <X />
+                    </button>
+                    <img
+                      src={img}
+                      className="tweet-preview max-h-60 object-contain mt-4"
+                    />
+                  </div>
                 )}
               </form>
             </DialogContent>

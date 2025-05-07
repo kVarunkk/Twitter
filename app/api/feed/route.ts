@@ -87,7 +87,8 @@ export async function POST(req: Request) {
       retweets: [],
       tag: tweetInfo.tag,
       postedTweetTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
-      image: body.image || null, // Set image to null if not provided
+      image: body.image || null,
+      // imageId: body.imageId,
     });
 
     // Find the user who posted the tweet

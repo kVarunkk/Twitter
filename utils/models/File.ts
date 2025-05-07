@@ -63,6 +63,7 @@ const tweetSchema = new mongoose.Schema(
     content: { type: String },
     tag: { type: String },
     image: { type: String },
+    // imageId: { type: String },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     postedTweetTime: {
       type: String,

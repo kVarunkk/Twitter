@@ -17,14 +17,13 @@ import {
 } from "./components/ui/dialog";
 import { showToast } from "./ToastComponent";
 import { encryptPrivateKey, formatContentWithLinks } from "utils/utils";
-import {
-  arrayBufferToBase64,
-  generateAESKey,
-  generateKeyPair,
-} from "utils/cryptoHelpers";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
 import { useAuth } from "hooks/useAuth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { Link, X } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import Avatar from "./Avatar";
 
 function ProfileBody({ userName }: { userName: string }) {
   const [loading, setLoading] = useState(true);
@@ -35,13 +34,25 @@ function ProfileBody({ userName }: { userName: string }) {
   const [followBtn, setFollowBtn] = useState("");
   const [banner, setBanner] = useState("");
   const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState("initial-avatar.png");
+  const [avatar, setAvatar] = useState(
+    `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`
+  );
   const router = useRouter();
   const url = useContext(UrlContext);
   const isActiveUser = activeUser === userName;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
+  const [saveAvatarLoading, setSaveAvatarLoading] = useState(false);
+
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
 
   // Fetch user data and tweets
   const populateUserData = async () => {
@@ -194,9 +205,9 @@ function ProfileBody({ userName }: { userName: string }) {
   // Handle avatar selection
   const handleSubmitAvatar = async (e: React.MouseEvent<HTMLImageElement>) => {
     try {
-      const avatarId = e.currentTarget.id;
+      const avatarSrc = e.currentTarget.src;
       const response = await axios.post(`${url}/api/avatar/${activeUser}`, {
-        avatar: `Avatar-${avatarId}.png`,
+        avatar: avatarSrc,
       });
 
       if (response.data.status === "ok") {
@@ -280,6 +291,60 @@ function ProfileBody({ userName }: { userName: string }) {
     }
   }, [user, load]);
 
+  const saveUploadedAvatar = async () => {
+    if (!file) return;
+
+    setSaveAvatarLoading(true);
+
+    const tempId = uuidv4();
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("type", "avatar");
+      formData.append("id", tempId);
+      formData.append("contentType", file.type);
+
+      const res = await fetch("/api/upload-image", {
+        method: "POST",
+        body: formData,
+      });
+
+      const { key } = await res.json();
+
+      const imageUrl = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/${key}`;
+
+      const response = await axios.post(`${url}/api/avatar/${activeUser}`, {
+        avatar: imageUrl,
+      });
+
+      if (response.data.status === "ok") {
+        setAvatar(response.data.avatar);
+        showToast({
+          heading: "Success 🎉",
+          message: "Avatar updated successfully.",
+          type: "success",
+        });
+      } else {
+        showToast({
+          heading: "Error",
+          message: response.data.message || "Failed to update avatar.",
+          type: "error",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      showToast({
+        heading: "Error",
+        message: "Something went wrong while uploading avatar.",
+        type: "error",
+      });
+    } finally {
+      setFile(null); // Reset the file state after upload
+      setSaveAvatarLoading(false);
+    }
+  };
+
   return (
     <div className="container">
       {banner?.trim()?.length > 0 && (
@@ -293,13 +358,27 @@ function ProfileBody({ userName }: { userName: string }) {
       )}
       <div className="!p-4 flex-avatar justify-between !w-full border-b border-border !mb-4">
         <div className="flex items-center gap-4">
-          <img
-            className="profile-avatar"
-            src={`${url}/images/${avatar}`}
-            alt="Avatar"
-          />
+          {/* <img className="profile-avatar" src={avatar} alt="Avatar" /> */}
+          <Avatar src={avatar} alt="Avatar" size="lg" />
           <div className="flex flex-col gap-1">
-            <div className="!px-4 userName">{userName}</div>
+            <div className="flex items-center gap-1">
+              <div className="!px-4 userName">{userName}</div>
+              {url && (
+                <Link
+                  className="cursor-pointer"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      `${url}/profile/${userName}`
+                    );
+                    showToast({
+                      heading: "Copied",
+                      message: `Profile link copied to clipboard`,
+                      type: "success",
+                    });
+                  }}
+                ></Link>
+              )}
+            </div>
             <div className="!px-4 text-lg">{formatContentWithLinks(bio)}</div>
             <div className="!px-4 followFollowing">
               <div>
@@ -323,7 +402,7 @@ function ProfileBody({ userName }: { userName: string }) {
                   <span className="text-gray-700">Click to change avatar</span>
                   <img
                     className="profile-avatar cursor-pointer"
-                    src={`/images/${avatar}`}
+                    src={avatar}
                     alt="Avatar"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -414,22 +493,89 @@ function ProfileBody({ userName }: { userName: string }) {
         <DialogTrigger asChild>
           <button id="avatar-dialog-trigger" className="hidden"></button>
         </DialogTrigger>
-        <DialogContent className="!p-4 h-3/4 overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="!p-4 h-3/4 grid-rows-[auto_1fr] ">
+          <DialogHeader className="">
             <DialogTitle>Choose Avatar</DialogTitle>
           </DialogHeader>
-          <div className="choose-avatar-container">
-            {[...Array(15)].map((_, index) => (
-              <img
-                key={index + 1}
-                id={`${index + 1}`}
-                className="choose-profile-avatar"
-                src={`${url}/images/Avatar-${index + 1}.png`}
-                onClick={handleSubmitAvatar}
-                alt={`Avatar ${index + 1}`}
-              />
-            ))}
-          </div>
+          <Tabs
+            className="overflow-y-auto h-full !mt-0 !mb-auto"
+            defaultValue="avatars"
+          >
+            <TabsList>
+              <TabsTrigger value="avatars">Avatars</TabsTrigger>
+              <TabsTrigger value="upload">Upload</TabsTrigger>
+            </TabsList>
+            <TabsContent value="avatars">
+              <div className="choose-avatar-container ">
+                {[...Array(15)].map((_, index) => (
+                  <img
+                    key={index + 1}
+                    id={`${index + 1}`}
+                    className="choose-profile-avatar"
+                    src={`https://${
+                      process.env.NEXT_PUBLIC_S3_BUCKET_NAME
+                    }.s3.${
+                      process.env.NEXT_PUBLIC_AWS_REGION
+                    }.amazonaws.com/avatars/Avatar-${index + 1}.png`}
+                    onClick={handleSubmitAvatar}
+                    alt={`Avatar ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="upload">
+              <div className="flex justify-center !mt-4">
+                <input
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+
+                <label
+                  htmlFor="file-upload"
+                  className="block cursor-pointer border-2 border-dashed border-gray-400 w-[300px] rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
+                >
+                  <span className="block text-sm">Click here to upload</span>
+                  <span className="text-xs text-gray-400">
+                    (Only images allowed)
+                  </span>
+                </label>
+              </div>
+              {file && (
+                <div className="relative">
+                  <button
+                    onClick={() => setFile(null)}
+                    className="cursor-pointer absolute -top-2 right-2 !p-3 rounded-full bg-white shadow-lg"
+                  >
+                    <X />
+                  </button>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    className="choose-profile-avatar !mx-auto !mt-10"
+                  />
+                </div>
+              )}
+
+              <div className="flex justify-end !mt-10">
+                <button
+                  disabled={!file || saveAvatarLoading}
+                  onClick={saveUploadedAvatar}
+                  className={`flex items-center ${
+                    !file || saveAvatarLoading ? "disabled" : "tweetBtn"
+                  }`}
+                >
+                  Save
+                  {saveAvatarLoading && (
+                    <div className="!ml-2">
+                      <AppLoader size="sm" color="white" />
+                    </div>
+                  )}
+                </button>
+              </div>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 

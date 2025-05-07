@@ -12,6 +12,7 @@ import {
 } from "../utils/cryptoHelpers";
 import AppLoader from "./AppLoader";
 import Link from "next/link";
+import Avatar from "./Avatar";
 
 // Import E2EE helper functions
 
@@ -153,10 +154,11 @@ export default function ChatRoom({ activeChat, activeUser }) {
         href={`${url}/profile/${nonActiveUser?.username}`}
         className="flex flex-col items-center gap-3 group"
       >
-        <img
-          className="!w-18 !h-18 profile-avatar"
-          src={`${url}/images/${nonActiveUser?.avatar}`}
+        <Avatar
+          // className="!w-18 !h-18 profile-avatar"
+          src={`${nonActiveUser?.avatar}`}
           alt="Avatar"
+          size="lg"
         />
         <div className="flex flex-col gap-1 items-center text-center">
           <div className="text-xl font-semibold group-hover:underline">

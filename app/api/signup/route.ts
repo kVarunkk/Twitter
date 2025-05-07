@@ -67,10 +67,9 @@ export async function POST(req: Request) {
     const newUser = new User({
       username: username.toLowerCase(),
       password: hashedPassword,
-      avatar: "initial-avatar.png",
+      avatar: `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`,
       publicKey,
       encryptedPrivateKey,
-      // salt,
       derivedKey,
       iv,
     });

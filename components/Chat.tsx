@@ -19,6 +19,7 @@ import { BsThreeDots } from "react-icons/bs";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import AppLoader from "./AppLoader";
 import { useAuth } from "hooks/useAuth";
+import Avatar from "./Avatar";
 
 export default function Chat(props) {
   // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -218,7 +219,7 @@ export default function Chat(props) {
           {activeChat ? (
             <ChatRoom activeChat={activeChat} activeUser={activeUser} />
           ) : (
-            <div className="">
+            <div className="overflow-y-auto h-full">
               {lastTextedUsers.length > 0 ? (
                 lastTextedUsers.map((chat) => (
                   <button
@@ -226,9 +227,9 @@ export default function Chat(props) {
                     className="relative hover:bg-gray-100 !w-full  !p-4 !border-b cursor-pointer flex items-center gap-4"
                     onClick={() => setActiveChat(chat)}
                   >
-                    <img
-                      className="!h-13 !w-13 profile-avatar"
-                      src={`${url}/images/${
+                    <Avatar
+                      // className="!h-13 !w-13 profile-avatar"
+                      src={`${
                         chat.users.find((u) => u._id !== activeUser.id).avatar
                       }`}
                       alt="Avatar"

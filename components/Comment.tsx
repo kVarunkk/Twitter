@@ -25,6 +25,8 @@ import { GoComment } from "react-icons/go";
 import { Reply } from "lucide-react";
 import debounce from "lodash.debounce"; // Import lodash debounce
 import { formatContentWithLinks } from "utils/utils";
+import Avatar from "./Avatar";
+import AppLoader from "./AppLoader";
 
 function Comment(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -37,6 +39,8 @@ function Comment(props) {
   const [replyInput, setReplyInput] = useState(
     `@${props.body.postedBy.username} `
   ); // State for the reply input
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   // Memoized debounced function to update the input state
   const debouncedSetReplyInput = useMemo(
@@ -74,6 +78,7 @@ function Comment(props) {
   // Handle deleting a comment
   const deleteComment = async (e) => {
     e.preventDefault();
+    setDeleteLoading(true);
     try {
       const req = await fetch(`${url}/api/comment/delete/${props.body._id}`, {
         method: "POST",
@@ -107,12 +112,15 @@ function Comment(props) {
         message: "Failed to delete comment",
         type: "error",
       });
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
   // Handle editing a comment
   const editComment = async (e) => {
     e.preventDefault();
+    setEditLoading(true);
     try {
       const req = await fetch(`${url}/api/comment/edit/${commentId}`, {
         method: "POST",
@@ -125,6 +133,11 @@ function Comment(props) {
 
       const data = await req.json();
       if (data.status === "ok") {
+        showToast({
+          heading: "Success",
+          message: "Comment edited successfully",
+          type: "success",
+        });
         setIsEdited(true);
         props.populateComments();
         // props.updateLoading(true);
@@ -136,6 +149,8 @@ function Comment(props) {
         message: "Failed to edit comment",
         type: "error",
       });
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -145,13 +160,18 @@ function Comment(props) {
       <div className="hover:bg-gray-100 border-b border-l border-border !p-4 flex-1">
         <div className="flex ">
           <Link
-            className="shrink-0 !p-1"
+            className="shrink-0 !p-1 h-fit"
             href={`/profile/${props.body.postedBy.username}`}
           >
-            <img
-              className="w-13 h-13 rounded-full"
-              src={`${url}/images/${props.body.postedBy.avatar}`}
+            {/* <img
+              className="w-12 h-12 rounded-full"
+              src={`${props.body.postedBy.avatar}`}
               alt="Avatar"
+            /> */}
+            <Avatar
+              src={`${props.body.postedBy.avatar}`}
+              alt="Avatar"
+              size="md"
             />
           </Link>
           <div className="!shrink !flex-1 !min-w-0">
@@ -181,8 +201,18 @@ function Comment(props) {
                     <DropdownMenuContent>
                       <DropdownMenuItem>
                         <form onSubmit={deleteComment}>
-                          <button className=" flex items-center !p-2">
-                            <RiDeleteBin6Fill className="!mr-2" /> Delete
+                          <button
+                            disabled={deleteLoading}
+                            className={`!p-2 flex items-center !justify-between disabled:opacity-50 disabled:cursor-not-allowed`}
+                          >
+                            <div className="flex items-center">
+                              <RiDeleteBin6Fill className="!mr-2" /> Delete
+                            </div>
+                            {deleteLoading && (
+                              <div className="ml-auto">
+                                <AppLoader size="sm" />
+                              </div>
+                            )}
                           </button>
                         </form>
                       </DropdownMenuItem>
@@ -200,15 +230,21 @@ function Comment(props) {
                       <DialogTitle>Edit Comment</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={editComment}>
-                      <input
-                        type="text"
+                      <textarea
                         value={commentContent}
                         onChange={(e) => setCommentContent(e.target.value)}
-                        className="!w-full !border-b !border-border  !p-2 !mb-4"
+                        className="!w-full focus:outline-none !border-b !border-border  !p-2 !mb-4"
                         required
                       />
-                      <button type="submit" className="tweetBtn">
+                      <button
+                        type="submit"
+                        disabled={editLoading}
+                        className={` ${
+                          editLoading ? "disabled" : "tweetBtn"
+                        } flex items-center gap-2`}
+                      >
                         Save
+                        {editLoading && <AppLoader size="sm" color="white" />}
                       </button>
                     </form>
                   </DialogContent>
@@ -260,20 +296,24 @@ function Comment(props) {
                   setReplyInput("");
                 }}
               >
-                <input
+                <textarea
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   name="commentInput"
                   defaultValue={`@${props.body.postedBy.username} `} // Pre-fill the input
                   onChange={(e) => debouncedSetReplyInput(e.target.value)} // Use debounced function for input changes
-                  className="!w-full !border-b !border-border !p-2 !mb-4"
+                  className="!w-full !border-b !border-border focus:outline-none !p-2 !mb-4"
                   required
                 />
                 <button
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   type="submit"
-                  className="tweetBtn"
+                  disabled={props.replyLoading}
+                  className={` ${
+                    props.replyLoading ? "disabled" : "tweetBtn"
+                  } flex items-center gap-2`}
                 >
                   Reply
+                  {props.replyLoading && <AppLoader size="sm" color="white" />}
                 </button>
               </form>
             </DialogContent>

@@ -5,6 +5,7 @@ import React from "react";
 import { UrlContext } from "../context/urlContext";
 import "../app/globals.css";
 import Link from "next/link";
+import Avatar from "./Avatar";
 
 function Usercard(props) {
   const url = useContext(UrlContext);
@@ -12,16 +13,19 @@ function Usercard(props) {
   const CardContent = (
     <div className="hover:bg-gray-100 card border-b border-border">
       <div className="card-img">
-        <img
-          className="tweet-avatar"
-          src={`${url}/images/${props.avatar}`}
+        <Avatar
+          // className="tweet-avatar"
+          src={`${props.avatar}`}
           alt={`${props.username}'s avatar`}
-        ></img>
+        />
       </div>
       <div className="card-text">
         <div className="card-text-username">{props.username}</div>
+        {props.bio && (
+          <div className="card-text-followers text-gray-600">{props.bio}</div>
+        )}
         <div className="card-text-follow">
-          <div className="card-text-followers">
+          <div className="card-text-followers text-gray-600">
             {props.followers.length} followers
           </div>
         </div>

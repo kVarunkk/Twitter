@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { formatContentWithLinks } from "utils/utils";
 import AppLoader from "./AppLoader";
+import Avatar from "./Avatar";
 
 export default function TweetBody(props) {
   const router = useRouter();
@@ -28,10 +29,11 @@ export default function TweetBody(props) {
           }}
           className="stop-link cursor-pointer shrink-0"
         >
-          <img
-            className="w-16 h-16 rounded-full !p-2"
-            src={`${props.url}/images/${props.body.postedBy.avatar}`}
+          <Avatar
+            // className="w-16 h-16 rounded-full !p-2"
+            src={`${props.body.postedBy.avatar}`}
             alt="Avatar"
+            size="md"
           />
         </button>
         <button

@@ -147,6 +147,7 @@ function SearchArea() {
                   key={user._id}
                   avatar={user.avatar}
                   username={user.username}
+                  bio={user.bio}
                   followers={user.followers}
                 />
               ))}
