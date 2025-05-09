@@ -146,17 +146,19 @@ function Sidebar() {
             <div className="hidden sm:block">Topics</div>
           </Link>
         </li>
-        <li className="sidebar-menu-items">
-          <Link
-            href={`/profile/${activeUser}`}
-            className={
-              pathname === `/profile/${activeUser}` ? "sidebar-active" : ""
-            }
-          >
-            <CgProfile />
-            <div className="hidden sm:block">Profile</div>
-          </Link>
-        </li>
+        {activeUser && (
+          <li className="sidebar-menu-items">
+            <Link
+              href={`/profile/${activeUser}`}
+              className={
+                pathname === `/profile/${activeUser}` ? "sidebar-active" : ""
+              }
+            >
+              <CgProfile />
+              <div className="hidden sm:block">Profile</div>
+            </Link>
+          </li>
+        )}
         <li className="sidebar-menu-items md:!hidden">
           <button
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
