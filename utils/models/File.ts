@@ -48,9 +48,10 @@ const userSchema = new mongoose.Schema(
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     publicKey: { type: String, required: true }, // Store public RSA key
     encryptedPrivateKey: { type: String, required: true }, // Store AES-GCM encrypted private key (base64)
-    // salt: { type: String, required: true }, // Store salt for PBKDF2 (base64)
     iv: { type: String, required: true }, // Store IV for AES-GCM encryption (base64)
     derivedKey: { type: String, required: true },
+    tweetGenCount: { type: Number, default: 0 },
+    tweetReplyGenCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,

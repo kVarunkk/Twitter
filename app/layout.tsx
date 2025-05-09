@@ -2,6 +2,7 @@ import { Roboto } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { UrlProvider } from "../context/urlContext";
 import "./globals.css";
+import { TooltipProvider } from "@/components/components/ui/tooltip";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,8 +24,10 @@ export default function RootLayout({
     <html lang="en" className={roboto.className + "!text-sm"}>
       <body className="!mt-20 md:!mt-0">
         <UrlProvider>
-          <Toaster />
-          {children}
+          <TooltipProvider>
+            <Toaster />
+            {children}
+          </TooltipProvider>
         </UrlProvider>
       </body>
     </html>

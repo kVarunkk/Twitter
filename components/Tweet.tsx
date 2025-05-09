@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import Comment from "./Comment";
 import { AiOutlineRetweet, AiOutlineLike } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
@@ -29,8 +29,10 @@ import { showToast } from "./ToastComponent";
 import { useRouter } from "next/navigation";
 import { formatContentWithLinks } from "utils/utils";
 import TweetBody from "./TweetBody";
-import { Share } from "lucide-react";
+import { Info, SendHorizonal, Share, Wand, X } from "lucide-react";
 import { set } from "mongoose";
+
+import TweetReplyDialog from "./TweetReplyDialog";
 
 function Tweet(props) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
@@ -43,6 +45,7 @@ function Tweet(props) {
   const [loading, setLoading] = useState(true);
   const [visibleComments, setVisibleComments] = useState(5);
   const [tweetContent, setTweetContent] = useState(props.body.content);
+  const [tweetReply, setTweetReply] = useState("");
   const [isEdited, setIsEdited] = useState(props.body.isEdited);
   const tweetId = props.body.postedTweetTime;
   const [isImageLoading, setIsImageLoading] = useState(true); // Track image loading state
@@ -52,6 +55,12 @@ function Tweet(props) {
   const [replyLoading, setReplyLoading] = useState(false);
   const url = useContext(UrlContext);
   const router = useRouter();
+  const [showPromptInput, setShowPromptInput] = useState(false);
+  const [prompt, setPrompt] = useState("");
+  const tweetInputRef = useRef<HTMLTextAreaElement>(null);
+  const [tweetGenError, setTweetGenError] = useState(null);
+  const [tweetGenLoading, setTweetGenLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const loadMoreComments = (e) => {
     e.stopPropagation();
@@ -355,6 +364,14 @@ function Tweet(props) {
     }
   };
 
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // reset height
+      textarea.style.height = `${textarea.scrollHeight}px`; // set to scrollHeight
+    }
+  };
+
   return (
     <div className="bg-white    ">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
@@ -438,6 +455,8 @@ function Tweet(props) {
               </DialogHeader>
               <form onSubmit={editTweet}>
                 <textarea
+                  ref={textareaRef}
+                  onInput={autoResize}
                   value={tweetContent}
                   onChange={(e) => {
                     e.stopPropagation();
@@ -481,50 +500,13 @@ function Tweet(props) {
               <AiOutlineRetweet className="mr-1" />
               <span>{retweetCount}</span>
             </button>
-            <Dialog>
-              <DialogTrigger asChild>
-                <button
-                  onClick={(e) => e.stopPropagation()} // Prevents triggering the link
-                  className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700"
-                >
-                  <GoComment className="mr-1" />
-                  <span>{comments?.length > 0 && comments?.length}</span>
-                </button>
-              </DialogTrigger>
-              <DialogContent className="!p-4">
-                <DialogHeader>
-                  <DialogTitle>
-                    Replying to{" "}
-                    <Link
-                      className="text-[#1DA1F2]"
-                      href={`/profile/${props.body.postedBy.username}`}
-                    >
-                      @{props.body.postedBy.username}
-                    </Link>
-                  </DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleCommentSubmit}>
-                  <textarea
-                    onClick={(e) => e.stopPropagation()} // Prevents event bubbling
-                    name="commentInput"
-                    placeholder="Tweet your reply"
-                    className="!w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
-                    required
-                  />
-                  <button
-                    onClick={(e) => e.stopPropagation()} // Prevents event bubbling
-                    type="submit"
-                    disabled={replyLoading}
-                    className={` ${
-                      replyLoading ? "disabled" : "tweetBtn"
-                    } flex items-center gap-2`}
-                  >
-                    Reply
-                    {replyLoading && <AppLoader size="sm" color="white" />}
-                  </button>
-                </form>
-              </DialogContent>
-            </Dialog>{" "}
+            <TweetReplyDialog
+              handleCommentSubmit={handleCommentSubmit}
+              comments={comments}
+              replyLoading={replyLoading}
+              username={props.body.postedBy.username}
+              tweetBody={props.body}
+            />
           </div>
 
           <button

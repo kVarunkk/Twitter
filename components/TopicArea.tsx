@@ -111,7 +111,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
     <div className="HeaderAndFeed">
       <Header title="Topics" />
       {/* Tag Area */}
-      <div className="tagArea">
+      <div className="tagArea !px-4">
         <ToggleGroup type="single" className="inline-flex gap-2">
           {tags.map((tag) => (
             <Link key={tag} href={`/topic/${tag}`}>

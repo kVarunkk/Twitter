@@ -4,7 +4,7 @@ import { MutableRefObject } from "react";
 
 interface AppLoaderProps {
   size?: "sm" | "md" | "lg"; // Loader sizes
-  color?: "blue" | "white"; // Loader colors
+  color?: "blue" | "white" | "black"; // Loader colors
   ref?: MutableRefObject<HTMLDivElement>;
 }
 
@@ -22,6 +22,7 @@ export default function AppLoader({
   const colorClasses = {
     blue: "border-[#1DA1F2] border-t-transparent",
     white: "border-white border-t-transparent",
+    black: "border-black border-t-transparent",
   };
 
   return (

@@ -212,7 +212,7 @@ input:focus {
     padding-bottom: 20px;
     padding-top: 20px;
     border-top: 1px solid rgb(217, 217, 217);
-    border-bottom: 1px solid rgb(217, 217, 217);
+    /* border-bottom: 1px solid rgb(217, 217, 217); */
 }
 
 .image-input {
@@ -744,7 +744,7 @@ input:focus {
 
 /* tagArea */
 .tagArea {
-    padding: 20px;
+    padding: 20px 0;
     overflow-x: scroll;
     flex-shrink: 0;
     /* display: flex; */

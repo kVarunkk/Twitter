@@ -85,7 +85,7 @@ export async function validateToken(req) {
     }
 
     // Find the user associated with the token
-    const user = await User.findById(decoded.id).select("username");
+    const user = await User.findById(decoded.id);
     if (!user) {
       return { status: "error", message: "User not found", user: null };
     }

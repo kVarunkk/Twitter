@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, useMemo } from "react";
+import React, { useState, useContext, useMemo, useRef } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDeleteBin6Fill } from "react-icons/ri";
@@ -41,6 +41,7 @@ function Comment(props) {
   ); // State for the reply input
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Memoized debounced function to update the input state
   const debouncedSetReplyInput = useMemo(
@@ -154,6 +155,13 @@ function Comment(props) {
     }
   };
 
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // reset height
+      textarea.style.height = `${textarea.scrollHeight}px`; // set to scrollHeight
+    }
+  };
   return (
     <li className="flex items-center w-full">
       <div className="!w-[10%] shrink-0 border-b border-border"></div>
@@ -231,6 +239,8 @@ function Comment(props) {
                     </DialogHeader>
                     <form onSubmit={editComment}>
                       <textarea
+                        ref={textareaRef}
+                        onInput={autoResize}
                         value={commentContent}
                         onChange={(e) => setCommentContent(e.target.value)}
                         className="!w-full focus:outline-none !border-b !border-border  !p-2 !mb-4"
@@ -297,6 +307,8 @@ function Comment(props) {
                 }}
               >
                 <textarea
+                  ref={textareaRef}
+                  onInput={autoResize}
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   name="commentInput"
                   defaultValue={`@${props.body.postedBy.username} `} // Pre-fill the input

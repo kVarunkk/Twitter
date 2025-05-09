@@ -11,11 +11,12 @@ Opensource Twitter built using Nextjs 15.2.2
 - Tweet
 - Comment
 - Retweet
-- Follow user
+- AI Tweet Generator
+- AI Comment Generator
 - Like, Edit & Delete tweets and comments
 - Tweets filtered according to "Topics"
 - Tweet images by easily adding Image URLs
-- No character limit on tweets
+- 280 character limit on tweets and comments
 - Global Search
 - Realtime End-To-End Encrypted Messaging
 

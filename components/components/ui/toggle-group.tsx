@@ -24,7 +24,6 @@ function ToggleGroup({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = React.useState(false);
   const [canScrollRight, setCanScrollRight] = React.useState(false);
-
   // Check scroll position to determine if arrows are needed
   const checkScroll = () => {
     if (containerRef.current) {

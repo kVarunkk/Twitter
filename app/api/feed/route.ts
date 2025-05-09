@@ -12,7 +12,7 @@ if (!global.mongoose) {
   });
 }
 
-export async function GET(req) {
+export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const tweetsToSkip = parseInt(searchParams.get("t")) || 0;

@@ -44,8 +44,9 @@ function ProfileBody({ userName }: { userName: string }) {
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [saveAvatarLoading, setSaveAvatarLoading] = useState(false);
-
   const [file, setFile] = useState<File | null>(null);
+
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -345,6 +346,14 @@ function ProfileBody({ userName }: { userName: string }) {
     }
   };
 
+  const autoResize = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto"; // reset height
+      textarea.style.height = `${textarea.scrollHeight}px`; // set to scrollHeight
+    }
+  };
+
   return (
     <div className="container">
       {banner?.trim()?.length > 0 && (
@@ -432,6 +441,8 @@ function ProfileBody({ userName }: { userName: string }) {
                     Bio
                   </label>
                   <textarea
+                    ref={textareaRef}
+                    onInput={autoResize}
                     className="w-full !border-b !border-border !p-2"
                     placeholder="Enter your bio"
                     rows={4}
