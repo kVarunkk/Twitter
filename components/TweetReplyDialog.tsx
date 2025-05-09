@@ -196,38 +196,54 @@ export default function TweetReplyDialog({
               </div>
             )}
             {showPromptInput && (
-              <div className="flex items-center gap-2 w-full">
-                <input
-                  disabled={tweetGenLoading}
-                  placeholder="Enter prompt to generate reply"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  className="disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <div className="flex items-center gap-1">
-                  <button
-                    disabled={replyLoading || tweetGenLoading}
-                    onClick={generateTweetReply}
-                    type="button"
-                    className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {tweetGenLoading ? (
-                      <AppLoader size="sm" color="black" />
-                    ) : (
-                      <SendHorizonal />
-                    )}
-                  </button>
-                  <button
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2 w-full">
+                  <input
                     disabled={tweetGenLoading}
-                    onClick={() => {
-                      setShowPromptInput(!showPromptInput);
-                      setPrompt("");
-                    }}
-                    type="button"
-                    className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <X />
-                  </button>
+                    placeholder="Enter prompt to generate reply"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed"
+                  />
+                  <div className="flex items-center gap-1">
+                    <button
+                      disabled={
+                        replyLoading ||
+                        tweetGenLoading ||
+                        prompt.trim().length === 0 ||
+                        prompt.length > 150
+                      }
+                      onClick={generateTweetReply}
+                      type="button"
+                      className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {tweetGenLoading ? (
+                        <AppLoader size="sm" color="black" />
+                      ) : (
+                        <SendHorizonal />
+                      )}
+                    </button>
+                    <button
+                      disabled={tweetGenLoading}
+                      onClick={() => {
+                        setShowPromptInput(!showPromptInput);
+                        setPrompt("");
+                      }}
+                      type="button"
+                      className="cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <X />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="text-sm text-gray-500">
+                  {tweetGenError && (
+                    <div className="text-red-500">{tweetGenError}</div>
+                  )}
+                  <div className="text-gray-600 text-sm">
+                    {150 - prompt.length} characters left
+                  </div>
                 </div>
               </div>
             )}
