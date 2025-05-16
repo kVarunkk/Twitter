@@ -52,6 +52,9 @@ export async function POST(
     // Delete the tweet
     await Tweet.findByIdAndDelete(tweet._id);
 
+    // Delete retweets associated with this tweet
+    await Tweet.deleteMany({ retweetedFrom: tweet._id });
+
     // Optionally, remove the tweet reference from the user's tweets array
     const dbUser = await User.findById(user.id);
     if (dbUser) {

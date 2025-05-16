@@ -17,6 +17,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
   const [tweets, setTweets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeUser, setActiveUser] = useState("");
+  const [userId, setUserId] = useState("");
   const [tweetCount, setTweetCount] = useState(20);
   const [currentTag, setCurrentTag] = useState(initialTag || "Sports");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -58,6 +59,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
       if (data.status === "ok") {
         setTweets(data.tweets);
         setActiveUser(data.activeUser.username);
+        setUserId(data.activeUser._id);
       } else {
         console.error(data.error);
         router.push("/");
@@ -145,6 +147,7 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
                   user={activeUser}
                   body={tweet}
                   setTweets={setTweets}
+                  userId={userId}
                 />
               ))
             )}

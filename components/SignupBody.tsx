@@ -100,6 +100,7 @@ function SignupBody() {
             message: "Successfully registered, please login",
             type: "success",
           });
+          // await embedDocs();
           setTimeout(() => router.push("/"), 300);
           setUserName("");
           setPassword("");

@@ -19,6 +19,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -29,7 +30,7 @@ import { showToast } from "./ToastComponent";
 import { useRouter } from "next/navigation";
 import { formatContentWithLinks } from "utils/utils";
 import TweetBody from "./TweetBody";
-import { Info, SendHorizonal, Share, Wand, X } from "lucide-react";
+import { Info, Link2, SendHorizonal, Share, Wand, X } from "lucide-react";
 import { set } from "mongoose";
 
 import TweetReplyDialog from "./TweetReplyDialog";
@@ -114,12 +115,14 @@ function Tweet(props) {
       });
 
       const data = await req.json();
-      if (data.status === "ok") {
-        setBtnColor((prev) => (prev === "black" ? "deeppink" : "black"));
-        setLikeCount((prev) => (btnColor === "black" ? prev + 1 : prev - 1));
-      }
+      // if (data.status === "ok") {
+      //   setBtnColor((prev) => (prev === "black" ? "deeppink" : "black"));
+      //   setLikeCount((prev) => (btnColor === "black" ? prev + 1 : prev - 1));
+      // }
     } catch (error) {
       console.error("Error liking tweet:", error);
+      setBtnColor((prev) => (prev === "black" ? "deeppink" : "black"));
+      setLikeCount((prev) => (btnColor === "black" ? prev + 1 : prev - 1));
     }
   };
 
@@ -136,14 +139,17 @@ function Tweet(props) {
             "Content-Type": "application/json",
             //"x-access-token": localStorage.getItem("token") || "",
           },
+          // body: JSON.stringify({
+          //   userId: props.userId,
+          // }),
         }
       );
 
       const data = await req.json();
       if (data.status === "ok") {
         // Update the retweet count and button color dynamically
-        setRetweetCount(data.retweetCount);
-        setRetweetBtnColor(data.retweetBtn);
+        // setRetweetCount(data.retweetCount);
+        // setRetweetBtnColor(data.retweetBtn);
 
         // Remove the tweet if retweetCount is 0, color is black, and the route is /profile
         if (
@@ -163,6 +169,10 @@ function Tweet(props) {
       }
     } catch (error) {
       console.error("Error retweeting:", error);
+      setRetweetBtnColor((prev) => (prev === "green" ? "black" : "green")); // Toggle retweet button color
+      setRetweetCount((prev) =>
+        retweetBtnColor === "green" ? prev - 1 : prev + 1
+      ); // Update retweet count
     }
   };
 
@@ -231,7 +241,7 @@ function Tweet(props) {
 
       const data = await req.json();
       if (data.status === "ok") {
-        setShareCount(data.shareCount);
+        // setShareCount(data.shareCount);
 
         // Copy the tweet link to the clipboard
         const tweetLink = `${window.location.origin}/tweet/${encodeURIComponent(
@@ -248,6 +258,7 @@ function Tweet(props) {
       }
     } catch (error) {
       console.error("Error sharing tweet:", error);
+      setShareCount((prev) => prev - 1);
     }
   };
 
@@ -375,6 +386,24 @@ function Tweet(props) {
   return (
     <div className="bg-white    ">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
+        {props.body.isRetweeted && (
+          <Link
+            href={`/profile/${props.body.retweetedByUser}`}
+            onClick={stopPropagation()}
+            className="  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
+          >
+            <AiOutlineRetweet className="text-gray-500 mr-2" />
+            <span className="text-gray-500 text-sm font-semibold">
+              Retweeted{" "}
+              {props.body.retweetedByUser &&
+                `by ${
+                  props.body.retweetedByUser === props.user
+                    ? "you"
+                    : props.body.retweetedByUser
+                }`}
+            </span>
+          </Link>
+        )}
         {!window.location.pathname.startsWith("/tweet") ? (
           <button
             className="cursor-pointer text-start w-full"
@@ -399,7 +428,10 @@ function Tweet(props) {
             url={url}
           />
         )}
-        {isUserActive && (
+        {((isUserActive && !props.body.isRetweeted) ||
+          (props.body.isRetweeted &&
+            props.body.retweetedByUser &&
+            props.body.retweetedByUser === props.user)) && (
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger
@@ -443,17 +475,29 @@ function Tweet(props) {
                       onClick={stopPropagation()}
                       className="!p-2 flex items-center"
                     >
-                      <AiFillEdit className="!mr-2" /> Edit
+                      <AiFillEdit className="" /> Edit
                     </button>
                   </DropdownMenuItem>
                 </DialogTrigger>
+                {props.body.isRetweeted && props.body.postedTweetTime && (
+                  <DropdownMenuItem onClick={stopPropagation()} asChild>
+                    <Link
+                      className="!p-2 flex items-center"
+                      onClick={stopPropagation()}
+                      href={`/tweet/${props.body.postedTweetTime}`}
+                    >
+                      <Link2 className="" />
+                      Original Tweet
+                    </Link>
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="!p-4">
               <DialogHeader>
                 <DialogTitle>Edit Tweet</DialogTitle>
               </DialogHeader>
-              <form onSubmit={editTweet}>
+              <form id="tweetEditForm" onSubmit={editTweet}>
                 <textarea
                   ref={textareaRef}
                   onInput={autoResize}
@@ -462,21 +506,32 @@ function Tweet(props) {
                     e.stopPropagation();
                     setTweetContent(e.target.value);
                   }}
-                  className="!w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
+                  disabled={editLoading}
+                  className="disabled:opacity-50 disabled:cursor-not-allowed !w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
                   required
                 />
+              </form>
+              <DialogFooter className="flex items-center !justify-between w-full">
+                <div className="text-gray-600 text-sm">
+                  {280 - tweetContent.length} characters left
+                </div>
                 <button
+                  form="tweetEditForm"
                   onClick={stopPropagation()}
                   type="submit"
                   className={` ${
                     editLoading ? "disabled" : "tweetBtn"
                   } flex items-center gap-2`}
-                  disabled={editLoading}
+                  disabled={
+                    tweetContent.trim().length === 0 ||
+                    editLoading ||
+                    tweetContent.length > 280
+                  }
                 >
                   Save
                   {editLoading && <AppLoader size="sm" color="white" />}
                 </button>
-              </form>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         )}
@@ -486,7 +541,18 @@ function Tweet(props) {
               className={`cursor-pointer flex items-center gap-1  ${
                 btnColor === "deeppink" ? "text-pink-500" : "text-gray-500"
               }`}
-              onClick={stopPropagation(handleLike)}
+              onClick={
+                stopPropagation((e) => {
+                  setBtnColor((prev) =>
+                    prev === "black" ? "deeppink" : "black"
+                  );
+                  setLikeCount((prev) =>
+                    btnColor === "black" ? prev + 1 : prev - 1
+                  );
+                  handleLike(e);
+                })
+                // stopPropagation(handleLike)
+              }
             >
               <AiOutlineLike className="mr-1" />
               <span>{likeCount}</span>
@@ -495,7 +561,15 @@ function Tweet(props) {
               className={`cursor-pointer flex items-center gap-1  ${
                 retweetBtnColor === "green" ? "text-green-500" : "text-gray-500"
               }`}
-              onClick={stopPropagation(handleRetweet)}
+              onClick={stopPropagation((e) => {
+                setRetweetBtnColor((prev) =>
+                  prev === "black" ? "green" : "black"
+                );
+                setRetweetCount((prev) =>
+                  retweetBtnColor === "black" ? prev + 1 : prev - 1
+                );
+                handleRetweet(e);
+              })}
             >
               <AiOutlineRetweet className="mr-1" />
               <span>{retweetCount}</span>
@@ -512,7 +586,10 @@ function Tweet(props) {
           <button
             className={`cursor-pointer flex items-center gap-1  text-gray-500
             `}
-            onClick={stopPropagation(handleShare)}
+            onClick={stopPropagation(() => {
+              setShareCount((prev) => prev + 1);
+              handleShare();
+            })}
           >
             <Share strokeWidth={1.2} size={20} />
             <span>{shareCount}</span>

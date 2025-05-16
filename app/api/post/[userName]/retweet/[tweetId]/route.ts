@@ -41,47 +41,60 @@ export async function POST(
     const originalTweetId = tweet.retweetedFrom || tweet._id;
 
     // Check if the user has already retweeted the original tweet
-    const userIndex = tweet.retweets.indexOf(userName);
+    // const userIndex = tweet.retweets.indexOf(userName);
 
-    if (userIndex === -1) {
+    // Check if the user already retweeted this tweet
+    const existingRetweet = await Tweet.findOne({
+      retweetedByUser: userName,
+      retweetedFrom: originalTweetId,
+    });
+
+    if (!existingRetweet) {
       // RETWEET: Only allowed if the tweet is an original tweet
-      if (tweet.isRetweeted) {
-        return NextResponse.json(
-          {
-            status: "error",
-            message: "Cannot retweet a retweeted tweet",
-          },
-          { status: 400 }
-        );
-      }
-
-      // Create a new retweet
-      const newTweet = await Tweet.create({
-        content: tweet.content,
-        postedBy: tweet.postedBy,
-        likes: tweet.likes,
-        retweets: [...tweet.retweets, userName],
-        tag: tweet.tag,
-        likeTweetBtn: tweet.likeTweetBtn,
-        retweetBtn: "green", // Change the retweet button color
-        image: tweet.image,
-        comments: tweet.comments,
-        isEdited: tweet.isEdited,
-        postedTweetTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
-        retweetedFrom: originalTweetId, // Reference to the original tweet
-        isRetweeted: true,
-      });
+      // if (tweet.isRetweeted) {
+      //   return NextResponse.json(
+      //     {
+      //       status: "error",
+      //       message: "Cannot retweet a retweeted tweet",
+      //     },
+      //     { status: 400 }
+      //   );
+      // }
 
       // Add the new retweet to the user's tweets
-      const user = await User.findOne({ username: userName });
-      if (user) {
-        user.tweets.unshift(newTweet._id);
-        await user.save();
-      }
+      // const user = await User.findOne({ username: userName });
+      // if (user) {
+      //   user.tweets.unshift(newTweet._id);
+      //   await user.save();
+      // }
 
       // Update the original tweet's retweets
-      await Tweet.findByIdAndUpdate(originalTweetId, {
-        $push: { retweets: userName },
+      // await Tweet.findByIdAndUpdate(originalTweetId, {
+      //   $push: { retweets: userName },
+      // });
+
+      // Sync retweet state between original and all retweets
+      await Tweet.updateMany(
+        { $or: [{ _id: originalTweetId }, { retweetedFrom: originalTweetId }] },
+        {
+          $push: { retweets: userName },
+        }
+      );
+
+      // Create a new retweet
+      await Tweet.create({
+        content: tweet.content,
+        image: tweet.image,
+        tag: tweet.tag,
+        postedBy: tweet.postedBy,
+        likes: tweet.likes,
+        comments: tweet.comments,
+        isEdited: tweet.isEdited,
+        retweets: [...tweet.retweets, userName],
+        postedTweetTime: moment().format("MMMM Do YYYY, h:mm:ss a"),
+        retweetedFrom: originalTweetId,
+        isRetweeted: true,
+        retweetedByUser: userName,
       });
 
       return NextResponse.json({
@@ -90,33 +103,44 @@ export async function POST(
         retweetBtn: "green",
       });
     } else {
-      // UN-RETWEET: Allowed for both original and retweeted tweets
-      const retweetedTweet = await Tweet.findOneAndDelete({
+      // delete retweet
+      await Tweet.findOneAndDelete({
         retweetedFrom: originalTweetId,
-        postedBy: validationResponse.user.id,
+        retweetedByUser: userName,
       });
+      // remove retweet from user's tweets
+      // await User.findOneAndUpdate(
+      //   {
+      //     username: userName,
+      //   },
+      //   {
+      //     $pull: { tweets: retweet._id },
+      //   },
+      //   {
+      //     new: true,
+      //   }
+      // );
+      // update original tweet's retweets
+      // await Tweet.findByIdAndUpdate(
+      //   originalTweetId,
+      //   {
+      //     $pull: { retweets: userName },
+      //   },
+      //   {
+      //     new: true,
+      //   }
+      // );
 
-      if (retweetedTweet) {
-        // Remove the user from the original tweet's retweets
-        await Tweet.findByIdAndUpdate(originalTweetId, {
-          $pull: { retweets: userName },
-        });
+      await Tweet.updateMany(
+        { $or: [{ _id: originalTweetId }, { retweetedFrom: originalTweetId }] },
+        { $pull: { retweets: userName } }
+      );
 
-        // Remove the retweet from the user's tweets
-        const user = await User.findOne({ username: userName });
-        if (user) {
-          user.tweets = user.tweets.filter(
-            (tweetId) => tweetId.toString() !== retweetedTweet._id.toString()
-          );
-          await user.save();
-        }
-
-        return NextResponse.json({
-          status: "ok",
-          retweetCount: tweet.retweets.length - 1,
-          retweetBtn: "black",
-        });
-      }
+      return NextResponse.json({
+        status: "ok",
+        retweetCount: tweet.retweets.length - 1,
+        retweetBtn: "black",
+      });
     }
   } catch (err) {
     console.error("Error handling retweet:", err);

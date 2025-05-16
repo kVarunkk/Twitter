@@ -29,9 +29,10 @@ export async function GET(req: Request) {
     const user = validationResponse.user;
 
     // Fetch tweets
-    const tweets = await Tweet.find({ isRetweeted: false })
+    const tweets = await Tweet.find()
       .populate("postedBy", "username avatar")
       .populate("comments")
+      .populate("retweetedFrom", "postedTweetTime")
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)
       .limit(20);
@@ -53,8 +54,9 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       status: "ok",
-      tweets,
+      tweets: tweets.filter((_) => _.postedBy),
       activeUser: user.username,
+      activeUserId: user._id,
     });
   } catch (error) {
     console.error("Error fetching feed:", error);

@@ -150,7 +150,7 @@ export default function TweetReplyDialog({
             </Link>
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleCommentSubmit}>
+        <form onSubmit={handleCommentSubmit} id="tweetReplyForm">
           <textarea
             ref={textareaRef}
             onInput={autoResize}
@@ -255,6 +255,7 @@ export default function TweetReplyDialog({
           </div>
 
           <button
+            form="tweetReplyForm"
             onClick={(e) => e.stopPropagation()} // Prevents event bubbling
             type="submit"
             disabled={

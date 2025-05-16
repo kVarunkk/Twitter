@@ -45,6 +45,7 @@ function ProfileBody({ userName }: { userName: string }) {
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [saveAvatarLoading, setSaveAvatarLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [userId, setUserId] = useState("");
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -70,14 +71,15 @@ function ProfileBody({ userName }: { userName: string }) {
       const data = await req.json();
 
       if (data.status === "ok") {
-        const updatedTweets = data.tweets.map((tweet) => ({
-          ...tweet,
-          likeTweetBtn: tweet.likeTweetBtn || "black",
-          retweetBtn: tweet.retweetBtn || "black",
-        }));
+        // const updatedTweets = data.tweets.map((tweet) => ({
+        //   ...tweet,
+        //   likeTweetBtn: tweet.likeTweetBtn || "black",
+        //   retweetBtn: tweet.retweetBtn || "black",
+        // }));
 
-        setTweets(updatedTweets);
+        setTweets(data.tweets.filter((_) => _.postedBy));
         setActiveUser(data.activeUser);
+        setUserId(data.activeUserId);
         setBio(data.bio);
         setBanner(data.banner);
         setFollowers(data.followers);
@@ -395,7 +397,7 @@ function ProfileBody({ userName }: { userName: string }) {
             </div>
           </div>
         </div>
-        {isActiveUser ? (
+        {isActiveUser && (
           <Dialog>
             <DialogTrigger asChild>
               <button className="tweetBtn">Edit Profile</button>
@@ -425,6 +427,7 @@ function ProfileBody({ userName }: { userName: string }) {
                     Banner Image URL
                   </label>
                   <input
+                    autoFocus={false}
                     type="text"
                     className="!text-base !w-full !border-b !border-border !p-2"
                     placeholder="Enter banner image URL"
@@ -441,6 +444,7 @@ function ProfileBody({ userName }: { userName: string }) {
                     Bio
                   </label>
                   <textarea
+                    autoFocus={false}
                     ref={textareaRef}
                     onInput={autoResize}
                     className="w-full !border-b !border-border !p-2"
@@ -453,7 +457,8 @@ function ProfileBody({ userName }: { userName: string }) {
               </div>
             </DialogContent>
           </Dialog>
-        ) : (
+        )}
+        {followBtn && !isActiveUser && (
           <div className="followBtn-div">
             <form className="follow-form" onSubmit={handleFollow}>
               <button className="followBtn" type="submit">
@@ -488,6 +493,7 @@ function ProfileBody({ userName }: { userName: string }) {
                   user={activeUser}
                   body={tweet}
                   setTweets={setTweets}
+                  userId={userId}
                 />
               ))
             )}

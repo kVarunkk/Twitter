@@ -38,14 +38,11 @@ function Feed() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
+  const [userId, setUserId] = useState("");
 
   async function populateTweets() {
     try {
-      const req = await fetch(`${url}/api/feed`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token"),
-        },
-      });
+      const req = await fetch(`${url}/api/feed`);
 
       const data = await req.json();
 
@@ -60,6 +57,7 @@ function Feed() {
 
         setTweets(updatedTweets);
         setActiveUser(data.activeUser || ""); // Ensure activeUser is set correctly
+        setUserId(data.activeUserId || "");
         setLoading(false);
         setError(false); // Reset error state on success
       } else {
@@ -156,6 +154,7 @@ function Feed() {
                     user={activeUser}
                     body={tweet}
                     setTweets={setTweets}
+                    userId={userId}
                   />
                 </div>
               );

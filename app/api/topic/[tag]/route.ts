@@ -32,7 +32,7 @@ export async function GET(
     const activeUser = validationResponse.user;
 
     // Fetch tweets with the specified tag
-    const tweets = await Tweet.find({ isRetweeted: false, tag })
+    const tweets = await Tweet.find({ tag })
       .populate("postedBy")
       .populate("comments")
       .sort({ createdAt: -1 })

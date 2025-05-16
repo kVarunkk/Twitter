@@ -52,6 +52,13 @@ const userSchema = new mongoose.Schema(
     derivedKey: { type: String, required: true },
     tweetGenCount: { type: Number, default: 0 },
     tweetReplyGenCount: { type: Number, default: 0 },
+    embedding: {
+      type: [Number],
+    },
+    embeddingUpdatedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -64,7 +71,6 @@ const tweetSchema = new mongoose.Schema(
     content: { type: String },
     tag: { type: String },
     image: { type: String },
-    // imageId: { type: String },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     postedTweetTime: {
       type: String,

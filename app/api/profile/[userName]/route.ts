@@ -33,21 +33,22 @@ export async function GET(
     const activeUser = validationResponse.user;
 
     // Find the user whose profile is being requested
-    const profileUser = await User.findOne({ username: userName }).populate({
-      path: "tweets",
-      options: {
-        sort: { createdAt: -1 },
-        skip: tweetsToSkip,
-        limit: tweetsLimit,
-      }, // Pagination options
-      populate: [
-        { path: "postedBy", select: "username avatar" },
-        {
-          path: "comments",
-          populate: { path: "postedBy", select: "username avatar" },
-        },
-      ],
-    });
+    const profileUser = await User.findOne({ username: userName });
+    // .populate({
+    //   path: "tweets",
+    //   options: {
+    //     sort: { createdAt: -1 },
+    //     skip: tweetsToSkip,
+    //     limit: tweetsLimit,
+    //   }, // Pagination options
+    //   populate: [
+    //     { path: "postedBy", select: "username avatar" },
+    //     {
+    //       path: "comments",
+    //       populate: { path: "postedBy", select: "username avatar" },
+    //     },
+    //   ],
+    // });
 
     if (!profileUser) {
       return NextResponse.json(
@@ -60,8 +61,21 @@ export async function GET(
     const isFollowing = profileUser.followers.includes(activeUser.username);
     const followBtn = isFollowing ? "Following" : "Follow";
 
+    // Fetch tweets
+    const tweets = await Tweet.find({
+      $or: [
+        { postedBy: profileUser._id },
+        { retweetedByUser: profileUser.username },
+      ],
+    })
+      .populate("postedBy", "username avatar")
+      .populate("comments")
+      .sort({ createdAt: -1 })
+      .skip(tweetsToSkip)
+      .limit(tweetsLimit);
+
     // Add like/retweet status for the active user
-    profileUser.tweets.forEach((tweet: any) => {
+    tweets.forEach((tweet: any) => {
       tweet.likeTweetBtn = tweet.likes.includes(activeUser.username)
         ? "deeppink"
         : "black";
@@ -79,10 +93,11 @@ export async function GET(
     // Return the profile data and paginated tweets
     return NextResponse.json({
       status: "ok",
-      tweets: profileUser.tweets,
+      tweets: tweets,
       followers: profileUser.followers.length,
       followBtn: followBtn,
       activeUser: activeUser.username,
+      activeUserId: activeUser._id,
       avatar: profileUser.avatar,
       bio: profileUser.bio,
       banner: profileUser.banner,

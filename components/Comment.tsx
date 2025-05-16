@@ -15,6 +15,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -67,12 +68,14 @@ function Comment(props) {
       );
 
       const data = await req.json();
-      if (data.status === "ok") {
-        setBtnColor(data.btnColor);
-        setLikeCount(data.likeCount);
-      }
+      // if (data.status === "ok") {
+      //   setBtnColor(data.btnColor);
+      //   setLikeCount(data.likeCount);
+      // }
     } catch (error) {
       console.error("Error liking comment:", error);
+      setBtnColor(btnColor === "deeppink" ? "black" : "deeppink");
+      setLikeCount(btnColor === "deeppink" ? likeCount - 1 : likeCount + 1);
     }
   };
 
@@ -271,7 +274,13 @@ function Comment(props) {
             className={`cursor-pointer flex items-center gap-1 ${
               btnColor === "deeppink" ? "text-pink-500" : "text-gray-500"
             }`}
-            onClick={handleLike}
+            onClick={(e) => {
+              setBtnColor(btnColor === "deeppink" ? "black" : "deeppink");
+              setLikeCount(
+                btnColor === "deeppink" ? likeCount - 1 : likeCount + 1
+              );
+              handleLike(e);
+            }}
           >
             <AiOutlineLike className="mr-1" />
             <span>{likeCount}</span>
@@ -300,6 +309,7 @@ function Comment(props) {
                 </DialogTitle>
               </DialogHeader>
               <form
+                id="commentReplyForm"
                 onSubmit={(e) => {
                   e.preventDefault();
                   props.handleCommentSubmit(e);
@@ -311,23 +321,38 @@ function Comment(props) {
                   onInput={autoResize}
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   name="commentInput"
-                  defaultValue={`@${props.body.postedBy.username} `} // Pre-fill the input
-                  onChange={(e) => debouncedSetReplyInput(e.target.value)} // Use debounced function for input changes
-                  className="!w-full !border-b !border-border focus:outline-none !p-2 !mb-4"
+                  value={replyInput} // Controlled input
+                  onChange={(e) => setReplyInput(e.target.value)} // Direct update without debounce
+                  className="disabled:opacity-50 disabled:cursor-not-allowed !w-full !border-b !border-border focus:outline-none !p-2 !mb-4"
                   required
+                  disabled={props.replyLoading}
                 />
+              </form>
+              <DialogFooter className="flex items-center !justify-between w-full">
+                <div className="text-gray-600 text-sm">
+                  {280 - replyInput.length} characters left
+                </div>
                 <button
+                  form="commentReplyForm"
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   type="submit"
-                  disabled={props.replyLoading}
-                  className={` ${
-                    props.replyLoading ? "disabled" : "tweetBtn"
-                  } flex items-center gap-2`}
+                  disabled={
+                    props.replyLoading ||
+                    replyInput.trim().length === 0 ||
+                    replyInput.length > 280
+                  }
+                  className={`${
+                    props.replyLoading ||
+                    replyInput.trim().length === 0 ||
+                    replyInput.length > 280
+                      ? "disabled"
+                      : "tweetBtn"
+                  }  flex items-center gap-2`}
                 >
                   Reply
                   {props.replyLoading && <AppLoader size="sm" color="white" />}
                 </button>
-              </form>
+              </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>

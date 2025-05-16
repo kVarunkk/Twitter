@@ -101,6 +101,7 @@ function HomeBody() {
           type: "success",
         });
 
+        embedDocs();
         setTimeout(() => router.push("/feed"), 600);
       } else {
         // toast.error(data.message || "Invalid login credentials");
@@ -123,6 +124,27 @@ function HomeBody() {
       setLoading(false);
       setUserName("");
       setPassword("");
+    }
+  };
+
+  const embedDocs = async () => {
+    try {
+      const response = await fetch(`${url}/api/secure/embed-doc`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ type: "user" }),
+      });
+
+      const data = await response.json();
+      if (data.status === "ok") {
+        console.log("Documents embedded successfully:", data.message);
+      } else {
+        console.error("Error embedding documents:", data.message);
+      }
+    } catch (error) {
+      console.error("Error embedding documents:", error);
     }
   };
 

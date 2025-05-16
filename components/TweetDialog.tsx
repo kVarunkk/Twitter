@@ -457,6 +457,7 @@ export default function TweetDialog() {
             {280 - input.length} characters left
           </div>
           <button
+            form="form1"
             className={`${
               checkInput && !tweetLoading && input.length <= 280
                 ? "tweetBtn"

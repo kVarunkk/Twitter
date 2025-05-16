@@ -17,6 +17,7 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
   const [visibleComments, setVisibleComments] = useState(5); // Show 5 comments initially
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [userId, setUserId] = useState("");
 
   const { user, loading: load } = useAuth();
 
@@ -45,6 +46,7 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
             : "black",
         });
         setActiveUser(data.activeUser.username);
+        setUserId(data.activeUser._id);
       } else {
         console.error("Error fetching tweet:", data.message);
       }
@@ -76,6 +78,7 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
         user={activeUser}
         body={tweet}
         setTweet={setTweet}
+        userId={userId}
       />
       <ChatWrapper
         isDrawerOpen={isDrawerOpen}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, useRef } from "react";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import Usercard from "./Usercard";
 import { UrlContext } from "../context/urlContext";
 import "../app/globals.css";
@@ -19,6 +19,7 @@ function SearchArea() {
   const [skip, setSkip] = useState(0);
   // const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [activeUser, setActiveUser] = useState("");
+  const [userId, setUserId] = useState("");
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -37,23 +38,14 @@ function SearchArea() {
     setLoading(true);
 
     try {
-      const req = await fetch(`${e.target.action}?skip=0&limit=10`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token"),
-        },
-      });
+      const results = await Promise.all([searchUsers(), searchTweets()]);
+      const { users, activeUser } = results[0];
+      const { tweets } = results[1];
 
-      const data = await req.json();
-
-      if (data.status === "ok") {
-        setActiveUser(data.activeUser);
-        setUsers(data.users);
-        setTweets(data.tweets);
-        setSkip(10); // Reset skip for pagination
-        setHasMoreTweets(data.tweets.length === 10); // Check if more tweets are available
-      } else {
-        throw new Error(data.error || "Unknown error occurred");
-      }
+      setActiveUser(activeUser.username);
+      setUserId(activeUser._id);
+      setUsers(users);
+      setTweets(tweets);
     } catch (error) {
       showToast({
         heading: "Error",
@@ -93,6 +85,62 @@ function SearchArea() {
     }
   };
 
+  const searchUsers = async () => {
+    try {
+      const embedding = await fetch(`${url}/api/secure/embed-query`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: text }),
+      });
+
+      const embeddingData = await embedding.json();
+
+      const req = await fetch(`${url}/api/hybrid-search/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: text,
+          queryEmbedding: embeddingData.data,
+        }),
+      });
+      const data = await req.json();
+      // console.log(data);
+      return {
+        users: data.results,
+        activeUser: data.user,
+      };
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      throw error;
+    }
+  };
+
+  const searchTweets = async () => {
+    try {
+      const req = await fetch(`${url}/api/hybrid-search/tweets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: text,
+        }),
+      });
+      const data = await req.json();
+      return {
+        tweets: data.results,
+        activeUser: data.user,
+      };
+    } catch (error) {
+      console.log("Error fetching users:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="HeaderAndFeed">
       <Header title="Search" />
@@ -110,19 +158,20 @@ function SearchArea() {
         ></input>
         <div className="flex items-center justify-between">
           <button
-            disabled={text.length === 0}
+            disabled={text.trim().length === 0}
             type="submit"
-            className={`!ml-2 tweetBtn ${
-              text.trim().length === 0 ? "opacity-50 !cursor-default" : ""
+            className={`!ml-2 ${
+              text.trim().length === 0 ? "disabled" : "tweetBtn"
             }`}
           >
             Search
           </button>
-          {(users.length > 0 || tweets.length > 0) && (
-            <div className="text-sm text-gray-500 !mr-2">
-              {users.length} users found, {tweets.length} tweets found
-            </div>
-          )}
+          {/* {(users?.length > 0 || tweets?.length > 0) && ( */}
+          <div className="text-sm text-gray-500 !mr-2">
+            {users ? users.length : 0} users found, {tweets ? tweets.length : 0}{" "}
+            tweets found
+          </div>
+          {/* )} */}
         </div>
       </form>
       <div className="allResults !mt-4">
@@ -159,11 +208,12 @@ function SearchArea() {
                   body={tweet}
                   user={activeUser}
                   setTweets={setTweets}
+                  userId={userId}
                 />
               ))}
-              {hasMoreTweets && tweets.length > 0 && hasMoreTweets && (
+              {/* {hasMoreTweets && tweets.length > 0 && (
                 <InfiniteScrolling addTweets={loadMoreTweets} />
-              )}
+              )} */}
             </TabsContent>
           </Tabs>
         )}

@@ -10,16 +10,6 @@ export default function TweetBody(props) {
   const router = useRouter();
   return (
     <li className=" flex flex-col ">
-      {props.body.isRetweeted && (
-        <button
-          type="button"
-          className="stop-link  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
-        >
-          <AiOutlineRetweet className="text-gray-500 mr-2" />
-          <span className="text-gray-500 text-sm font-semibold">Retweeted</span>
-        </button>
-      )}
-
       <div className="flex items-center mb-2">
         <button
           onClick={(e) => {
