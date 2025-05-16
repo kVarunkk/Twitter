@@ -91,9 +91,14 @@ export async function validateToken(req) {
     }
 
     // Return the user if validation is successful
-    return { status: "ok", message: "Token is valid", user };
+    return { status: "ok", message: "Token is valid", user, token };
   } catch (error) {
     console.error("Token validation error:", error);
-    return { status: "error", message: "Invalid or expired token", user: null };
+    return {
+      status: "error",
+      message: "Invalid or expired token",
+      user: null,
+      token: null,
+    };
   }
 }

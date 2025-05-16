@@ -1,12 +1,15 @@
-import { getTokenFromServer } from "lib/auth";
+import { getTokenFromServer, validateToken } from "lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const token = await getTokenFromServer();
-
-    if (!token) {
-      return { status: "error", message: "Unauthorized", user: null };
+    // Validate the token and get the active user
+    const validationResponse = await validateToken(req);
+    if (validationResponse.status !== "ok") {
+      return NextResponse.json(
+        { status: "error", message: validationResponse.message },
+        { status: 401 }
+      );
     }
 
     const body = await req.json();
@@ -17,7 +20,7 @@ export async function POST(req: NextRequest) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${validationResponse.token}`,
         },
         body: JSON.stringify(body),
       }
