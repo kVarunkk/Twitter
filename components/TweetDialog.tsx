@@ -52,13 +52,13 @@ export default function TweetDialog() {
   const [img, setImg] = useState("");
   const [isImageSelected, setIsImageSelected] = useState(false);
   const [tag, setTag] = useState("");
-  const [index1, setIndex1] = useState<number | null>(null);
   const [tweetLoading, setTweetLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [tweetGenError, setTweetGenError] = useState(null);
   const [tweetGenLoading, setTweetGenLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const tags = useMemo(
     () => [
       "Sports",
@@ -143,11 +143,6 @@ export default function TweetDialog() {
       });
 
       if (response.data.status === "ok") {
-        setInput("");
-        setImg("");
-        setFile(null);
-        setTag("");
-        setIsImageSelected(false);
         showToast({
           heading: "Success 🎉",
           message: (
@@ -179,6 +174,16 @@ export default function TweetDialog() {
       });
     } finally {
       setTweetLoading(false);
+      setIsDialogOpen(false);
+      setPrompt("");
+      setShowPromptInput(false);
+      setInput("");
+      setImg("");
+      setFile(null);
+      setTag("");
+      setIsImageSelected(false);
+      setTweetGenError(null);
+      setTweetGenLoading(false);
     }
   };
   const handleChange = (e) => {
@@ -256,7 +261,7 @@ export default function TweetDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger className="!mx-2 sm:!mx-0" asChild>
         <button className="tweetBtn sidebar-menu-tweetBtn">Tweet</button>
       </DialogTrigger>

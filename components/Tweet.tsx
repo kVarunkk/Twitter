@@ -4,11 +4,8 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import Comment from "./Comment";
 import { AiOutlineRetweet, AiOutlineLike } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
-import { GoComment } from "react-icons/go";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { AiFillEdit } from "react-icons/ai";
-import moment from "moment";
-// import { useToast } from "@chakra-ui/toast";
 import { UrlContext } from "../context/urlContext";
 import {
   DropdownMenu,
@@ -28,10 +25,8 @@ import Link from "next/link";
 import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
 import { useRouter } from "next/navigation";
-import { formatContentWithLinks } from "utils/utils";
 import TweetBody from "./TweetBody";
 import { Info, Link2, SendHorizonal, Share, Wand, X } from "lucide-react";
-import { set } from "mongoose";
 
 import TweetReplyDialog from "./TweetReplyDialog";
 
@@ -46,7 +41,6 @@ function Tweet(props) {
   const [loading, setLoading] = useState(true);
   const [visibleComments, setVisibleComments] = useState(5);
   const [tweetContent, setTweetContent] = useState(props.body.content);
-  const [tweetReply, setTweetReply] = useState("");
   const [isEdited, setIsEdited] = useState(props.body.isEdited);
   const tweetId = props.body.postedTweetTime;
   const [isImageLoading, setIsImageLoading] = useState(true); // Track image loading state
@@ -54,13 +48,11 @@ function Tweet(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [replyLoading, setReplyLoading] = useState(false);
+  const [isDialogOpen1, setIsDialogOpen1] = useState(false);
+  const [isDialogOpen2, setIsDialogOpen2] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const url = useContext(UrlContext);
   const router = useRouter();
-  const [showPromptInput, setShowPromptInput] = useState(false);
-  const [prompt, setPrompt] = useState("");
-  const tweetInputRef = useRef<HTMLTextAreaElement>(null);
-  const [tweetGenError, setTweetGenError] = useState(null);
-  const [tweetGenLoading, setTweetGenLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   const loadMoreComments = (e) => {
@@ -114,11 +106,7 @@ function Tweet(props) {
         },
       });
 
-      const data = await req.json();
-      // if (data.status === "ok") {
-      //   setBtnColor((prev) => (prev === "black" ? "deeppink" : "black"));
-      //   setLikeCount((prev) => (btnColor === "black" ? prev + 1 : prev - 1));
-      // }
+      // const data = await req.json();
     } catch (error) {
       console.error("Error liking tweet:", error);
       setBtnColor((prev) => (prev === "black" ? "deeppink" : "black"));
@@ -137,20 +125,12 @@ function Tweet(props) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            //"x-access-token": localStorage.getItem("token") || "",
           },
-          // body: JSON.stringify({
-          //   userId: props.userId,
-          // }),
         }
       );
 
       const data = await req.json();
       if (data.status === "ok") {
-        // Update the retweet count and button color dynamically
-        // setRetweetCount(data.retweetCount);
-        // setRetweetBtnColor(data.retweetBtn);
-
         // Remove the tweet if retweetCount is 0, color is black, and the route is /profile
         if (
           props.body.isRetweeted &&
@@ -223,6 +203,8 @@ function Tweet(props) {
       });
     } finally {
       setReplyLoading(false);
+      setIsDialogOpen1(false);
+      setIsDialogOpen2(false);
     }
   };
 
@@ -364,6 +346,8 @@ function Tweet(props) {
       });
     } finally {
       setEditLoading(false);
+      setIsDialogOpen(false);
+      setTweetContent(props.body.content.trim());
     }
   };
 
@@ -432,7 +416,7 @@ function Tweet(props) {
           (props.body.isRetweeted &&
             props.body.retweetedByUser &&
             props.body.retweetedByUser === props.user)) && (
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DropdownMenu>
               <DropdownMenuTrigger
                 className="absolute top-3 right-3"
@@ -576,6 +560,8 @@ function Tweet(props) {
             </button>
             <TweetReplyDialog
               handleCommentSubmit={handleCommentSubmit}
+              isDialogOpen={isDialogOpen2}
+              setIsDialogOpen={setIsDialogOpen2}
               comments={comments}
               replyLoading={replyLoading}
               username={props.body.postedBy.username}
@@ -620,6 +606,8 @@ function Tweet(props) {
                   handleCommentSubmit={handleCommentSubmit}
                   replyLoading={replyLoading}
                   setReplyLoading={setReplyLoading}
+                  isDialogOpen1={isDialogOpen1}
+                  setIsDialogOpen1={setIsDialogOpen1}
                 />
               );
             })

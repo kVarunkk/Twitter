@@ -27,12 +27,16 @@ export default function TweetReplyDialog({
   replyLoading,
   username,
   tweetBody,
+  isDialogOpen,
+  setIsDialogOpen,
 }: {
   handleCommentSubmit: (e: any) => Promise<void>;
   comments: any[];
   replyLoading: boolean;
   username: string;
   tweetBody: string;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (isOpen: boolean) => void;
 }) {
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -56,9 +60,6 @@ export default function TweetReplyDialog({
       console.error("Error fetching user:", error);
     }
   };
-  //   useEffect(() => {
-  //     fetchUser();
-  //   }, []);
 
   const generateTweetReply = async () => {
     if (!prompt) return;
@@ -128,7 +129,18 @@ export default function TweetReplyDialog({
   };
 
   return (
-    <Dialog>
+    <Dialog
+      open={isDialogOpen}
+      onOpenChange={(open) => {
+        setIsDialogOpen(open);
+        if (!open) {
+          setTweetReply("");
+          setPrompt("");
+          setShowPromptInput(false);
+          setTweetGenError(null);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <button
           onClick={(e) => {

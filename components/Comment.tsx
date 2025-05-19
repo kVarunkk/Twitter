@@ -43,15 +43,8 @@ function Comment(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isDialogOpen, setDialogOpen] = useState(false);
 
-  // Memoized debounced function to update the input state
-  const debouncedSetReplyInput = useMemo(
-    () =>
-      debounce((value) => {
-        setReplyInput(value);
-      }, 300), // 300ms debounce delay
-    []
-  );
   // Handle liking a comment
   const handleLike = async (e) => {
     e.preventDefault();
@@ -155,6 +148,8 @@ function Comment(props) {
       });
     } finally {
       setEditLoading(false);
+      setDialogOpen(false);
+      setCommentContent(commentContent.trim());
     }
   };
 
@@ -202,7 +197,7 @@ function Comment(props) {
                 </div>
               </Link>
               {isUserActive && (
-                <Dialog>
+                <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button className="cursor-pointer text-gray-500 hover:text-gray-700">
@@ -240,26 +235,37 @@ function Comment(props) {
                     <DialogHeader>
                       <DialogTitle>Edit Comment</DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={editComment}>
+                    <form id="editcommentform" onSubmit={editComment}>
                       <textarea
+                        disabled={editLoading}
                         ref={textareaRef}
                         onInput={autoResize}
                         value={commentContent}
                         onChange={(e) => setCommentContent(e.target.value)}
-                        className="!w-full focus:outline-none !border-b !border-border  !p-2 !mb-4"
+                        className="disabled:opacity-50 disabled:cursor-not-allowed !w-full focus:outline-none !border-b !border-border  !p-2 !mb-4"
                         required
                       />
+                    </form>
+                    <DialogFooter className="flex items-center !justify-between w-full">
+                      <div className="text-gray-600 text-sm">
+                        {280 - commentContent.length} characters left
+                      </div>
                       <button
+                        form="editcommentform"
                         type="submit"
-                        disabled={editLoading}
+                        disabled={editLoading || commentContent.length > 280}
                         className={` ${
-                          editLoading ? "disabled" : "tweetBtn"
+                          editLoading ||
+                          commentContent.length > 280 ||
+                          commentContent.trim().length === 0
+                            ? "disabled"
+                            : "tweetBtn"
                         } flex items-center gap-2`}
                       >
                         Save
                         {editLoading && <AppLoader size="sm" color="white" />}
                       </button>
-                    </form>
+                    </DialogFooter>
                   </DialogContent>
                 </Dialog>
               )}
@@ -286,7 +292,10 @@ function Comment(props) {
             <span>{likeCount}</span>
           </button>
 
-          <Dialog>
+          <Dialog
+            open={props.isDialogOpen1}
+            onOpenChange={props.setIsDialogOpen1}
+          >
             <DialogTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()} // Prevents triggering the link
@@ -310,10 +319,10 @@ function Comment(props) {
               </DialogHeader>
               <form
                 id="commentReplyForm"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  props.handleCommentSubmit(e);
-                  setReplyInput("");
+                  await props.handleCommentSubmit(e);
+                  setReplyInput(`@${props.body.postedBy.username} `);
                 }}
               >
                 <textarea
