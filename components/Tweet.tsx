@@ -277,7 +277,7 @@ function Tweet(props) {
         console.error("Error deleting tweet:", data.message);
         showToast({
           heading: "Error",
-          message: data.message || "Failed to delete tweet.",
+          message: "Failed to delete tweet.",
           type: "error",
         });
       }
@@ -463,18 +463,19 @@ function Tweet(props) {
                     </button>
                   </DropdownMenuItem>
                 </DialogTrigger>
-                {props.body.isRetweeted && props.body.postedTweetTime && (
-                  <DropdownMenuItem onClick={stopPropagation()} asChild>
-                    <Link
-                      className="!p-2 flex items-center"
-                      onClick={stopPropagation()}
-                      href={`/tweet/${props.body.postedTweetTime}`}
-                    >
-                      <Link2 className="" />
-                      Original Tweet
-                    </Link>
-                  </DropdownMenuItem>
-                )}
+                {props.body.isRetweeted &&
+                  props.body.retweetedFrom.postedTweetTime && (
+                    <DropdownMenuItem onClick={stopPropagation()} asChild>
+                      <Link
+                        className="!p-2 flex items-center"
+                        onClick={stopPropagation()}
+                        href={`/tweet/${props.body.retweetedFrom.postedTweetTime}`}
+                      >
+                        <Link2 className="" />
+                        Original Tweet
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
             <DialogContent className="!p-4">

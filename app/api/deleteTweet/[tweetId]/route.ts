@@ -49,19 +49,21 @@ export async function POST(
       );
     }
 
-    // Delete the tweet
-    await Tweet.findByIdAndDelete(tweet._id);
+    // Delete the tweet & retweets associated with this tweet
+    await Tweet.deleteMany({
+      $or: [{ retweetedFrom: tweet._id }, { _id: tweet._id }],
+    });
 
-    // Delete retweets associated with this tweet
-    await Tweet.deleteMany({ retweetedFrom: tweet._id });
-
-    // Optionally, remove the tweet reference from the user's tweets array
-    const dbUser = await User.findById(user.id);
-    if (dbUser) {
-      dbUser.tweets = dbUser.tweets.filter(
-        (tweetId) => tweetId.toString() !== tweet._id.toString()
+    if (tweet.isRetweeted && tweet.retweetedFrom) {
+      await Tweet.updateMany(
+        {
+          $or: [
+            { _id: tweet.retweetedFrom },
+            { retweetedFrom: tweet.retweetedFrom },
+          ],
+        },
+        { $pull: { retweets: user.username } }
       );
-      await dbUser.save();
     }
 
     return NextResponse.json({

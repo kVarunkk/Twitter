@@ -69,6 +69,7 @@ export async function GET(
       ],
     })
       .populate("postedBy", "username avatar")
+      .populate("retweetedFrom", "postedTweetTime")
       .populate("comments")
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)
