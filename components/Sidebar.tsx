@@ -5,35 +5,17 @@ import Link from "next/link";
 import { BsTwitter } from "react-icons/bs";
 import { BiHome } from "react-icons/bi";
 import { CgProfile } from "react-icons/cg";
-import { AiFillCamera } from "react-icons/ai";
 import { AiOutlineSearch } from "react-icons/ai";
 import { BiChevronsRight } from "react-icons/bi";
 import { GrLogout } from "react-icons/gr";
-import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import moment from "moment";
-import axios from "axios";
-import toast, { Toaster } from "react-hot-toast";
 import "../app/globals.css";
-import { v4 as uuidv4 } from "uuid";
-import jwtDecode from "jwt-decode";
 import { UrlContext } from "../context/urlContext";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./components/ui/dialog";
-import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { usePathname, useRouter } from "next/navigation";
-import { showToast } from "./ToastComponent";
 import { Mail, SendHorizonal, Wand, X } from "lucide-react";
 import Chat from "./Chat";
-import AppLoader from "./AppLoader";
 import TweetDialog from "./TweetDialog";
+import { useAuth } from "hooks/useAuth";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -43,6 +25,7 @@ function Sidebar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   let lastScrollY = 10;
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,41 +46,11 @@ function Sidebar() {
     };
   }, []);
 
-  async function populateUser() {
-    try {
-      const req = await fetch(`${url}/api/feed`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token"),
-        },
-      });
-
-      const data = await req.json();
-
-      if (data.status === "ok") {
-        setActiveUser(data.activeUser);
-      } else {
-        // Handle invalid token or authentication failure
-        // console.error("Error fetching user data:", data.error);
-        showToast({
-          heading: "Error",
-          message: "Session expired. Please log in again.",
-          type: "error",
-        });
-        router.push("/"); // Redirect to the home page
-      }
-    } catch (error) {
-      // console.error("Error fetching user data:", error);
-      showToast({
-        heading: "Error",
-        message: "Failed to fetch user data. Please try again later.",
-        type: "error",
-      });
-    }
-  }
-
   useEffect(() => {
-    populateUser();
-  }, []);
+    if (!loading && user) {
+      setActiveUser(user.username);
+    }
+  }, [user, loading]);
 
   const logout = async () => {
     await fetch(url + "/api/logout", {

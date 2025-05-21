@@ -114,7 +114,7 @@ function SearchArea() {
         activeUser: data.user,
       };
     } catch (error) {
-      console.log("Error fetching users:", error);
+      // console.log("Error fetching users:", error);
       throw error;
     }
   };
@@ -136,7 +136,7 @@ function SearchArea() {
         activeUser: data.user,
       };
     } catch (error) {
-      console.log("Error fetching users:", error);
+      // console.log("Error fetching users:", error);
       throw error;
     }
   };

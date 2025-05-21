@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useContext, useMemo, useRef } from "react";
+import React, { useState, useContext, useMemo, useRef, useEffect } from "react";
 import { AiOutlineLike } from "react-icons/ai";
 import { BsThreeDots } from "react-icons/bs";
 import { RiDeleteBin6Fill } from "react-icons/ri";
@@ -30,7 +30,7 @@ import Avatar from "./Avatar";
 import AppLoader from "./AppLoader";
 
 function Comment(props) {
-  const [likeCount, setLikeCount] = useState(props.body.likes.length);
+  const [likeCount, setLikeCount] = useState(props.body.likes?.length);
   const [btnColor, setBtnColor] = useState(props.body.likeCommentBtn);
   const [commentContent, setCommentContent] = useState(props.body.content);
   const [isEdited, setIsEdited] = useState(props.body.isEdited);
@@ -44,6 +44,7 @@ function Comment(props) {
   const [editLoading, setEditLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [isDialogOpen1, setIsDialogOpen1] = useState(false);
 
   // Handle liking a comment
   const handleLike = async (e) => {
@@ -94,6 +95,11 @@ function Comment(props) {
           )
         );
         props.setCommentCount((prevCount) => prevCount - 1); // Decrease the comment count
+        showToast({
+          heading: "Success",
+          message: "Comment deleted successfully",
+          type: "success",
+        });
       } else {
         console.error("Failed to delete comment:", data.message);
         showToast({
@@ -160,6 +166,7 @@ function Comment(props) {
       textarea.style.height = `${textarea.scrollHeight}px`; // set to scrollHeight
     }
   };
+
   return (
     <li className="flex items-center w-full">
       <div className="!w-[10%] shrink-0 border-b border-border"></div>
@@ -292,10 +299,7 @@ function Comment(props) {
             <span>{likeCount}</span>
           </button>
 
-          <Dialog
-            open={props.isDialogOpen1}
-            onOpenChange={props.setIsDialogOpen1}
-          >
+          <Dialog open={isDialogOpen1} onOpenChange={setIsDialogOpen1}>
             <DialogTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()} // Prevents triggering the link
@@ -321,8 +325,9 @@ function Comment(props) {
                 id="commentReplyForm"
                 onSubmit={async (e) => {
                   e.preventDefault();
-                  await props.handleCommentSubmit(e);
-                  setReplyInput(`@${props.body.postedBy.username} `);
+                  await props.handleCommentSubmit(e, replyInput);
+                  setIsDialogOpen1(false);
+                  // setReplyInput(`@${props.body.postedBy.username} `);
                 }}
               >
                 <textarea
@@ -331,7 +336,10 @@ function Comment(props) {
                   onClick={(e) => e.stopPropagation()} // Prevents event bubbling
                   name="commentInput"
                   value={replyInput} // Controlled input
-                  onChange={(e) => setReplyInput(e.target.value)} // Direct update without debounce
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    setReplyInput(e.target.value);
+                  }} // Direct update without debounce
                   className="disabled:opacity-50 disabled:cursor-not-allowed !w-full !border-b !border-border focus:outline-none !p-2 !mb-4"
                   required
                   disabled={props.replyLoading}

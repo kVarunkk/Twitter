@@ -25,27 +25,37 @@ import { Link, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import Avatar from "./Avatar";
 
-function ProfileBody({ userName }: { userName: string }) {
-  const [loading, setLoading] = useState(true);
+function ProfileBody({ userName, profileData }) {
+  const {
+    initialTweets,
+    activeUserProp,
+    userIdProp,
+    followBtnProp,
+    bioProp,
+    avatarProp,
+    followersProp,
+    bannerProp,
+  } = profileData;
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [tweets, setTweets] = useState([]);
-  const [activeUser, setActiveUser] = useState("");
-  const [followers, setFollowers] = useState(0);
-  const [followBtn, setFollowBtn] = useState("");
-  const [banner, setBanner] = useState("");
-  const [bio, setBio] = useState("");
+  const [tweets, setTweets] = useState(initialTweets || []);
+  const [activeUser, setActiveUser] = useState(activeUserProp || "");
+  const [followers, setFollowers] = useState(followersProp || 0);
+  const [followBtn, setFollowBtn] = useState(followBtnProp || "");
+  const [banner, setBanner] = useState(bannerProp || "");
+  const [bio, setBio] = useState(bioProp || "");
   const [avatar, setAvatar] = useState(
-    `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`
+    avatarProp ||
+      `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`
   );
-  const router = useRouter();
   const url = useContext(UrlContext);
-  const isActiveUser = activeUser === userName;
+  const isActiveUser = userName === activeUserProp;
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [saveAvatarLoading, setSaveAvatarLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(userIdProp || "");
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -286,13 +296,13 @@ function ProfileBody({ userName }: { userName: string }) {
     }
   };
 
-  const { user, loading: load } = useAuth();
+  // const { user, loading: load } = useAuth();
 
-  useEffect(() => {
-    if (!load && user) {
-      populateUserData();
-    }
-  }, [user, load]);
+  // useEffect(() => {
+  //   if (!load && user) {
+  //     populateUserData();
+  //   }
+  // }, [user, load]);
 
   const saveUploadedAvatar = async () => {
     if (!file) return;

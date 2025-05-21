@@ -4,6 +4,7 @@ import ProfileBody from "@/components/ProfileBody";
 import ScrollToTop from "@/components/ScrollToTop";
 import Sidebar from "@/components/Sidebar";
 import TopicArea from "@/components/TopicArea";
+import TopicAreaServer from "@/components/TopicAreaServer";
 
 export default async function TagTopic({
   params,
@@ -16,7 +17,7 @@ export default async function TagTopic({
     <div className="App">
       <Sidebar />
 
-      <TopicArea tag={tag} />
+      <TopicAreaServer tag={tag} />
 
       <ScrollToTop />
       {/* <Chat /> */}

@@ -13,13 +13,13 @@ import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
 import { useAuth } from "hooks/useAuth";
 
-function TopicArea({ tag: initialTag }: { tag: string }) {
-  const [tweets, setTweets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeUser, setActiveUser] = useState("");
-  const [userId, setUserId] = useState("");
+function TopicArea({ tag, initialTweets, activeUserProp, userIdProp }) {
+  const [tweets, setTweets] = useState(initialTweets || []);
+  const [loading, setLoading] = useState(false);
+  const [activeUser, setActiveUser] = useState(activeUserProp || "");
+  const [userId, setUserId] = useState(userIdProp || "");
   const [tweetCount, setTweetCount] = useState(20);
-  const [currentTag, setCurrentTag] = useState(initialTag || "Sports");
+  const [currentTag, setCurrentTag] = useState(tag || "Sports");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const url = useContext(UrlContext);
@@ -37,13 +37,17 @@ function TopicArea({ tag: initialTag }: { tag: string }) {
     "Entertainment",
   ];
 
-  const { user, loading: load } = useAuth();
+  // useEffect(() => {
+  //   setCurrentTag(tag);
+  // }, [tag]);
 
-  useEffect(() => {
-    if (!load && user && currentTag) {
-      fetchTweets(currentTag);
-    }
-  }, [user, load, currentTag]);
+  // const { user, loading: load } = useAuth();
+
+  // useEffect(() => {
+  //   if (!load && user && currentTag) {
+  //     fetchTweets(currentTag);
+  //   }
+  // }, [user, load, currentTag]);
 
   // Fetch tweets for the selected topic
   const fetchTweets = async (tag: string) => {

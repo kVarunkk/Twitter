@@ -30,7 +30,7 @@ export default function TweetReplyDialog({
   isDialogOpen,
   setIsDialogOpen,
 }: {
-  handleCommentSubmit: (e: any) => Promise<void>;
+  handleCommentSubmit: (e: any, input: string) => Promise<void>;
   comments: any[];
   replyLoading: boolean;
   username: string;
@@ -162,7 +162,10 @@ export default function TweetReplyDialog({
             </Link>
           </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleCommentSubmit} id="tweetReplyForm">
+        <form
+          onSubmit={(e) => handleCommentSubmit(e, tweetReply)}
+          id="tweetReplyForm"
+        >
           <textarea
             ref={textareaRef}
             onInput={autoResize}

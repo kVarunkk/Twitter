@@ -42,7 +42,13 @@ export async function GET(
       content: { $regex: `${user}`, $options: "i" },
     })
       .populate("postedBy", "username avatar")
-      .populate("comments")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "postedBy",
+          select: "username avatar",
+        },
+      })
       .sort({ createdAt: -1 }) // Sort tweets by creation date (newest first)
       .skip(tweetsToSkip) // Skip the specified number of tweets
       .limit(tweetsLimit); // Limit the number of tweets returned

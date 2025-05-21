@@ -10,12 +10,16 @@ export default function Avatar({ src, alt, size = "md" }) {
   return (
     <img
       className={`rounded-full ${sizeClasses[size]}`}
-      src={src}
+      src={
+        src.startsWith("https://")
+          ? src
+          : `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/${src}`
+      }
       alt={alt}
-      onError={(e) => {
-        e.currentTarget.onerror = null; // prevent infinite loop
-        e.currentTarget.src = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`;
-      }}
+      // onError={(e) => {
+      //   e.currentTarget.onerror = null; // prevent infinite loop
+      //   e.currentTarget.src = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`;
+      // }}
     />
   );
 }

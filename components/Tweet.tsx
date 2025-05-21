@@ -37,8 +37,8 @@ function Tweet(props) {
   const [shareCount, setShareCount] = useState(props.body?.shares ?? 0);
   const [retweetBtnColor, setRetweetBtnColor] = useState(props.body.retweetBtn);
   const [btnColor, setBtnColor] = useState(props.body.likeTweetBtn);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [comments, setComments] = useState(props.body.comments || []);
+  const [loading, setLoading] = useState(false);
   const [visibleComments, setVisibleComments] = useState(5);
   const [tweetContent, setTweetContent] = useState(props.body.content);
   const [isEdited, setIsEdited] = useState(props.body.isEdited);
@@ -48,12 +48,17 @@ function Tweet(props) {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [replyLoading, setReplyLoading] = useState(false);
-  const [isDialogOpen1, setIsDialogOpen1] = useState(false);
+  // const [isDialogOpen1, setIsDialogOpen1] = useState(false);
   const [isDialogOpen2, setIsDialogOpen2] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const url = useContext(UrlContext);
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true); // now we are safely on the client
+  }, []);
 
   const loadMoreComments = (e) => {
     e.stopPropagation();
@@ -87,10 +92,6 @@ function Tweet(props) {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    populateComments();
-  }, []);
 
   // Handle liking a tweet
   const handleLike = async (e) => {
@@ -157,13 +158,13 @@ function Tweet(props) {
   };
 
   // Handle comment submission
-  const handleCommentSubmit = async (e) => {
+  const handleCommentSubmit = async (e, input) => {
     e.stopPropagation();
     e.preventDefault();
     setReplyLoading(true);
 
     const comment = {
-      content: e.target.commentInput.value,
+      content: input,
       postedBy: {
         username: props.user,
       },
@@ -203,7 +204,7 @@ function Tweet(props) {
       });
     } finally {
       setReplyLoading(false);
-      setIsDialogOpen1(false);
+      // setIsDialogOpen1(false);
       setIsDialogOpen2(false);
     }
   };
@@ -367,6 +368,8 @@ function Tweet(props) {
     }
   };
 
+  if (!isClient) return null;
+
   return (
     <div className="bg-white    ">
       <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
@@ -388,21 +391,11 @@ function Tweet(props) {
             </span>
           </Link>
         )}
-        {!window.location.pathname.startsWith("/tweet") ? (
-          <button
-            className="cursor-pointer text-start w-full"
-            onClick={() => router.push(`/tweet/${tweetId}`)}
-          >
-            <TweetBody
-              body={props.body}
-              isImageLoading={isImageLoading}
-              setIsImageLoading={setIsImageLoading}
-              tweetId={tweetId}
-              isEdited={isEdited}
-              url={url}
-            />
-          </button>
-        ) : (
+        {/* {!window.location.pathname.startsWith("/tweet") ? ( */}
+        <button
+          className="cursor-pointer text-start w-full"
+          onClick={() => router.push(`/tweet/${tweetId}`)}
+        >
           <TweetBody
             body={props.body}
             isImageLoading={isImageLoading}
@@ -411,7 +404,17 @@ function Tweet(props) {
             isEdited={isEdited}
             url={url}
           />
-        )}
+        </button>
+        {/* ) : (
+          <TweetBody
+            body={props.body}
+            isImageLoading={isImageLoading}
+            setIsImageLoading={setIsImageLoading}
+            tweetId={tweetId}
+            isEdited={isEdited}
+            url={url}
+          />
+        )} */}
         {((isUserActive && !props.body.isRetweeted) ||
           (props.body.isRetweeted &&
             props.body.retweetedByUser &&
@@ -449,21 +452,24 @@ function Tweet(props) {
                     </button>
                   </form>
                 </DropdownMenuItem>
-                <DialogTrigger
-                  onClick={stopPropagation()}
-                  className="w-full"
-                  asChild
-                >
-                  <DropdownMenuItem onClick={stopPropagation()} asChild>
-                    <button
-                      onClick={stopPropagation()}
-                      className="!p-2 flex items-center"
-                    >
-                      <AiFillEdit className="" /> Edit
-                    </button>
-                  </DropdownMenuItem>
-                </DialogTrigger>
+                {isUserActive && (
+                  <DialogTrigger
+                    onClick={stopPropagation()}
+                    className="w-full"
+                    asChild
+                  >
+                    <DropdownMenuItem onClick={stopPropagation()} asChild>
+                      <button
+                        onClick={stopPropagation()}
+                        className="!p-2 flex items-center"
+                      >
+                        <AiFillEdit className="" /> Edit
+                      </button>
+                    </DropdownMenuItem>
+                  </DialogTrigger>
+                )}
                 {props.body.isRetweeted &&
+                  props.body.retweetedFrom &&
                   props.body.retweetedFrom.postedTweetTime && (
                     <DropdownMenuItem onClick={stopPropagation()} asChild>
                       <Link
@@ -498,7 +504,7 @@ function Tweet(props) {
               </form>
               <DialogFooter className="flex items-center !justify-between w-full">
                 <div className="text-gray-600 text-sm">
-                  {280 - tweetContent.length} characters left
+                  {280 - tweetContent?.length} characters left
                 </div>
                 <button
                   form="tweetEditForm"
@@ -508,9 +514,9 @@ function Tweet(props) {
                     editLoading ? "disabled" : "tweetBtn"
                   } flex items-center gap-2`}
                   disabled={
-                    tweetContent.trim().length === 0 ||
+                    tweetContent?.trim()?.length === 0 ||
                     editLoading ||
-                    tweetContent.length > 280
+                    tweetContent?.length > 280
                   }
                 >
                   Save
@@ -565,7 +571,7 @@ function Tweet(props) {
               setIsDialogOpen={setIsDialogOpen2}
               comments={comments}
               replyLoading={replyLoading}
-              username={props.body.postedBy.username}
+              username={props.body.postedBy?.username}
               tweetBody={props.body}
             />
           </div>
@@ -592,14 +598,16 @@ function Tweet(props) {
             </div>
           ) : (
             comments.slice(0, visibleComments).map((comment) => {
-              comment.likeCommentBtn = comment.likes.includes(props.user)
+              comment.likeCommentBtn = (comment.likes || []).includes(
+                props.user
+              )
                 ? "deeppink"
                 : "black";
               return (
                 <Comment
                   key={comment._id}
                   user={props.user}
-                  tweetBy={props.body.postedBy.username}
+                  tweetBy={props.body.postedBy?.username}
                   body={comment}
                   setComments={setComments}
                   setCommentCount={setCommentCount}
@@ -607,8 +615,8 @@ function Tweet(props) {
                   handleCommentSubmit={handleCommentSubmit}
                   replyLoading={replyLoading}
                   setReplyLoading={setReplyLoading}
-                  isDialogOpen1={isDialogOpen1}
-                  setIsDialogOpen1={setIsDialogOpen1}
+                  // isDialogOpen1={isDialogOpen1}
+                  // setIsDialogOpen1={setIsDialogOpen1}
                 />
               );
             })

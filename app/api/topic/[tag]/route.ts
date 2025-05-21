@@ -33,8 +33,15 @@ export async function GET(
 
     // Fetch tweets with the specified tag
     const tweets = await Tweet.find({ tag })
-      .populate("postedBy")
-      .populate("comments")
+      .populate("postedBy", "username avatar")
+      .populate("retweetedFrom", "postedTweetTime")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "postedBy",
+          select: "username avatar",
+        },
+      })
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)
       .limit(20);

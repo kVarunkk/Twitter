@@ -34,21 +34,6 @@ export async function GET(
 
     // Find the user whose profile is being requested
     const profileUser = await User.findOne({ username: userName });
-    // .populate({
-    //   path: "tweets",
-    //   options: {
-    //     sort: { createdAt: -1 },
-    //     skip: tweetsToSkip,
-    //     limit: tweetsLimit,
-    //   }, // Pagination options
-    //   populate: [
-    //     { path: "postedBy", select: "username avatar" },
-    //     {
-    //       path: "comments",
-    //       populate: { path: "postedBy", select: "username avatar" },
-    //     },
-    //   ],
-    // });
 
     if (!profileUser) {
       return NextResponse.json(
@@ -70,7 +55,13 @@ export async function GET(
     })
       .populate("postedBy", "username avatar")
       .populate("retweetedFrom", "postedTweetTime")
-      .populate("comments")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "postedBy",
+          select: "username avatar",
+        },
+      })
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)
       .limit(tweetsLimit);

@@ -15,13 +15,13 @@ export default function TweetBody(props) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            router.push(`/profile/${props.body.postedBy.username}`);
+            router.push(`/profile/${props.body.postedBy?.username}`);
           }}
           className="stop-link cursor-pointer shrink-0"
         >
           <Avatar
             // className="w-16 h-16 rounded-full !p-2"
-            src={`${props.body.postedBy.avatar}`}
+            src={`${props.body.postedBy?.avatar}`}
             alt="Avatar"
             size="md"
           />
@@ -30,13 +30,13 @@ export default function TweetBody(props) {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            router.push(`/profile/${props.body.postedBy.username}`);
+            router.push(`/profile/${props.body.postedBy?.username}`);
           }}
           className="stop-link cursor-pointer !p-2 group"
         >
           <div className="flex flex-col items-start">
             <div className="font-bold text-gray-800 group-hover:underline">
-              {props.body.postedBy.username}
+              {props.body.postedBy?.username}
             </div>
             <div className="text-sm text-gray-500 text-start">
               {props.body.postedTweetTime}

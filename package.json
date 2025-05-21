@@ -17,6 +17,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
+    "@types/react": "^19.1.5",
     "axios": "^0.27.2",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
@@ -77,6 +78,6 @@
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.2",
     "gh-pages": "^5.0.0",
-    "typescript": "5.8.2"
+    "typescript": "^5.8.3"
   }
 }

@@ -11,7 +11,10 @@ function Header({ title }: { title?: string }) {
   return (
     <div className=" w-full !p-4 flex items-center gap-2 ">
       <button
-        onClick={() => router.back()} // Navigate back to the previous page
+        onClick={() => {
+          router.back();
+          router.refresh();
+        }} // Navigate back to the previous page
         className="cursor-pointer !p-2 rounded-full hover:bg-gray-200"
       >
         <ArrowLeft />

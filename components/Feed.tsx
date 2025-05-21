@@ -1,44 +1,27 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  useRef,
-} from "react";
+import React, { useState, useContext, useRef } from "react";
 import Tweet from "./Tweet";
-import { AiFillCamera } from "react-icons/ai";
-import axios from "axios";
-import jwtDecode from "jwt-decode";
-import moment from "moment";
-import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import { UrlContext } from "../context/urlContext";
 import "../app/globals.css";
-import { useRouter } from "next/navigation";
-import { ArrowUp, ChevronUp } from "lucide-react";
-import toast from "react-hot-toast";
 import ScrollToTop from "./ScrollToTop";
 import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
-import Chat from "./Chat";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
-import { useAuth } from "hooks/useAuth";
 
-function Feed() {
+function Feed({ initialTweets, activeUserProp, userIdProp }) {
   const [error, setError] = useState(false);
-  const [tweets, setTweets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeUser, setActiveUser] = useState("");
-  const router = useRouter();
+  const [tweets, setTweets] = useState(initialTweets || []);
+  const [loading, setLoading] = useState(false);
+  const [activeUser, setActiveUser] = useState(activeUserProp || "");
   const [tweetCount, setTweetCount] = useState("20");
   const url = useContext(UrlContext);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState(userIdProp || "");
 
   async function populateTweets() {
     try {
@@ -97,13 +80,29 @@ function Feed() {
           retweetBtn: tweet.retweetBtn || "black",
         }));
 
-        setTweets((prevTweets) => [...prevTweets, ...updatedTweets]);
+        setTweets((prevTweets) => {
+          const tweetMap = new Map();
+
+          // Add old tweets
+          prevTweets.forEach((tweet) => tweetMap.set(tweet._id, tweet));
+
+          // Add new tweets (overwrites duplicates with latest version)
+          updatedTweets.forEach((tweet) => tweetMap.set(tweet._id, tweet));
+
+          return Array.from(tweetMap.values());
+        });
+
         if (updatedTweets.length < 20) {
           setHasMoreTweets(false);
         }
         setTweetCount((prevValue) => (parseInt(prevValue) + 20).toString());
       } else {
-        toast.error(data.message || "Failed to fetch more tweets");
+        // toast.error(data.message || "Failed to fetch more tweets");
+        showToast({
+          heading: "Error",
+          type: "error",
+          message: "Failed to fetch tweets. Please try again.",
+        });
       }
     } catch (error) {
       console.error("Error adding tweets:", error);
@@ -111,14 +110,6 @@ function Feed() {
       isFetching.current = false;
     }
   }
-
-  const { user, loading: load } = useAuth();
-
-  useEffect(() => {
-    if (!load && user) {
-      populateTweets();
-    }
-  }, [user, load]);
 
   return (
     <div>
@@ -136,7 +127,7 @@ function Feed() {
               <button
                 className="tweetBtn"
                 onClick={() => {
-                  setLoading(true);
+                  populateTweets();
                 }} // Retry fetching tweets
               >
                 Retry
@@ -144,9 +135,6 @@ function Feed() {
             </div>
           ) : (
             tweets.map(function (tweet) {
-              tweet.likeTweetBtn = tweet.likes.includes(activeUser)
-                ? "deeppink"
-                : "black";
               return (
                 <div key={tweet._id}>
                   <Tweet

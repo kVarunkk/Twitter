@@ -31,7 +31,13 @@ export async function GET(req: Request) {
     // Fetch tweets
     const tweets = await Tweet.find()
       .populate("postedBy", "username avatar")
-      .populate("comments")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "postedBy",
+          select: "username avatar",
+        },
+      })
       .populate("retweetedFrom", "postedTweetTime")
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)

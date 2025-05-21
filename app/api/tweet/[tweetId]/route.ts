@@ -32,6 +32,7 @@ export async function GET(
     // Find the tweet by its unique identifier
     const tweet = await Tweet.findOne({ postedTweetTime: tweetId })
       .populate("postedBy", "username avatar")
+      .populate("retweetedFrom", "postedTweetTime")
       .populate({
         path: "comments",
         populate: {

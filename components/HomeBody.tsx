@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 // import { Spinner } from "@chakra-ui/react";
 import "../app/globals.css";
-import toast from "react-hot-toast";
 import { LoaderCircle } from "lucide-react";
 import { showToast } from "./ToastComponent";
 import {
@@ -139,12 +138,12 @@ function HomeBody() {
 
       const data = await response.json();
       if (data.status === "ok") {
-        console.log("Documents embedded successfully:", data.message);
+        // console.log("Documents embedded successfully:", data.message);
       } else {
-        console.error("Error embedding documents:", data.message);
+        // console.error("Error embedding documents:", data.message);
       }
     } catch (error) {
-      console.error("Error embedding documents:", error);
+      // console.error("Error embedding documents:", error);
     }
   };
 

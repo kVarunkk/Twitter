@@ -1,6 +1,7 @@
 import Chat from "@/components/Chat";
 import Header from "@/components/Header";
 import ProfileBody from "@/components/ProfileBody";
+import ProfileBodyServer from "@/components/ProfileBodyServer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Sidebar from "@/components/Sidebar";
 
@@ -16,7 +17,7 @@ export default async function UserProfile({
       <Sidebar />
       <div className="HeaderAndFeed">
         <Header title="Profile" />
-        <ProfileBody userName={username} />
+        {username && <ProfileBodyServer userName={username} />}
       </div>
       <ScrollToTop />
       {/* <Chat /> */}
