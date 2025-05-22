@@ -597,29 +597,30 @@ function Tweet(props) {
               <AppLoader size="sm" />
             </div>
           ) : (
-            comments.slice(0, visibleComments).map((comment) => {
-              comment.likeCommentBtn = (comment.likes || []).includes(
-                props.user
+            comments
+              .slice(0, visibleComments)
+              .filter(
+                (comment) =>
+                  comment.postedBy && Object.keys(comment.postedBy).length > 0
               )
-                ? "deeppink"
-                : "black";
-              return (
-                <Comment
-                  key={comment._id}
-                  user={props.user}
-                  tweetBy={props.body.postedBy?.username}
-                  body={comment}
-                  setComments={setComments}
-                  setCommentCount={setCommentCount}
-                  populateComments={populateComments}
-                  handleCommentSubmit={handleCommentSubmit}
-                  replyLoading={replyLoading}
-                  setReplyLoading={setReplyLoading}
-                  // isDialogOpen1={isDialogOpen1}
-                  // setIsDialogOpen1={setIsDialogOpen1}
-                />
-              );
-            })
+              .map((comment) => {
+                return (
+                  <Comment
+                    key={comment._id}
+                    user={props.user}
+                    tweetBy={props.body.postedBy?.username}
+                    body={comment}
+                    setComments={setComments}
+                    setCommentCount={setCommentCount}
+                    populateComments={populateComments}
+                    handleCommentSubmit={handleCommentSubmit}
+                    replyLoading={replyLoading}
+                    setReplyLoading={setReplyLoading}
+                    // isDialogOpen1={isDialogOpen1}
+                    // setIsDialogOpen1={setIsDialogOpen1}
+                  />
+                );
+              })
           )}
         </div>
       </div>

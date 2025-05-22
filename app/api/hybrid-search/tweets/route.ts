@@ -35,6 +35,8 @@ export async function POST(req: NextRequest) {
 
     const results = await Tweet.aggregate(pipeline);
 
+    console.log("Hybrid search results:", JSON.stringify(results));
+
     if (!results || results.length === 0) {
       return NextResponse.json({ status: "ok", results: [] });
     }
