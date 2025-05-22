@@ -41,6 +41,20 @@ export async function GET(
         },
       });
 
+    tweet.likeTweetBtn = tweet.likes.includes(user.username)
+      ? "deeppink"
+      : "black";
+    tweet.retweetBtn = tweet.retweets.includes(user.username)
+      ? "green"
+      : "black";
+    tweet.comments.forEach((comment) => {
+      if (comment.likes) {
+        comment.likeCommentBtn = comment.likes.includes(user.username)
+          ? "deeppink"
+          : "black";
+      }
+    });
+
     if (!tweet) {
       return NextResponse.json(
         { status: "error", message: "Tweet not found" },
