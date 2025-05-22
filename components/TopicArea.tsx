@@ -114,8 +114,7 @@ function TopicArea({ tag, initialTweets, activeUserProp, userIdProp }) {
   };
 
   return (
-    <div className="HeaderAndFeed">
-      <Header title="Topics" />
+    <div>
       {/* Tag Area */}
       <div className="tagArea !px-4">
         <ToggleGroup type="single" className="inline-flex gap-2">

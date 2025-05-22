@@ -18,15 +18,18 @@ export default async function TagTopic({
   return (
     <div className="App">
       <Sidebar />
-      <Suspense
-        fallback={
-          <div className="flex justify-center items-center h-screen w-full ">
-            <AppLoader size="md" color="blue" />
-          </div>
-        }
-      >
-        <TopicAreaServer tag={tag} />
-      </Suspense>
+      <div className="HeaderAndFeed">
+        <Header title="Topics" />
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen w-full ">
+              <AppLoader size="md" color="blue" />
+            </div>
+          }
+        >
+          <TopicAreaServer tag={tag} />
+        </Suspense>
+      </div>
 
       <ScrollToTop />
       {/* <Chat /> */}
