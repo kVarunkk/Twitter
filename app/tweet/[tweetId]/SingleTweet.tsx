@@ -10,8 +10,8 @@ import AppLoader from "@/components/AppLoader";
 import ChatWrapper from "@/components/ChatWrapper";
 import { useAuth } from "hooks/useAuth";
 
-function SingleTweet({ tweetId }: { tweetId: string }) {
-  const [tweet, setTweet] = useState(null);
+function SingleTweet({ tweetProp }) {
+  const [tweet, setTweet] = useState(tweetProp || null);
   const [loading, setLoading] = useState(true);
   const [activeUser, setActiveUser] = useState("");
   const [visibleComments, setVisibleComments] = useState(5); // Show 5 comments initially
@@ -19,51 +19,51 @@ function SingleTweet({ tweetId }: { tweetId: string }) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [userId, setUserId] = useState("");
 
-  const { user, loading: load } = useAuth();
+  // const { user, loading: load } = useAuth();
 
-  useEffect(() => {
-    if (!load && user) {
-      fetchTweet();
-    }
-  }, [user, load]);
+  // useEffect(() => {
+  //   if (!load && user) {
+  //     fetchTweet();
+  //   }
+  // }, [user, load]);
 
-  const fetchTweet = async () => {
-    try {
-      const response = await fetch(`${url}/api/tweet/${tweetId}`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token"),
-        },
-      });
-      const data = await response.json();
-      if (data.status === "ok") {
-        setTweet({
-          ...data.tweet,
-          likeTweetBtn: data.tweet.likes.includes(data.activeUser.username)
-            ? "deeppink"
-            : "black",
-          retweetBtn: data.tweet.retweets.includes(data.activeUser.username)
-            ? "green"
-            : "black",
-        });
-        setActiveUser(data.activeUser.username);
-        setUserId(data.activeUser._id);
-      } else {
-        console.error("Error fetching tweet:", data.message);
-      }
-    } catch (error) {
-      console.error("Error fetching tweet:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const fetchTweet = async () => {
+  //   try {
+  //     const response = await fetch(`${url}/api/tweet/${tweetId}`, {
+  //       headers: {
+  //         //"x-access-token": localStorage.getItem("token"),
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     if (data.status === "ok") {
+  //       setTweet({
+  //         ...data.tweet,
+  //         likeTweetBtn: data.tweet.likes.includes(data.activeUser.username)
+  //           ? "deeppink"
+  //           : "black",
+  //         retweetBtn: data.tweet.retweets.includes(data.activeUser.username)
+  //           ? "green"
+  //           : "black",
+  //       });
+  //       setActiveUser(data.activeUser.username);
+  //       setUserId(data.activeUser._id);
+  //     } else {
+  //       console.error("Error fetching tweet:", data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching tweet:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
-  if (loading) {
-    return (
-      <div className="h-screen">
-        <AppLoader size="md" />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="h-screen">
+  //       <AppLoader size="md" />
+  //     </div>
+  //   );
+  // }
 
   if (!tweet) {
     return (

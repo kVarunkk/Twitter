@@ -1,9 +1,9 @@
+import SingleTweet from "@/app/tweet/[tweetId]/SingleTweet";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyJwt } from "lib/auth";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
-import { cookies } from "next/headers";
-import TopicArea from "./TopicArea";
 import Error from "./Error";
 
 const { User, Tweet, Comment } = require("utils/models/File");
@@ -19,8 +19,7 @@ function serializeObject(obj) {
 }
 
 export const dynamic = "force-dynamic";
-
-export default async function TopicAreaServer({ tag }) {
+export default async function SingleTweetServer({ tweetId }) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
@@ -32,12 +31,11 @@ export default async function TopicAreaServer({ tag }) {
     const user = await User.findById(decoded.id);
     if (!user) redirect("/");
 
-    const tweets = await Tweet.find({
-      tag,
-      postedBy: { $exists: true, $ne: null },
-    })
-      .lean()
+    const decodedTweetId = decodeURIComponent(tweetId);
+
+    const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
       .populate("postedBy", "username avatar")
+      .populate("retweetedFrom", "postedTweetTime")
       .populate({
         path: "comments",
         populate: {
@@ -45,38 +43,25 @@ export default async function TopicAreaServer({ tag }) {
           select: "username avatar",
         },
       })
-      .populate("retweetedFrom", "postedTweetTime")
-      .sort({ createdAt: -1 })
-      .limit(20);
+      .lean();
 
-    const hydratedTweets = tweets.map((tweet) => {
-      const safeTweet = serializeObject(tweet);
+    const safeTweet = serializeObject(tweet);
 
-      return {
-        ...safeTweet,
-        likeTweetBtn: safeTweet.likes.includes(user.username)
+    safeTweet.likeTweetBtn = safeTweet.likes.includes(user.username)
+      ? "deeppink"
+      : "black";
+    safeTweet.retweetBtn = safeTweet.retweets.includes(user.username)
+      ? "green"
+      : "black";
+    safeTweet.comments.forEach((comment) => {
+      if (comment.likes) {
+        comment.likeCommentBtn = comment.likes.includes(user.username)
           ? "deeppink"
-          : "black",
-        retweetBtn: safeTweet.retweets.includes(user.username)
-          ? "green"
-          : "black",
-        comments: (safeTweet.comments || []).map((comment) => ({
-          ...comment,
-          likeCommentBtn: comment.likes.includes(user.username)
-            ? "deeppink"
-            : "black",
-        })),
-      };
+          : "black";
+      }
     });
 
-    return (
-      <TopicArea
-        tag={tag}
-        initialTweets={hydratedTweets}
-        activeUserProp={user.username}
-        userIdProp={user._id.toString()}
-      />
-    );
+    return <SingleTweet tweetProp={safeTweet} />;
   } catch (error) {
     return <Error />;
   }

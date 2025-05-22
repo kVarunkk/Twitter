@@ -4,6 +4,9 @@ import Sidebar from "@/components/Sidebar";
 import SingleTweet from "./SingleTweet";
 import ScrollToTop from "@/components/ScrollToTop";
 import Chat from "@/components/Chat";
+import SingleTweetServer from "@/components/SingleTweetServer";
+import { Suspense } from "react";
+import AppLoader from "@/components/AppLoader";
 
 export default async function TweetPage({
   params,
@@ -17,7 +20,15 @@ export default async function TweetPage({
       <Sidebar />
       <div className="HeaderAndFeed">
         <Header title="Tweet" />
-        <SingleTweet tweetId={tweetId} />
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center h-screen w-full">
+              <AppLoader size="md" color="blue" />
+            </div>
+          }
+        >
+          <SingleTweetServer tweetId={tweetId} />
+        </Suspense>
       </div>
       <ScrollToTop />
       {/* <Chat /> */}
