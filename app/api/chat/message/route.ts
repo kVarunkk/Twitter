@@ -1,18 +1,13 @@
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
+import { NextRequest, NextResponse } from "next/server";
+import mongoose, { connect } from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
+import { connectToDatabase } from "lib/mongoose";
+import { Message } from "utils/models/File";
 
-const { Chat, Message } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    await connectToDatabase();
     // Validate the token
     const validationResponse = await validateToken(req);
     if (validationResponse.status !== "ok") {

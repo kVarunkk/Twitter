@@ -29,8 +29,19 @@ import TweetBody from "./TweetBody";
 import { Info, Link2, SendHorizonal, Share, Wand, X } from "lucide-react";
 
 import TweetReplyDialog from "./TweetReplyDialog";
+import { IPopulatedTweet } from "utils/types";
+import { stopPropagation } from "utils/utils";
 
-function Tweet(props) {
+type TweetProps = {
+  updateLoading?: React.Dispatch<React.SetStateAction<boolean>>;
+  user: string;
+  body: IPopulatedTweet;
+  setTweets?: React.Dispatch<React.SetStateAction<IPopulatedTweet[]>>;
+  setTweet?: React.Dispatch<React.SetStateAction<IPopulatedTweet>>;
+  userId: string;
+};
+
+function Tweet(props: TweetProps) {
   const [likeCount, setLikeCount] = useState(props.body.likes.length);
   const [commentCount, setCommentCount] = useState(props.body.comments.length);
   const [retweetCount, setRetweetCount] = useState(props.body.retweets.length);
@@ -55,12 +66,15 @@ function Tweet(props) {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [isClient, setIsClient] = useState(false);
+  const [isDeleteDialog, setIsDeleteDialog] = useState(false);
 
   useEffect(() => {
     setIsClient(true); // now we are safely on the client
   }, []);
 
-  const loadMoreComments = (e) => {
+  const loadMoreComments = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation();
     if (visibleComments >= comments.length) {
       // Collapse comments back to 5
@@ -94,7 +108,9 @@ function Tweet(props) {
   };
 
   // Handle liking a tweet
-  const handleLike = async (e) => {
+  const handleLike = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation();
 
     e.preventDefault();
@@ -116,7 +132,9 @@ function Tweet(props) {
   };
 
   // Handle retweeting
-  const handleRetweet = async (e) => {
+  const handleRetweet = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.stopPropagation();
     e.preventDefault();
     try {
@@ -140,8 +158,10 @@ function Tweet(props) {
           window.location.pathname === "/profile/" + props.user
         ) {
           if (props.setTweets) {
-            props.setTweets((prevTweets) =>
-              prevTweets.filter((tweet) => tweet.postedTweetTime !== tweetId)
+            props.setTweets((prevTweets: IPopulatedTweet[]) =>
+              prevTweets.filter(
+                (tweet: IPopulatedTweet) => tweet.postedTweetTime !== tweetId
+              )
             );
           } else {
             router.back();
@@ -158,7 +178,10 @@ function Tweet(props) {
   };
 
   // Handle comment submission
-  const handleCommentSubmit = async (e, input) => {
+  const handleCommentSubmit = async (
+    e: React.FormEvent<HTMLFormElement>,
+    input: string
+  ) => {
     e.stopPropagation();
     e.preventDefault();
     setReplyLoading(true);
@@ -186,7 +209,9 @@ function Tweet(props) {
         // Add the new comment to the state
         setComments((prevComments) => [data.comment, ...prevComments]);
         setCommentCount(data.commentCount);
-        e.target.commentInput.value = ""; // Clear input after successful comment
+        const form = e.target as HTMLFormElement;
+        (form.elements.namedItem("commentInput") as HTMLInputElement).value =
+          ""; // Clear input after successful comment
       } else {
         console.error("Failed to post comment:", data.message);
         showToast({
@@ -246,7 +271,7 @@ function Tweet(props) {
   };
 
   // Handle tweet deletion
-  const deleteTweet = async (e) => {
+  const deleteTweet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
     setDeleteLoading(true);
@@ -295,7 +320,7 @@ function Tweet(props) {
   };
 
   // Handle tweet editing
-  const editTweet = async (e) => {
+  const editTweet = async (e: React.FormEvent<HTMLFormElement>) => {
     e.stopPropagation();
     e.preventDefault();
     setEditLoading(true);
@@ -322,7 +347,7 @@ function Tweet(props) {
           );
         } else {
           // for single tweet page
-          props.setTweet(updatedTweet);
+          props.setTweet && props.setTweet(updatedTweet);
         }
 
         showToast({
@@ -348,15 +373,7 @@ function Tweet(props) {
     } finally {
       setEditLoading(false);
       setIsDialogOpen(false);
-      setTweetContent(props.body.content.trim());
-    }
-  };
-
-  // Utility function to wrap event handlers
-  const stopPropagation = (handler?) => (e) => {
-    e.stopPropagation(); // Prevent event propagation
-    if (handler) {
-      handler(e); // Call the original handler
+      setTweetContent(props.body.content?.trim());
     }
   };
 
@@ -434,27 +451,34 @@ function Tweet(props) {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="text-lg">
-                <DropdownMenuItem onClick={stopPropagation()}>
-                  <form onSubmit={deleteTweet}>
+                <DialogTrigger
+                  onClick={(e) => {
+                    stopPropagation();
+                    setIsDeleteDialog(true);
+                  }}
+                  className="w-full"
+                  asChild
+                >
+                  <DropdownMenuItem onClick={stopPropagation()} asChild>
+                    {/* <form onSubmit={deleteTweet}> */}
                     <button
-                      disabled={deleteLoading}
+                      type="button"
                       onClick={stopPropagation()}
-                      className={`!p-2 flex items-center !justify-between disabled:opacity-50 disabled:cursor-not-allowed`}
+                      className="!p-2 flex items-center"
                     >
-                      <div className="flex items-center">
-                        <RiDeleteBin6Fill className="!mr-2" /> Delete
-                      </div>
-                      {deleteLoading && (
-                        <div className="ml-auto">
-                          <AppLoader size="sm" />
-                        </div>
-                      )}
+                      {/* <div className="flex items-center"> */}
+                      <RiDeleteBin6Fill /> Delete
+                      {/* </div> */}
                     </button>
-                  </form>
-                </DropdownMenuItem>
+                    {/* </form> */}
+                  </DropdownMenuItem>
+                </DialogTrigger>
                 {isUserActive && (
                   <DialogTrigger
-                    onClick={stopPropagation()}
+                    onClick={(e) => {
+                      stopPropagation();
+                      setIsDeleteDialog(false);
+                    }}
                     className="w-full"
                     asChild
                   >
@@ -486,42 +510,75 @@ function Tweet(props) {
             </DropdownMenu>
             <DialogContent className="!p-4">
               <DialogHeader>
-                <DialogTitle>Edit Tweet</DialogTitle>
+                <DialogTitle>
+                  {isDeleteDialog ? "Delete" : "Edit"} Tweet
+                </DialogTitle>
               </DialogHeader>
-              <form id="tweetEditForm" onSubmit={editTweet}>
-                <textarea
-                  ref={textareaRef}
-                  onInput={autoResize}
-                  value={tweetContent}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    setTweetContent(e.target.value);
-                  }}
-                  disabled={editLoading}
-                  className="disabled:opacity-50 disabled:cursor-not-allowed !w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
-                  required
-                />
-              </form>
-              <DialogFooter className="flex items-center !justify-between w-full">
-                <div className="text-gray-600 text-sm">
-                  {280 - tweetContent?.length} characters left
+              {isDeleteDialog ? (
+                <div className="text-gray-600">
+                  Are you sure you want to delete this tweet? This action cannot
+                  be undone.
                 </div>
-                <button
-                  form="tweetEditForm"
-                  onClick={stopPropagation()}
-                  type="submit"
-                  className={` ${
-                    editLoading ? "disabled" : "tweetBtn"
-                  } flex items-center gap-2`}
-                  disabled={
-                    tweetContent?.trim()?.length === 0 ||
-                    editLoading ||
-                    tweetContent?.length > 280
-                  }
-                >
-                  Save
-                  {editLoading && <AppLoader size="sm" color="white" />}
-                </button>
+              ) : (
+                <form id="tweetEditForm" onSubmit={editTweet}>
+                  <textarea
+                    ref={textareaRef}
+                    onInput={autoResize}
+                    value={tweetContent}
+                    onChange={(e) => {
+                      e.stopPropagation();
+                      setTweetContent(e.target.value);
+                    }}
+                    disabled={editLoading}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed !w-full !border-b !border-border focus:outline-0 !p-2 !mb-4"
+                    required
+                  />
+                </form>
+              )}
+              <DialogFooter className="flex items-center !justify-between w-full">
+                {!isDeleteDialog && (
+                  <div className="text-gray-600 text-sm">
+                    {280 - (tweetContent?.length ?? 0)} characters left
+                  </div>
+                )}
+                {!isDeleteDialog && (
+                  <button
+                    form="tweetEditForm"
+                    onClick={stopPropagation()}
+                    type="submit"
+                    className={` ${
+                      editLoading ? "disabled" : "tweetBtn"
+                    } flex items-center gap-2`}
+                    disabled={
+                      tweetContent?.trim()?.length === 0 ||
+                      editLoading ||
+                      (tweetContent?.length ?? 0) > 280
+                    }
+                  >
+                    Save
+                    {editLoading && <AppLoader size="sm" color="white" />}
+                  </button>
+                )}
+
+                {isDeleteDialog && (
+                  <form onSubmit={deleteTweet}>
+                    <button
+                      className={`
+                    ${
+                      deleteLoading ? "disabled" : "tweetBtn"
+                    } flex items-center gap-2`}
+                      onClick={stopPropagation()}
+                      disabled={deleteLoading}
+                    >
+                      Delete
+                      {deleteLoading && (
+                        <div className="ml-auto">
+                          <AppLoader size="sm" color="white" />
+                        </div>
+                      )}
+                    </button>
+                  </form>
+                )}
               </DialogFooter>
             </DialogContent>
           </Dialog>

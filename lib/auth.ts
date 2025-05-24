@@ -1,7 +1,8 @@
 import { JWTPayload, SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
+import { User } from "utils/models/File";
 import { JWT_SECRET } from "utils/utils";
-const { User, Tweet, Comment } = require("utils/models/File");
 
 const TOKEN_NAME = "token";
 const MAX_AGE = 60 * 60 * 24; // 1 day in seconds
@@ -66,7 +67,7 @@ export function removeTokenCookie(response: Response): void {
   );
 }
 
-export async function validateToken(req) {
+export async function validateToken(req: NextRequest) {
   try {
     // Get the token from the x-access-token header
     const token = getTokenFromRequest(req);

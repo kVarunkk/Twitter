@@ -7,7 +7,15 @@ import "../app/globals.css";
 import Link from "next/link";
 import Avatar from "./Avatar";
 
-function Usercard(props) {
+type UsercardProps = {
+  username: string;
+  avatar?: string;
+  followers: string[];
+  bio?: string;
+  noLink?: boolean; // Optional prop to render as a non-clickable div
+};
+
+function Usercard(props: UsercardProps) {
   const url = useContext(UrlContext);
 
   const CardContent = (

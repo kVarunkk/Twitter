@@ -10,8 +10,15 @@ import AppLoader from "./AppLoader";
 import { showToast } from "./ToastComponent";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
+import { IPopulatedTweet } from "utils/types";
 
-function Feed({ initialTweets, activeUserProp, userIdProp }) {
+type FeedProps = {
+  initialTweets: IPopulatedTweet[];
+  activeUserProp: string;
+  userIdProp: string;
+};
+
+function Feed({ initialTweets, activeUserProp, userIdProp }: FeedProps) {
   const [error, setError] = useState(false);
   const [tweets, setTweets] = useState(initialTweets || []);
   const [loading, setLoading] = useState(false);
@@ -30,7 +37,7 @@ function Feed({ initialTweets, activeUserProp, userIdProp }) {
       const data = await req.json();
 
       if (data.status === "ok") {
-        const updatedTweets = data.tweets.map((tweet) => ({
+        const updatedTweets = data.tweets.map((tweet: IPopulatedTweet) => ({
           ...tweet,
           likeTweetBtn: tweet.likeTweetBtn || "black",
           retweetBtn: tweet.retweetBtn || "black",
@@ -74,11 +81,13 @@ function Feed({ initialTweets, activeUserProp, userIdProp }) {
 
       const data = await req.json();
       if (data.status === "ok") {
-        const updatedTweets = data.tweets.map((tweet) => ({
-          ...tweet,
-          likeTweetBtn: tweet.likeTweetBtn || "black",
-          retweetBtn: tweet.retweetBtn || "black",
-        }));
+        const updatedTweets: IPopulatedTweet[] = data.tweets.map(
+          (tweet: IPopulatedTweet) => ({
+            ...tweet,
+            likeTweetBtn: tweet.likeTweetBtn || "black",
+            retweetBtn: tweet.retweetBtn || "black",
+          })
+        );
 
         setTweets((prevTweets) => {
           const tweetMap = new Map();

@@ -2,17 +2,14 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-const { User, Tweet, Comment } = require("utils/models/File");
+import { Tweet, User } from "utils/models/File";
 import { JWT_SECRET, MONGODB_URI } from "utils/utils";
 import { setTokenCookie, signJwt } from "lib/auth";
-
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI);
-}
+import { connectToDatabase } from "lib/mongoose";
 
 export async function POST(req: Request) {
   try {
+    await connectToDatabase();
     const { username, password } = await req.json();
 
     // Find the user by username

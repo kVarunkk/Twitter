@@ -46,6 +46,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "./components/ui/tooltip";
+import { ISerealizedUser } from "utils/types";
 
 export default function TweetDialog() {
   const [input, setInput] = useState("");
@@ -56,7 +57,7 @@ export default function TweetDialog() {
   const [file, setFile] = useState<File | null>(null);
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [prompt, setPrompt] = useState("");
-  const [tweetGenError, setTweetGenError] = useState(null);
+  const [tweetGenError, setTweetGenError] = useState<string | null>(null);
   const [tweetGenLoading, setTweetGenLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const tags = useMemo(
@@ -75,7 +76,7 @@ export default function TweetDialog() {
   const url = useContext(UrlContext);
   const checkInput = input.trim().length || img.trim().length || file;
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const [activeUser, setActiveUser] = useState(null);
+  const [activeUser, setActiveUser] = useState<ISerealizedUser | null>(null);
   const fetchUser = async () => {
     try {
       const req = await fetch(`${url}/api/active-user`);
@@ -100,7 +101,7 @@ export default function TweetDialog() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!checkInput) return;
@@ -186,12 +187,15 @@ export default function TweetDialog() {
       setTweetGenLoading(false);
     }
   };
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
-  const handleSubmitTag = useCallback((e) => {
-    setTag(e.target.innerText);
-  }, []);
+  const handleSubmitTag = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      setTag(e.currentTarget.innerText);
+    },
+    []
+  );
 
   const generateTweet = async () => {
     if (!prompt) return;
@@ -295,7 +299,9 @@ export default function TweetDialog() {
               {!showPromptInput && (
                 <div className="flex items-center gap-1">
                   <button
-                    disabled={activeUser && activeUser.tweetGenCount === 5}
+                    disabled={
+                      activeUser ? activeUser.tweetGenCount === 5 : true
+                    }
                     type="button"
                     onClick={() => {
                       setShowPromptInput(!showPromptInput);

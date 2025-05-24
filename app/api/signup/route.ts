@@ -1,16 +1,13 @@
 import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-const { User, Tweet, Comment } = require("utils/models/File");
+import { Tweet, User } from "utils/models/File";
+import { connectToDatabase } from "lib/mongoose";
 const MONGODB_URI = process.env.MONGO_URI;
-
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI);
-}
 
 export async function POST(req: Request) {
   try {
+    await connectToDatabase();
     const {
       username,
       password,

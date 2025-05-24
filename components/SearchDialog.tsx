@@ -11,20 +11,29 @@ import { UrlContext } from "context/urlContext";
 import { showToast } from "./ToastComponent";
 import Usercard from "./Usercard";
 import AppLoader from "./AppLoader";
+import { ISerealizedUser, IUser } from "utils/types";
+
+type SearchDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  onUserSelect: (user: ISerealizedUser) => void;
+  activeUser: ISerealizedUser | null;
+};
 
 export default function SearchDialog({
   open,
   onClose,
   onUserSelect,
   activeUser,
-}) {
+}: SearchDialogProps) {
   const [searchText, setSearchText] = useState("");
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<ISerealizedUser[]>([]);
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
 
   const handleSearch = async () => {
     if (searchText.trim().length === 0) return;
+    if (!activeUser) return;
 
     setLoading(true);
 
@@ -41,7 +50,11 @@ export default function SearchDialog({
       const data = await req.json();
 
       if (data.status === "ok") {
-        setUsers(data.users.filter((user) => user._id !== activeUser.id));
+        setUsers(
+          data.users.filter(
+            (user: ISerealizedUser) => user._id !== activeUser._id
+          )
+        );
       } else {
         throw new Error(data.error || "Unknown error occurred");
       }

@@ -3,16 +3,13 @@ import { validateToken } from "lib/auth";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { getAggregatePipeline } from "lib/aggregatePipelines";
-const { User } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { User } from "utils/models/File";
+import { IUser } from "utils/types";
 
 export async function POST(req: NextRequest) {
   try {
+    await connectToDatabase();
     const validationResponse = await validateToken(req);
     if (validationResponse.status !== "ok") {
       return NextResponse.json(
@@ -33,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
     const pipeline = getAggregatePipeline("users", query, queryEmbedding);
 
-    const results = await User.aggregate(pipeline);
+    const results: IUser[] = await User.aggregate(pipeline);
     return NextResponse.json({ status: "ok", results, user });
   } catch (err) {
     console.error("Hybrid search error:", err);

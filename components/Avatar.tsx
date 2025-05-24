@@ -1,6 +1,14 @@
 "use client";
 
-export default function Avatar({ src, alt, size = "md" }) {
+export default function Avatar({
+  src,
+  alt,
+  size = "md",
+}: {
+  src: string;
+  alt: string;
+  size?: "sm" | "md" | "lg";
+}) {
   const sizeClasses = {
     sm: "w-8 h-8",
     md: "w-12 h-12",
@@ -16,10 +24,6 @@ export default function Avatar({ src, alt, size = "md" }) {
           : `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/${src}`
       }
       alt={alt}
-      // onError={(e) => {
-      //   e.currentTarget.onerror = null; // prevent infinite loop
-      //   e.currentTarget.src = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`;
-      // }}
     />
   );
 }

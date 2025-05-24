@@ -1,15 +1,15 @@
 "use client";
 
-import { MutableRefObject } from "react";
+import { RefObject } from "react";
 
 interface AppLoaderProps {
   size?: "sm" | "md" | "lg"; // Loader sizes
   color?: "blue" | "white" | "black"; // Loader colors
-  ref?: MutableRefObject<HTMLDivElement>;
+  ref?: RefObject<HTMLDivElement | null>;
 }
 
 export default function AppLoader({
-  ref = null,
+  ref,
   size = "md",
   color = "blue",
 }: AppLoaderProps) {

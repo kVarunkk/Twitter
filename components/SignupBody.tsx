@@ -36,12 +36,12 @@ function SignupBody() {
     }
   }, [user, load]);
 
-  const handleChangeUserName = (e) => {
+  const handleChangeUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value.toLowerCase());
     setErrors((prev) => ({ ...prev, username: "" })); // Clear username error on input change
   };
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
     setErrors((prev) => ({ ...prev, password: "" })); // Clear password error on input change
   };
@@ -58,7 +58,7 @@ function SignupBody() {
   }
 
   const handleSubmit = useCallback(
-    async (e) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoading(true);
       setErrors({ username: "", password: "" }); // Clear previous errors
@@ -110,7 +110,7 @@ function SignupBody() {
             username: "",
             password: "",
           };
-          data.errors.forEach((error) => {
+          data.errors.forEach((error: any) => {
             if (error.path === "username") {
               validationErrors.username = error.msg;
             }

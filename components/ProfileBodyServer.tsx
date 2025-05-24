@@ -6,23 +6,23 @@ import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { cookies } from "next/headers";
 import Error from "./Error";
+import { Tweet, User } from "utils/models/File";
+import { connectToDatabase } from "lib/mongoose";
+import { IPopulatedTweet } from "utils/types";
 
-const { User, Tweet, Comment } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
-function serializeObject(obj) {
+function serializeObject(obj: unknown) {
   return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
 }
 
 export const dynamic = "force-dynamic";
 
-export default async function ProfileBodyServer({ userName }) {
+export default async function ProfileBodyServer({
+  userName,
+}: {
+  userName: string;
+}) {
   try {
+    await connectToDatabase();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) redirect("/");
@@ -34,6 +34,8 @@ export default async function ProfileBodyServer({ userName }) {
     if (!user) redirect("/");
 
     const profileUser = await User.findOne({ username: userName });
+
+    if (!profileUser) throw Error();
 
     const isFollowing = profileUser.followers.includes(user.username);
     const followBtn = isFollowing ? "Following" : "Follow";
@@ -53,7 +55,7 @@ export default async function ProfileBodyServer({ userName }) {
       ],
       postedBy: { $exists: true, $ne: null },
     })
-      .lean()
+      .lean<IPopulatedTweet[]>()
       .populate("postedBy", "username avatar")
       .populate("retweetedFrom", "postedTweetTime")
       .populate({
@@ -66,8 +68,8 @@ export default async function ProfileBodyServer({ userName }) {
       .sort({ createdAt: -1 })
       .limit(20);
     // Add like/retweet status for the active user
-    const hydratedTweets = tweets.map((tweet: any) => {
-      const safeTweet = serializeObject(tweet);
+    const hydratedTweets = tweets.map((tweet) => {
+      const safeTweet: IPopulatedTweet = serializeObject(tweet);
       return {
         ...safeTweet,
         likeTweetBtn: safeTweet.likes.includes(user.username)

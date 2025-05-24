@@ -3,7 +3,15 @@
 import { ChevronUp } from "lucide-react";
 import Chat from "./Chat";
 
-export default function ChatWrapper({ setIsDrawerOpen, isDrawerOpen }) {
+type ChatWrapperProps = {
+  setIsDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isDrawerOpen: boolean;
+};
+
+export default function ChatWrapper({
+  setIsDrawerOpen,
+  isDrawerOpen,
+}: ChatWrapperProps) {
   return (
     <>
       <button

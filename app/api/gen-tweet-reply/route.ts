@@ -1,22 +1,18 @@
 import { validateToken } from "lib/auth";
+import { connectToDatabase } from "lib/mongoose";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { User } from "utils/models/File";
 import { MONGODB_URI } from "utils/utils";
-const { User } = require("utils/models/File");
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
 export async function POST(req: NextRequest) {
   try {
+    await connectToDatabase();
     // Validate the token
     const validationResponse = await validateToken(req);
     if (validationResponse.status !== "ok") {
@@ -27,6 +23,13 @@ export async function POST(req: NextRequest) {
     }
 
     const user = validationResponse.user;
+
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
 
     const { tweet, prompt } = await req.json();
 

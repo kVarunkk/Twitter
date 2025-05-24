@@ -1,7 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Model, Schema } from "mongoose";
 import moment from "moment";
+import { IChat, IComment, IMessage, ITweet, IUser } from "utils/types";
 
-const messageSchema = new mongoose.Schema(
+export interface IUserDocument extends IUser, Document {}
+export interface IChatDocument extends IChat, Document {}
+export interface IMessageDocument extends IMessage, Document {}
+export interface ITweetDocument extends ITweet, Document {}
+export interface ICommentDocument extends IComment, Document {}
+
+const messageSchema = new mongoose.Schema<IMessageDocument>(
   {
     chat: { type: mongoose.Schema.Types.ObjectId, ref: "Chat", required: true },
     sender: {
@@ -20,7 +27,7 @@ const messageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const chatSchema = new mongoose.Schema(
+const chatSchema = new mongoose.Schema<IChatDocument>(
   {
     users: [
       { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -35,14 +42,14 @@ const chatSchema = new mongoose.Schema(
 );
 
 // User Schema
-const userSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema<IUserDocument>(
   {
     avatar: { type: String },
     username: { type: String, required: true },
     bio: { type: String },
     banner: { type: String },
     password: { type: String, required: true },
-    followers: { type: Array },
+    followers: [{ type: String }],
     followBtn: { type: String, default: "Follow" },
     tweets: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tweet" }],
     chats: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
@@ -66,7 +73,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Tweet Schema
-const tweetSchema = new mongoose.Schema(
+const tweetSchema = new mongoose.Schema<ITweetDocument>(
   {
     content: { type: String },
     tag: { type: String },
@@ -76,12 +83,12 @@ const tweetSchema = new mongoose.Schema(
       type: String,
       default: moment().format("MMMM Do YYYY, h:mm:ss a"),
     },
-    likes: { type: Array },
+    likes: [{ type: String }],
     likeTweetBtn: { type: String, default: "black" },
     retweetBtn: { type: String, default: "black" },
     retweetedByUser: { type: String },
     isRetweeted: { type: Boolean, default: false },
-    retweets: { type: Array, default: [] },
+    retweets: [{ type: String, default: [] }],
     isEdited: { type: Boolean, default: false },
     shares: { type: Number, default: 0 },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
@@ -91,7 +98,7 @@ const tweetSchema = new mongoose.Schema(
 );
 
 // Comment Schema
-const commentSchema = new mongoose.Schema(
+const commentSchema = new mongoose.Schema<ICommentDocument>(
   {
     content: { type: String, required: true },
     postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
@@ -99,7 +106,7 @@ const commentSchema = new mongoose.Schema(
       type: String,
       default: moment().format("MMMM Do YYYY, h:mm:ss a"),
     },
-    likes: { type: Array },
+    likes: [{ type: String }],
     likeCommentBtn: { type: String, default: "black" },
     isEdited: { type: Boolean, default: false },
   },
@@ -107,11 +114,16 @@ const commentSchema = new mongoose.Schema(
 );
 
 // Models
-export const Message =
-  mongoose.models?.Message || mongoose.model("Message", messageSchema);
-export const Chat = mongoose.models?.Chat || mongoose.model("Chat", chatSchema);
-export const User = mongoose.models?.User || mongoose.model("User", userSchema);
-export const Tweet =
-  mongoose.models?.Tweet || mongoose.model("Tweet", tweetSchema);
-export const Comment =
-  mongoose.models?.Comment || mongoose.model("Comment", commentSchema);
+export const Message: Model<IMessageDocument> =
+  mongoose.models?.Message ||
+  mongoose.model<IMessageDocument>("Message", messageSchema);
+export const Chat: Model<IChatDocument> =
+  mongoose.models?.Chat || mongoose.model<IChatDocument>("Chat", chatSchema);
+export const User: Model<IUserDocument> =
+  mongoose.models?.User || mongoose.model<IUserDocument>("User", userSchema);
+export const Tweet: Model<ITweetDocument> =
+  mongoose.models?.Tweet ||
+  mongoose.model<ITweetDocument>("Tweet", tweetSchema);
+export const Comment: Model<ICommentDocument> =
+  mongoose.models?.Comment ||
+  mongoose.model<ICommentDocument>("Comment", commentSchema);

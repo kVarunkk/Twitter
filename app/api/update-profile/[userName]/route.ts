@@ -1,21 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
-
-const { User } = require("utils/models/File");
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { User } from "utils/models/File";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ userName: string }> }
 ) {
   try {
+    await connectToDatabase();
     const { userName } = await params;
     const { field, value } = await req.json();
 
@@ -33,6 +28,13 @@ export async function POST(
       return NextResponse.json(
         { status: "error", message: validationResponse.message },
         { status: 401 }
+      );
+    }
+
+    if (!validationResponse.user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found." },
+        { status: 404 }
       );
     }
 

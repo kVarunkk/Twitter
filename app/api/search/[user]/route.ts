@@ -1,22 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
-
-const { User, Tweet } = require("utils/models/File");
-
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { Tweet, User } from "utils/models/File";
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ user: string }> }
 ) {
   try {
+    await connectToDatabase();
     const { user } = await params;
     const url = new URL(req.url);
     const tweetsToSkip = parseInt(url.searchParams.get("skip") || "0"); // Pagination: Number of tweets to skip
@@ -30,6 +24,14 @@ export async function GET(
         { status: 401 }
       );
     }
+
+    if (!validationResponse.user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
+
     const activeUser = validationResponse.user.username;
 
     // Search for users matching the query

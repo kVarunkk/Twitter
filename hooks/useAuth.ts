@@ -11,11 +11,11 @@ export function useAuth() {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch(url + "/api/me");
+        const res = await fetch(url + "/api/active-user");
         if (res.ok) {
           const data = await res.json();
           setUser(data.user);
-        }
+        } else throw new Error("Failed to fetch user");
       } catch {
         setUser(null);
       } finally {

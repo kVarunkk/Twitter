@@ -75,6 +75,8 @@
     ]
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.9",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.2",
     "gh-pages": "^5.0.0",

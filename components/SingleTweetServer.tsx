@@ -5,22 +5,22 @@ import { verifyJwt } from "lib/auth";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import Error from "./Error";
+import { Tweet, User } from "utils/models/File";
+import { IPopulatedTweet } from "utils/types";
+import { connectToDatabase } from "lib/mongoose";
 
-const { User, Tweet, Comment } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
-function serializeObject(obj) {
+function serializeObject(obj: unknown) {
   return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
 }
 
 export const dynamic = "force-dynamic";
-export default async function SingleTweetServer({ tweetId }) {
+export default async function SingleTweetServer({
+  tweetId,
+}: {
+  tweetId: string;
+}) {
   try {
+    await connectToDatabase();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) redirect("/");
@@ -43,9 +43,8 @@ export default async function SingleTweetServer({ tweetId }) {
           select: "username avatar",
         },
       })
-      .lean();
-
-    const safeTweet = serializeObject(tweet);
+      .lean<IPopulatedTweet>();
+    const safeTweet: IPopulatedTweet = serializeObject(tweet);
 
     safeTweet.likeTweetBtn = safeTweet.likes.includes(user.username)
       ? "deeppink"
@@ -61,7 +60,7 @@ export default async function SingleTweetServer({ tweetId }) {
       }
     });
 
-    return <SingleTweet tweetProp={safeTweet} />;
+    return <SingleTweet tweetProp={safeTweet} activeUserProp={user.username} />;
   } catch (error) {
     return <Error />;
   }

@@ -1,21 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
+import { connectToDatabase } from "lib/mongoose";
+import { Comment } from "utils/models/File";
 
-const { User, Tweet, Comment } = require("utils/models/File");
 // Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ userName: string; commentId: string }> }
 ) {
   try {
+    await connectToDatabase();
     const { userName, commentId } = await params;
 
     // Validate the token

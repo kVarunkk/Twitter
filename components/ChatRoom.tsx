@@ -13,26 +13,44 @@ import {
 import AppLoader from "./AppLoader";
 import Link from "next/link";
 import Avatar from "./Avatar";
+import {
+  IPopulatedChat,
+  IPopulatedMessage,
+  ISerealizedUser,
+  IUser,
+} from "utils/types";
 
-// Import E2EE helper functions
+type ChatRoomProps = {
+  activeChat: IPopulatedChat;
+  activeUser: ISerealizedUser | null;
+};
 
-export default function ChatRoom({ activeChat, activeUser }) {
-  const [messages, setMessages] = useState([]);
+type Message = {
+  _id: string;
+  sender: {
+    _id: string;
+  };
+  createdAt: Date;
+  content: string;
+};
+
+export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const { socket, joinRoom } = useSocket();
   const textareaRef = useRef(null);
   const url = useContext(UrlContext);
-  const [nonActiveUser, setNonActiveUser] = useState(null);
+  const [nonActiveUser, setNonActiveUser] = useState<ISerealizedUser>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (activeChat && activeUser) {
-      setNonActiveUser(activeChat.users.find((u) => u._id !== activeUser.id));
+      setNonActiveUser(activeChat.users.find((u) => u._id !== activeUser._id));
     }
   }, [activeChat, activeUser]);
 
   useEffect(() => {
-    if (!socket || !activeChat._id) return; // Ensure socket is initialized
+    if (!socket || !activeChat._id || !activeUser) return; // Ensure socket is initialized
     setLoading(true);
     const fetchMessages = async () => {
       try {
@@ -57,21 +75,19 @@ export default function ChatRoom({ activeChat, activeUser }) {
         if (data.status === "ok") {
           //console.log(data.messages);
 
-          const decryptedMessages = await Promise.all(
-            data.messages
-              // .filter((e) => e.sender._id !== activeUser.id)
-              .map(async (msg) => ({
-                _id: msg._id,
-                sender: msg.sender,
-                createdAt: new Date(msg.createdAt),
-                content: await fetchAndDecryptMessage(
-                  msg.encryptedAESKeyForSender,
-                  msg.encryptedAESKeyForRecipient,
-                  msg.encryptedMessage,
-                  msg.iv,
-                  msg.sender._id === activeUser.id
-                ),
-              }))
+          const decryptedMessages: Message[] = await Promise.all(
+            data.messages.map(async (msg: IPopulatedMessage) => ({
+              _id: msg._id,
+              sender: msg.sender,
+              createdAt: new Date(msg.createdAt || ""),
+              content: await fetchAndDecryptMessage(
+                msg.encryptedAESKeyForSender,
+                msg.encryptedAESKeyForRecipient,
+                msg.encryptedMessage,
+                msg.iv,
+                msg.sender._id === activeUser._id
+              ),
+            }))
           );
 
           setMessages(decryptedMessages);
@@ -93,7 +109,7 @@ export default function ChatRoom({ activeChat, activeUser }) {
         message.encryptedAESKeyForRecipient,
         message.encryptedMessage,
         message.iv,
-        message.sender === activeUser.id
+        message.sender === activeUser._id
       );
 
       setMessages((prev) => [
@@ -113,10 +129,16 @@ export default function ChatRoom({ activeChat, activeUser }) {
     return () => {
       socket.off("message", handleMessage);
     };
-  }, [socket, activeChat._id, setMessages]);
+  }, [socket, activeChat._id, setMessages, activeUser]);
 
   const sendMessage = async () => {
-    if (socket && newMessage.trim() && nonActiveUser.publicKey) {
+    if (
+      socket &&
+      newMessage.trim() &&
+      nonActiveUser &&
+      nonActiveUser?.publicKey &&
+      activeUser
+    ) {
       try {
         const encryptedData = await encryptAndSendMessage(
           newMessage,
@@ -127,7 +149,7 @@ export default function ChatRoom({ activeChat, activeUser }) {
         const message = {
           id: uuidv4(),
           roomId: activeChat._id,
-          sender: activeUser.id,
+          sender: activeUser._id,
           ...encryptedData, // Send encrypted message data
         };
 
@@ -165,7 +187,7 @@ export default function ChatRoom({ activeChat, activeUser }) {
             {nonActiveUser?.username}
           </div>
           <div className="text-sm text-gray-500">
-            {formatContentWithLinks(nonActiveUser?.bio)}
+            {formatContentWithLinks(nonActiveUser?.bio || "")}
           </div>
           <div className="text-sm text-gray-500">
             {nonActiveUser?.followers?.length} followers
@@ -185,14 +207,14 @@ export default function ChatRoom({ activeChat, activeUser }) {
             <div
               key={msg._id}
               className={`flex flex-col gap-1 !max-w-[75%] !w-fit ${
-                msg.sender._id === activeUser.id
+                msg.sender._id === activeUser?._id
                   ? " self-end !ml-auto"
                   : " self-start"
               }`}
             >
               <div
                 className={` !px-4 !py-2 rounded-xl ${
-                  msg.sender._id === activeUser.id
+                  msg.sender._id === activeUser?._id
                     ? "bg-[#1DA1F2] text-white "
                     : "bg-gray-200 text-black "
                 }`}

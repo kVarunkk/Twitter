@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { validateToken } from "lib/auth";
-import mongoose from "mongoose";
+import mongoose, { connect } from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { getAggregatePipeline } from "lib/aggregatePipelines";
-const { User, Tweet } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { IPopulatedTweet } from "utils/types";
+import { Tweet } from "utils/models/File";
 
 export async function POST(req: NextRequest) {
   try {
+    await connectToDatabase();
     const validationResponse = await validateToken(req);
     if (validationResponse.status !== "ok") {
       return NextResponse.json(
@@ -22,6 +19,13 @@ export async function POST(req: NextRequest) {
     }
 
     const user = validationResponse.user;
+
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
 
     const { query } = await req.json();
 
@@ -33,9 +37,7 @@ export async function POST(req: NextRequest) {
     }
     const pipeline = getAggregatePipeline("tweets", query);
 
-    const results = await Tweet.aggregate(pipeline);
-
-    console.log("Hybrid search results:", JSON.stringify(results));
+    const results: IPopulatedTweet[] = await Tweet.aggregate(pipeline);
 
     if (!results || results.length === 0) {
       return NextResponse.json({ status: "ok", results: [] });

@@ -3,25 +3,17 @@ import Feed from "./Feed";
 import { redirect } from "next/navigation";
 import { verifyJwt } from "lib/auth";
 import mongoose from "mongoose";
-import { MONGODB_URI } from "utils/utils";
+import { MONGODB_URI, serializeObject } from "utils/utils";
 import Error from "./Error";
-
-const { User, Tweet, Comment } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
-function serializeObject(obj) {
-  return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
-}
+import { connectToDatabase } from "lib/mongoose";
+import { Tweet, User } from "utils/models/File";
+import { IPopulatedTweet, ITweet } from "utils/types";
 
 export const dynamic = "force-dynamic"; // This will make sure the page is always revalidated on every request
 
 export default async function FeedServer() {
   try {
+    await connectToDatabase();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) redirect("/");
@@ -35,7 +27,6 @@ export default async function FeedServer() {
     const tweets = await Tweet.find({
       postedBy: { $exists: true, $ne: null },
     })
-      .lean()
       .populate("postedBy", "username avatar")
       .populate({
         path: "comments",
@@ -46,10 +37,11 @@ export default async function FeedServer() {
       })
       .populate("retweetedFrom", "postedTweetTime")
       .sort({ createdAt: -1 })
-      .limit(20);
+      .limit(20)
+      .lean<IPopulatedTweet[]>();
 
     const hydratedTweets = tweets.map((tweet) => {
-      const safeTweet = serializeObject(tweet);
+      const safeTweet: IPopulatedTweet = serializeObject(tweet);
 
       return {
         ...safeTweet,

@@ -24,12 +24,27 @@ import Link from "next/link";
 import { showToast } from "./ToastComponent";
 import { GoComment } from "react-icons/go";
 import { Reply } from "lucide-react";
-import debounce from "lodash.debounce"; // Import lodash debounce
 import { formatContentWithLinks } from "utils/utils";
 import Avatar from "./Avatar";
 import AppLoader from "./AppLoader";
+import { IComment, IPopulatedComment } from "utils/types";
 
-function Comment(props) {
+type CommentProps = {
+  body: IPopulatedComment;
+  user: string;
+  setComments: React.Dispatch<React.SetStateAction<IPopulatedComment[]>>;
+  setCommentCount: React.Dispatch<React.SetStateAction<number>>;
+  handleCommentSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    input: string
+  ) => Promise<void>;
+  populateComments: () => Promise<void>;
+  replyLoading?: boolean;
+  setReplyLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  tweetBy: string;
+};
+
+function Comment(props: CommentProps) {
   const [likeCount, setLikeCount] = useState(props.body.likes?.length);
   const [btnColor, setBtnColor] = useState(props.body.likeCommentBtn);
   const [commentContent, setCommentContent] = useState(props.body.content);
@@ -47,7 +62,9 @@ function Comment(props) {
   const [isDialogOpen1, setIsDialogOpen1] = useState(false);
 
   // Handle liking a comment
-  const handleLike = async (e) => {
+  const handleLike = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     try {
       const req = await fetch(
@@ -74,7 +91,7 @@ function Comment(props) {
   };
 
   // Handle deleting a comment
-  const deleteComment = async (e) => {
+  const deleteComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setDeleteLoading(true);
     try {
@@ -121,7 +138,7 @@ function Comment(props) {
   };
 
   // Handle editing a comment
-  const editComment = async (e) => {
+  const editComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setEditLoading(true);
     try {

@@ -5,23 +5,19 @@ import { MONGODB_URI } from "utils/utils";
 import { cookies } from "next/headers";
 import TopicArea from "./TopicArea";
 import Error from "./Error";
+import { connectToDatabase } from "lib/mongoose";
+import { IPopulatedTweet } from "utils/types";
+import { Tweet, User } from "utils/models/File";
 
-const { User, Tweet, Comment } = require("utils/models/File");
-
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
-
-function serializeObject(obj) {
+function serializeObject(obj: unknown) {
   return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
 }
 
 export const dynamic = "force-dynamic";
 
-export default async function TopicAreaServer({ tag }) {
+export default async function TopicAreaServer({ tag }: { tag: string }) {
   try {
+    await connectToDatabase();
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
     if (!token) redirect("/");
@@ -36,7 +32,6 @@ export default async function TopicAreaServer({ tag }) {
       tag,
       postedBy: { $exists: true, $ne: null },
     })
-      .lean()
       .populate("postedBy", "username avatar")
       .populate({
         path: "comments",
@@ -47,10 +42,11 @@ export default async function TopicAreaServer({ tag }) {
       })
       .populate("retweetedFrom", "postedTweetTime")
       .sort({ createdAt: -1 })
-      .limit(20);
+      .limit(20)
+      .lean<IPopulatedTweet[]>();
 
     const hydratedTweets = tweets.map((tweet) => {
-      const safeTweet = serializeObject(tweet);
+      const safeTweet: IPopulatedTweet = serializeObject(tweet);
 
       return {
         ...safeTweet,

@@ -1,21 +1,18 @@
-import { NextResponse } from "next/server";
-import mongoose from "mongoose";
-import { MONGODB_URI } from "utils/utils";
+import { NextRequest, NextResponse } from "next/server";
+import mongoose, { connect } from "mongoose";
+import { MONGODB_URI, serializeObject } from "utils/utils";
 import { validateToken } from "lib/auth";
 
 import moment from "moment";
-const { User, Tweet, Comment } = require("utils/models/File");
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { IPopulatedTweet, ITweet } from "utils/types";
+import { Tweet, User } from "utils/models/File";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
+    await connectToDatabase();
     const { searchParams } = new URL(req.url);
-    const tweetsToSkip = parseInt(searchParams.get("t")) || 0;
+    const tweetsToSkip = parseInt(searchParams.get("t") || "") || 0;
 
     // Validate the token
     const validationResponse = await validateToken(req);
@@ -28,8 +25,16 @@ export async function GET(req: Request) {
 
     const user = validationResponse.user;
 
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
     // Fetch tweets
-    const tweets = await Tweet.find()
+    const tweets = await Tweet.find({
+      postedBy: { $exists: true, $ne: null },
+    })
       .populate("postedBy", "username avatar")
       .populate({
         path: "comments",
@@ -41,26 +46,32 @@ export async function GET(req: Request) {
       .populate("retweetedFrom", "postedTweetTime")
       .sort({ createdAt: -1 })
       .skip(tweetsToSkip)
-      .limit(20);
+      .limit(20)
+      .lean<IPopulatedTweet[]>();
 
-    // Add like and retweet button states
-    tweets.forEach((tweet) => {
-      tweet.likeTweetBtn = tweet.likes.includes(user.username)
-        ? "deeppink"
-        : "black";
-      tweet.retweetBtn = tweet.retweets.includes(user.username)
-        ? "green"
-        : "black";
-      tweet.comments.forEach((comment) => {
-        comment.likeCommentBtn = comment.likes.includes(user.username)
+    const hydratedTweets = tweets.map((tweet) => {
+      const safeTweet: IPopulatedTweet = serializeObject(tweet);
+
+      return {
+        ...safeTweet,
+        likeTweetBtn: safeTweet.likes.includes(user.username)
           ? "deeppink"
-          : "black";
-      });
+          : "black",
+        retweetBtn: safeTweet.retweets.includes(user.username)
+          ? "green"
+          : "black",
+        comments: (safeTweet.comments || []).map((comment) => ({
+          ...comment,
+          likeCommentBtn: (comment.likes || []).includes(user.username)
+            ? "deeppink"
+            : "black",
+        })),
+      };
     });
 
     return NextResponse.json({
       status: "ok",
-      tweets: tweets.filter((_) => _.postedBy),
+      tweets: hydratedTweets,
       activeUser: user.username,
       activeUserId: user._id,
     });
@@ -73,8 +84,9 @@ export async function GET(req: Request) {
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
+    await connectToDatabase();
     const body = await req.json();
     const tweetInfo = body.tweet;
 
@@ -88,6 +100,13 @@ export async function POST(req: Request) {
     }
 
     const user = validationResponse.user;
+
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
 
     // Create a new tweet
     const newTweet = await Tweet.create({

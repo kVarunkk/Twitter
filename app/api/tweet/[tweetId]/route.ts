@@ -1,21 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
+import { connectToDatabase } from "lib/mongoose";
+import { IPopulatedTweet } from "utils/types";
 
-const { User, Tweet, Comment } = require("utils/models/File");
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { Tweet, User } from "utils/models/File";
 
 export async function GET(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ tweetId: string }> }
 ) {
   try {
+    await connectToDatabase();
     const { tweetId } = await params;
 
     // Validate the token
@@ -29,8 +26,17 @@ export async function GET(
 
     const user = validationResponse.user;
 
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
+
     // Find the tweet by its unique identifier
-    const tweet = await Tweet.findOne({ postedTweetTime: tweetId })
+    const tweet = await Tweet.findOne({
+      postedTweetTime: tweetId,
+    })
       .populate("postedBy", "username avatar")
       .populate("retweetedFrom", "postedTweetTime")
       .populate({
@@ -39,7 +45,10 @@ export async function GET(
           path: "postedBy",
           select: "username avatar",
         },
-      });
+      })
+      .lean<IPopulatedTweet>();
+
+    if (!tweet) throw new Error("Tweet not found");
 
     tweet.likeTweetBtn = tweet.likes.includes(user.username)
       ? "deeppink"

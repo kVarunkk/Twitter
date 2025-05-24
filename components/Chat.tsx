@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { Drawer, DrawerContent, DrawerTitle } from "./components/ui/drawer";
 import ChatRoom from "./ChatRoom";
 import SearchDialog from "./SearchDialog";
@@ -20,36 +20,49 @@ import { RiDeleteBin6Fill } from "react-icons/ri";
 import AppLoader from "./AppLoader";
 import { useAuth } from "hooks/useAuth";
 import Avatar from "./Avatar";
+import { IPopulatedChat, ISerealizedUser, IUser } from "utils/types";
+import { stopPropagation } from "utils/utils";
 
-export default function Chat(props) {
+type ChatProps = {
+  isDrawerOpen: boolean;
+  setIsDrawerOpen: (isOpen: boolean) => void;
+};
+
+export default function Chat(props: ChatProps) {
   // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [activeChat, setActiveChat] = useState(null);
-  const [lastTextedUsers, setLastTextedUsers] = useState([]);
-  const [activeUser, setActiveUser] = useState(null);
+  const [activeChat, setActiveChat] = useState<IPopulatedChat | null>(null);
+  const [lastTextedUsers, setLastTextedUsers] = useState<IPopulatedChat[]>([]);
+  const [activeUser, setActiveUser] = useState<ISerealizedUser | null>(null);
   const [loading, setLoading] = useState(false);
   const url = useContext(UrlContext);
 
   const { user, loading: load } = useAuth();
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const res = await fetch(`${url}/api/profile/${(user as any).username}`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token") || "",
-        },
-      });
-      const data = await res.json();
-      if (data.status === "ok") {
-        setActiveUser(data);
-      } else {
-        console.error("Error fetching user profile");
-      }
-    };
     if (!load && user) {
-      fetchUser();
+      setActiveUser(user);
     }
-  }, [user, load]);
+  }, [load, user]);
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const res = await fetch(`${url}/api/profile/${(user as any).username}`, {
+  //       headers: {
+  //         //"x-access-token": localStorage.getItem("token") || "",
+  //       },
+  //     });
+  //     const data = await res.json();
+  //     if (data.status === "ok") {
+  //       setActiveUser(data);
+  //     } else {
+  //       console.error("Error fetching user profile");
+  //     }
+  //   };
+  //   if (!load && user) {
+  //     fetchUser();
+  //   }
+  // }, [user, load]);
 
   useEffect(() => {
     const fetchLastTextedUsers = async () => {
@@ -58,7 +71,7 @@ export default function Chat(props) {
       setLoading(true);
 
       try {
-        const res = await fetch(`/api/chat/getChats?userId=${activeUser.id}`, {
+        const res = await fetch(`/api/chat/getChats?userId=${activeUser._id}`, {
           headers: {
             //"x-access-token": localStorage.getItem("token") || "",
           },
@@ -73,7 +86,9 @@ export default function Chat(props) {
         const data = await res.json();
 
         if (data.status === "ok") {
-          setLastTextedUsers(data.chats.filter((_) => _.users.length > 1));
+          setLastTextedUsers(
+            data.chats.filter((_: IPopulatedChat) => _.users.length > 1)
+          );
         } else {
           throw new Error(`API error: ${data.message}`);
         }
@@ -87,15 +102,16 @@ export default function Chat(props) {
     fetchLastTextedUsers();
   }, [activeUser]);
 
-  const handleUserSelect = async (user) => {
+  const handleUserSelect = async (user: ISerealizedUser) => {
     try {
+      if (!activeUser) throw new Error("Active user not found");
       const res = await fetch("/api/chat/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           //"x-access-token": localStorage.getItem("token"),
         },
-        body: JSON.stringify({ user1: activeUser.id, user2: user._id }),
+        body: JSON.stringify({ user1: activeUser._id, user2: user._id }),
       });
 
       const data = await res.json();
@@ -116,7 +132,7 @@ export default function Chat(props) {
     }
   };
 
-  const deleteChat = async (e, chatId) => {
+  const deleteChat = async (e: FormEvent<HTMLFormElement>, chatId: string) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -159,14 +175,6 @@ export default function Chat(props) {
     }
   };
 
-  // Utility function to wrap event handlers
-  const stopPropagation = (handler?) => (e) => {
-    e.stopPropagation(); // Prevent event propagation
-    if (handler) {
-      handler(e); // Call the original handler
-    }
-  };
-
   return (
     <div className="fixed bottom-0 right-0">
       <Drawer open={props.isDrawerOpen} onOpenChange={props.setIsDrawerOpen}>
@@ -185,14 +193,14 @@ export default function Chat(props) {
                 {activeChat ? (
                   <Link
                     href={`/profile/${
-                      activeChat.users.find((u) => u._id !== activeUser.id)
-                        .username
+                      activeChat.users.find((u) => u._id !== activeUser?._id)
+                        ?.username
                     }`}
                     className="hover:underline underline-offset-2"
                   >
                     {
-                      activeChat.users.find((u) => u._id !== activeUser.id)
-                        .username
+                      activeChat.users.find((u) => u._id !== activeUser?._id)
+                        ?.username
                     }
                   </Link>
                 ) : (
@@ -230,7 +238,8 @@ export default function Chat(props) {
                     <Avatar
                       // className="!h-13 !w-13 profile-avatar"
                       src={`${
-                        chat.users.find((u) => u._id !== activeUser.id).avatar
+                        chat.users.find((u) => u._id !== activeUser?._id)
+                          ?.avatar
                       }`}
                       alt="Avatar"
                     />
@@ -238,8 +247,8 @@ export default function Chat(props) {
                       <div className="font-semibold">
                         {" "}
                         {
-                          chat.users.find((u) => u._id !== activeUser.id)
-                            .username
+                          chat.users.find((u) => u._id !== activeUser?._id)
+                            ?.username
                         }
                       </div>
                       <div className="text-gray-500 truncate">

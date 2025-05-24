@@ -1,21 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
-
-const { User, Tweet, Comment } = require("utils/models/File");
-// Ensure Mongoose connection is established
-if (!global.mongoose) {
-  global.mongoose = mongoose.connect(MONGODB_URI).catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
-}
+import { connectToDatabase } from "lib/mongoose";
+import { Tweet } from "utils/models/File";
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ tweetId: string }> }
 ) {
   try {
+    await connectToDatabase();
     const { tweetId } = await params;
     const { content } = await req.json();
 
@@ -37,6 +32,13 @@ export async function POST(
     }
 
     const user = validationResponse.user;
+
+    if (!user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 404 }
+      );
+    }
 
     // Find the tweet by its unique identifier
     const tweet = await Tweet.findOne({ postedTweetTime: tweetId });

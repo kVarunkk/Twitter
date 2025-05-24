@@ -53,7 +53,7 @@ function Sidebar() {
   }, [user, loading]);
 
   const logout = async () => {
-    await fetch(url + "/api/logout", {
+    fetch(url + "/api/logout", {
       method: "POST",
       credentials: "include",
     });

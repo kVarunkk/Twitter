@@ -9,7 +9,9 @@ export const TagSelector = React.memo(
     handleSubmitTag,
   }: {
     tags: string[];
-    handleSubmitTag: (e: any) => void;
+    handleSubmitTag: (
+      e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => void;
   }) => {
     return (
       <div className="tagArea overflow-x-auto whitespace-nowrap">

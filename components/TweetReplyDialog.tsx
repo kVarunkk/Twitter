@@ -20,6 +20,20 @@ import AppLoader from "./AppLoader";
 import { useContext, useEffect, useRef, useState } from "react";
 import { showToast } from "./ToastComponent";
 import { UrlContext } from "context/urlContext";
+import { IPopulatedTweet, IUser } from "utils/types";
+
+type TweetReplyDialogProps = {
+  handleCommentSubmit: (
+    e: React.FormEvent<HTMLFormElement>,
+    comment: string
+  ) => void;
+  comments: any[];
+  replyLoading: boolean;
+  username: string;
+  tweetBody: IPopulatedTweet;
+  isDialogOpen: boolean;
+  setIsDialogOpen: (open: boolean) => void;
+};
 
 export default function TweetReplyDialog({
   handleCommentSubmit,
@@ -29,24 +43,16 @@ export default function TweetReplyDialog({
   tweetBody,
   isDialogOpen,
   setIsDialogOpen,
-}: {
-  handleCommentSubmit: (e: any, input: string) => Promise<void>;
-  comments: any[];
-  replyLoading: boolean;
-  username: string;
-  tweetBody: string;
-  isDialogOpen: boolean;
-  setIsDialogOpen: (isOpen: boolean) => void;
-}) {
+}: TweetReplyDialogProps) {
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [prompt, setPrompt] = useState("");
   const tweetInputRef = useRef<HTMLTextAreaElement>(null);
-  const [tweetGenError, setTweetGenError] = useState(null);
+  const [tweetGenError, setTweetGenError] = useState<string | null>(null);
   const [tweetGenLoading, setTweetGenLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [tweetReply, setTweetReply] = useState("");
   const url = useContext(UrlContext);
-  const [activeUser, setActiveUser] = useState(null);
+  const [activeUser, setActiveUser] = useState<IUser>();
 
   const fetchUser = async () => {
     try {

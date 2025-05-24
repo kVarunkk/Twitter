@@ -5,8 +5,18 @@ import { AiOutlineRetweet } from "react-icons/ai";
 import { formatContentWithLinks } from "utils/utils";
 import AppLoader from "./AppLoader";
 import Avatar from "./Avatar";
+import { IPopulatedTweet } from "utils/types";
 
-export default function TweetBody(props) {
+type TweetBodyProps = {
+  body: IPopulatedTweet;
+  tweetId: string;
+  isEdited?: boolean;
+  isImageLoading: boolean;
+  url: string;
+  setIsImageLoading: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+export default function TweetBody(props: TweetBodyProps) {
   const router = useRouter();
   return (
     <li className=" flex flex-col ">
@@ -47,7 +57,7 @@ export default function TweetBody(props) {
       </div>
 
       <div className="text-gray-800 !mb-3 break-words whitespace-pre-wrap">
-        {formatContentWithLinks(props.body.content)}
+        {formatContentWithLinks(props.body.content || "")}
       </div>
       {props.body.image && (
         <div

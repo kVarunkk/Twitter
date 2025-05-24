@@ -11,11 +11,12 @@ import { showToast } from "./ToastComponent";
 import AppLoader from "./AppLoader";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
+import { IPopulatedTweet, ISerealizedUser } from "utils/types";
 
 function SearchArea() {
   const [text, setText] = useState("");
-  const [users, setUsers] = useState([]);
-  const [tweets, setTweets] = useState([]);
+  const [users, setUsers] = useState<ISerealizedUser[]>([]);
+  const [tweets, setTweets] = useState<IPopulatedTweet[]>([]);
   const [skip, setSkip] = useState(0);
   // const [hasMoreTweets, setHasMoreTweets] = useState(true);
   const [activeUser, setActiveUser] = useState("");
@@ -26,11 +27,11 @@ function SearchArea() {
   const isFetching = useRef(false);
   const [hasMoreTweets, setHasMoreTweets] = useState(true);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setText(e.target.value);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (text.trim().length === 0) return;
@@ -57,35 +58,10 @@ function SearchArea() {
     }
   };
 
-  const loadMoreTweets = async () => {
-    if (isFetching.current) return;
-    isFetching.current = true;
-    try {
-      const req = await fetch(
-        `${url}/api/search/${text}?skip=${skip}&limit=10`,
-        {
-          headers: {
-            //"x-access-token": localStorage.getItem("token"),
-          },
-        }
-      );
-
-      const data = await req.json();
-      if (data.status === "ok") {
-        setTweets((prevTweets) => [...prevTweets, ...data.tweets]); // Append new tweets
-        setSkip(skip + 10); // Increment skip for the next batch
-        setHasMoreTweets(data.tweets.length === 10); // Check if more tweets are available
-      } else {
-        //console.log(data.error);
-      }
-    } catch (err) {
-      console.error("Error loading more tweets:", err);
-    } finally {
-      isFetching.current = false;
-    }
-  };
-
-  const searchUsers = async () => {
+  const searchUsers = async (): Promise<{
+    users: ISerealizedUser[];
+    activeUser: ISerealizedUser;
+  }> => {
     try {
       const embedding = await fetch(`${url}/api/secure/embed-query`, {
         method: "POST",

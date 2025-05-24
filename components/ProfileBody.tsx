@@ -24,8 +24,23 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
 import { Link, X } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import Avatar from "./Avatar";
+import { IPopulatedTweet } from "utils/types";
 
-function ProfileBody({ userName, profileData }) {
+type ProfileBodyProps = {
+  userName: string;
+  profileData: {
+    initialTweets: IPopulatedTweet[];
+    activeUserProp: string;
+    userIdProp: string;
+    followBtnProp: string;
+    bioProp?: string;
+    avatarProp?: string;
+    followersProp: number;
+    bannerProp?: string;
+  };
+};
+
+function ProfileBody({ userName, profileData }: ProfileBodyProps) {
   const {
     initialTweets,
     activeUserProp,
@@ -87,7 +102,7 @@ function ProfileBody({ userName, profileData }) {
         //   retweetBtn: tweet.retweetBtn || "black",
         // }));
 
-        setTweets(data.tweets.filter((_) => _.postedBy));
+        setTweets(data.tweets.filter((_: IPopulatedTweet) => _.postedBy));
         setActiveUser(data.activeUser);
         setUserId(data.activeUserId);
         setBio(data.bio);
@@ -134,11 +149,13 @@ function ProfileBody({ userName, profileData }) {
       const data = await req.json();
 
       if (data.status === "ok") {
-        const updatedTweets = data.tweets.map((tweet) => ({
-          ...tweet,
-          likeTweetBtn: tweet.likeTweetBtn || "black",
-          retweetBtn: tweet.retweetBtn || "black",
-        }));
+        const updatedTweets: IPopulatedTweet[] = data.tweets.map(
+          (tweet: IPopulatedTweet) => ({
+            ...tweet,
+            likeTweetBtn: tweet.likeTweetBtn || "black",
+            retweetBtn: tweet.retweetBtn || "black",
+          })
+        );
 
         if (updatedTweets.length < 20) {
           setHasMoreTweets(false);
@@ -247,7 +264,7 @@ function ProfileBody({ userName, profileData }) {
     }
   };
 
-  const handleProfileUpdate = async (field, value) => {
+  const handleProfileUpdate = async (field: string, value: string) => {
     try {
       const response = await axios.post(
         `${url}/api/update-profile/${activeUser}`,
@@ -286,7 +303,7 @@ function ProfileBody({ userName, profileData }) {
       }
     } catch (error) {
       // console.error(`Error updating ${field}:`, error);
-      error.response.data.message !==
+      (error as any).response.data.message !==
         "Field and value are required for profile update." &&
         showToast({
           heading: "Error",
@@ -295,14 +312,6 @@ function ProfileBody({ userName, profileData }) {
         });
     }
   };
-
-  // const { user, loading: load } = useAuth();
-
-  // useEffect(() => {
-  //   if (!load && user) {
-  //     populateUserData();
-  //   }
-  // }, [user, load]);
 
   const saveUploadedAvatar = async () => {
     if (!file) return;

@@ -11,9 +11,21 @@ import AppLoader from "./AppLoader";
 import Header from "./Header";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
-import { useAuth } from "hooks/useAuth";
+import { IPopulatedTweet } from "utils/types";
 
-function TopicArea({ tag, initialTweets, activeUserProp, userIdProp }) {
+type TopicAreaProps = {
+  tag: string;
+  initialTweets: IPopulatedTweet[];
+  activeUserProp: string;
+  userIdProp: string;
+};
+
+function TopicArea({
+  tag,
+  initialTweets,
+  activeUserProp,
+  userIdProp,
+}: TopicAreaProps) {
   const [tweets, setTweets] = useState(initialTweets || []);
   const [loading, setLoading] = useState(false);
   const [activeUser, setActiveUser] = useState(activeUserProp || "");
@@ -36,44 +48,6 @@ function TopicArea({ tag, initialTweets, activeUserProp, userIdProp }) {
     "Gaming",
     "Entertainment",
   ];
-
-  // useEffect(() => {
-  //   setCurrentTag(tag);
-  // }, [tag]);
-
-  // const { user, loading: load } = useAuth();
-
-  // useEffect(() => {
-  //   if (!load && user && currentTag) {
-  //     fetchTweets(currentTag);
-  //   }
-  // }, [user, load, currentTag]);
-
-  // Fetch tweets for the selected topic
-  const fetchTweets = async (tag: string) => {
-    setLoading(true);
-    try {
-      const req = await fetch(`${url}/api/topic/${tag}`, {
-        headers: {
-          //"x-access-token": localStorage.getItem("token") || "",
-        },
-      });
-
-      const data = await req.json();
-      if (data.status === "ok") {
-        setTweets(data.tweets);
-        setActiveUser(data.activeUser.username);
-        setUserId(data.activeUser._id);
-      } else {
-        console.error(data.error);
-        router.push("/");
-      }
-    } catch (error) {
-      console.error("Error fetching tweets:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Load more tweets
   const loadMoreTweets = async () => {
