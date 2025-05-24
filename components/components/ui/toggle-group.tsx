@@ -66,7 +66,9 @@ function ToggleGroup({
         <button
           type="button"
           onClick={scrollLeft}
-          className="sm:hidden group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute  z-10 !p-3 rounded-full"
+          className="sm:hidden 
+          group-active:block active:bg-gray-200
+          group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute  z-10 !p-3 rounded-full"
         >
           <ArrowLeft />
         </button>
@@ -98,7 +100,9 @@ function ToggleGroup({
         <button
           type="button"
           onClick={scrollRight}
-          className="sm:hidden group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute right-0 z-10 !p-3 rounded-full "
+          className="sm:hidden 
+          group-active:block active:bg-gray-200
+          group-hover:block hover:bg-gray-200 bg-gray-100 cursor-pointer text-gray-800 absolute right-0 z-10 !p-3 rounded-full "
         >
           <ArrowRight />
         </button>
@@ -129,6 +133,7 @@ function ToggleGroupItem({
         }),
         "border border-border cursor-pointer min-w-[100px] w-fit flex-1 shrink-0  focus-visible:z-10",
         "hover:bg-[#1DA1F2] hover:text-white", // Updated hover color
+        "active:bg-[#1DA1F2] active:text-white",
         "data-[state=on]:bg-[#0b92e6] data-[state=on]:text-white", // Updated active color
         className
       )}

@@ -183,7 +183,7 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
           size="lg"
         />
         <div className="flex flex-col gap-1 items-center text-center">
-          <div className="text-xl font-semibold group-hover:underline">
+          <div className="text-xl font-semibold group-hover:underline group-active:underline">
             {nonActiveUser?.username}
           </div>
           <div className="text-sm text-gray-500">

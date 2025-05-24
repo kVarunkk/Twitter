@@ -187,7 +187,7 @@ function Comment(props: CommentProps) {
   return (
     <li className="flex items-center w-full">
       <div className="!w-[10%] shrink-0 border-b border-border"></div>
-      <div className="hover:bg-gray-100 border-b border-l border-border !p-4 flex-1">
+      <div className="hover:bg-gray-100 active:bg-gray-100 border-b border-l border-border !p-4 flex-1">
         <div className="flex ">
           <Link
             className="shrink-0 !p-1 h-fit"
@@ -211,7 +211,7 @@ function Comment(props: CommentProps) {
                 href={`/profile/${props.body.postedBy.username}`}
               >
                 <div className="flex flex-col gap-1">
-                  <span className="font-bold text-gray-800 group-hover:underline">
+                  <span className="font-bold text-gray-800 group-hover:underline group-active:underline">
                     {props.body.postedBy.username}
                   </span>
                   <span className="text-sm text-gray-500 ">
@@ -224,7 +224,7 @@ function Comment(props: CommentProps) {
                 <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <button className="cursor-pointer text-gray-500 hover:text-gray-700">
+                      <button className="cursor-pointer text-gray-500 hover:text-gray-700 active:text-gray-700">
                         <BsThreeDots />
                       </button>
                     </DropdownMenuTrigger>
@@ -320,7 +320,7 @@ function Comment(props: CommentProps) {
             <DialogTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()} // Prevents triggering the link
-                className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700"
+                className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700 active:text-gray-700"
               >
                 <Reply strokeWidth={1.4} className="mr-1" />
                 {/* <span>{comments?.length > 0 && comments?.length}</span> */}

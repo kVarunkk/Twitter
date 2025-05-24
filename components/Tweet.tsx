@@ -389,12 +389,12 @@ function Tweet(props: TweetProps) {
 
   return (
     <div className="bg-white    ">
-      <div className="relative hover:bg-gray-100 !p-4 border-b border-border">
+      <div className="relative hover:bg-gray-100 active:bg-gray-100 !p-4 border-b border-border">
         {props.body.isRetweeted && (
           <Link
             href={`/profile/${props.body.retweetedByUser}`}
             onClick={stopPropagation()}
-            className="  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 gap-1 !mb-2"
+            className="  flex items-center hover:underline hover:underline-offset-2 hover:decoration-gray-500 active:underline active:underline-offset-2 active:decoration-gray-500 gap-1 !mb-2"
           >
             <AiOutlineRetweet className="text-gray-500 mr-2" />
             <span className="text-gray-500 text-sm font-semibold">
@@ -445,7 +445,7 @@ function Tweet(props: TweetProps) {
               >
                 <button
                   onClick={stopPropagation()}
-                  className="cursor-pointer !p-2 !ml-auto text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full"
+                  className="cursor-pointer !p-2 !ml-auto text-gray-500 hover:text-gray-700 hover:bg-gray-200 active:text-gray-700 active:bg-gray-200 rounded-full"
                 >
                   <BsThreeDots />
                 </button>
@@ -684,7 +684,7 @@ function Tweet(props: TweetProps) {
 
       {!loading && comments.length >= 5 && (
         <button
-          className="text-sm !p-4 cursor-pointer !mt-2 text-gray-600 hover:underline"
+          className="text-sm !p-4 cursor-pointer !mt-2 text-gray-600 hover:underline active:underline"
           onClick={loadMoreComments}
         >
           {visibleComments >= comments.length

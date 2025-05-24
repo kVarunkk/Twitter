@@ -15,7 +15,7 @@ function Header({ title }: { title?: string }) {
           router.back();
           router.refresh();
         }} // Navigate back to the previous page
-        className="cursor-pointer !p-2 rounded-full hover:bg-gray-200"
+        className="cursor-pointer !p-2 rounded-full hover:bg-gray-200 active:bg-gray-200"
       >
         <ArrowLeft />
       </button>

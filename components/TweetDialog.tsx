@@ -391,7 +391,7 @@ export default function TweetDialog() {
 
               <label
                 htmlFor="file-upload"
-                className="flex items-center justify-center gap-4 cursor-pointer border-2 border-dashed border-gray-400 w-full rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
+                className="flex items-center justify-center gap-4 cursor-pointer border-2 border-dashed border-gray-400 w-full rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 active:bg-gray-100 transition"
               >
                 <AiFillCamera
                   className="shrink-0"

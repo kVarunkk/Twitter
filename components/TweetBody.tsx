@@ -45,7 +45,7 @@ export default function TweetBody(props: TweetBodyProps) {
           className="stop-link cursor-pointer !p-2 group"
         >
           <div className="flex flex-col items-start">
-            <div className="font-bold text-gray-800 group-hover:underline">
+            <div className="font-bold text-gray-800 group-hover:underline group-active:underline">
               {props.body.postedBy?.username}
             </div>
             <div className="text-sm text-gray-500 text-start">
@@ -109,7 +109,7 @@ export default function TweetBody(props: TweetBodyProps) {
             e.stopPropagation();
             router.push(`/topic/${props.body.tag}`);
           }}
-          className="stop-link !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white"
+          className="stop-link !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white  active:text-white active:bg-[#1DA1F2]"
         >
           {props.body.tag}
         </button>

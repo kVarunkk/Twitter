@@ -196,7 +196,7 @@ export default function Chat(props: ChatProps) {
                       activeChat.users.find((u) => u._id !== activeUser?._id)
                         ?.username
                     }`}
-                    className="hover:underline underline-offset-2"
+                    className="hover:underline active:underline underline-offset-2"
                   >
                     {
                       activeChat.users.find((u) => u._id !== activeUser?._id)
@@ -210,13 +210,13 @@ export default function Chat(props: ChatProps) {
             </div>
             <div className="flex gap-2">
               <button
-                className="!p-2 cursor-pointer hover:bg-gray-100 !border !border-border !rounded-full"
+                className="!p-2 cursor-pointer hover:bg-gray-100 active:bg-gray-100 !border !border-border !rounded-full"
                 onClick={() => setIsDialogOpen(true)}
               >
                 <Plus />
               </button>
               <button
-                className="!p-2 cursor-pointer hover:bg-gray-100 !border !border-border !rounded-full"
+                className="!p-2 cursor-pointer hover:bg-gray-100 active:bg-gray-100 !border !border-border !rounded-full"
                 onClick={() => props.setIsDrawerOpen(false)}
               >
                 <X />
@@ -232,7 +232,7 @@ export default function Chat(props: ChatProps) {
                 lastTextedUsers.map((chat) => (
                   <button
                     key={chat._id}
-                    className="relative hover:bg-gray-100 !w-full  !p-4 !border-b cursor-pointer flex items-center gap-4"
+                    className="relative hover:bg-gray-100 active:bg-gray-100 !w-full  !p-4 !border-b cursor-pointer flex items-center gap-4"
                     onClick={() => setActiveChat(chat)}
                   >
                     <Avatar
@@ -264,7 +264,7 @@ export default function Chat(props: ChatProps) {
                       >
                         <button
                           onClick={stopPropagation()}
-                          className="cursor-pointer !p-2 !ml-auto text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-full"
+                          className="cursor-pointer !p-2 !ml-auto text-gray-500 hover:text-gray-700 active:text-gray-700 hover:bg-gray-200 active:bg-gray-200 rounded-full"
                         >
                           <BsThreeDots />
                         </button>

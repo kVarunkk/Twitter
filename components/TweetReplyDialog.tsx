@@ -153,7 +153,7 @@ export default function TweetReplyDialog({
             e.stopPropagation();
             fetchUser();
           }} // Prevents triggering the link
-          className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700"
+          className="cursor-pointer flex items-center gap-1 text-gray-500 hover:text-gray-700 active:text-gray-700"
         >
           <GoComment className="mr-1" />
           <span>{comments?.length > 0 && comments?.length}</span>

@@ -570,7 +570,7 @@ function ProfileBody({ userName, profileData }: ProfileBodyProps) {
 
                 <label
                   htmlFor="file-upload"
-                  className="block cursor-pointer border-2 border-dashed border-gray-400 w-[300px] rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 transition"
+                  className="block cursor-pointer border-2 border-dashed border-gray-400 w-[300px] rounded-lg !px-6 !py-3 text-center text-gray-600 hover:bg-gray-100 active:bg-gray-100 transition"
                 >
                   <span className="block text-sm">Click here to upload</span>
                   <span className="text-xs text-gray-400">

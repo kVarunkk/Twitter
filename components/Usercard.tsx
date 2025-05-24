@@ -19,7 +19,7 @@ function Usercard(props: UsercardProps) {
   const url = useContext(UrlContext);
 
   const CardContent = (
-    <div className="hover:bg-gray-100 card border-b border-border">
+    <div className="hover:bg-gray-100 active:bg-gray-100 card border-b border-border">
       <div className="card-img">
         <Avatar
           // className="tweet-avatar"
