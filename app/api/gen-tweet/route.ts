@@ -7,7 +7,10 @@ import { connectToDatabase } from "lib/mongoose";
 import { User } from "utils/models/File";
 
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  apiKey:
+    process.env.NODE_ENV === "development"
+      ? process.env.NEXT_PUBLIC_OPENAI_API_KEY
+      : process.env.OPENAI_API_KEY,
 });
 
 export async function POST(req: NextRequest) {

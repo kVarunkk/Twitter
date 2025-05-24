@@ -1,4 +1,3 @@
-// app/api/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { v4 as uuidv4 } from "uuid";
@@ -12,8 +11,14 @@ export const config = {
 const s3 = new S3Client({
   region: process.env.NEXT_PUBLIC_AWS_REGION!,
   credentials: {
-    accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!,
+    accessKeyId:
+      process.env.NODE_ENV === "development"
+        ? process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID!
+        : process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey:
+      process.env.NODE_ENV === "development"
+        ? process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!
+        : process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
 
