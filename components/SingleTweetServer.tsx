@@ -8,6 +8,8 @@ import Error from "./Error";
 import { Tweet, User } from "utils/models/File";
 import { IPopulatedTweet } from "utils/types";
 import { connectToDatabase } from "lib/mongoose";
+import { Suspense } from "react";
+import AppLoader from "./AppLoader";
 
 function serializeObject(obj: unknown) {
   return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
@@ -44,6 +46,7 @@ export default async function SingleTweetServer({
         },
       })
       .lean<IPopulatedTweet>();
+
     const safeTweet: IPopulatedTweet = serializeObject(tweet);
 
     safeTweet.likeTweetBtn = safeTweet.likes.includes(user.username)
@@ -60,7 +63,17 @@ export default async function SingleTweetServer({
       }
     });
 
-    return <SingleTweet tweetProp={safeTweet} activeUserProp={user.username} />;
+    return (
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-screen w-full ">
+            <AppLoader size="md" color="blue" />
+          </div>
+        }
+      >
+        <SingleTweet tweetProp={safeTweet} activeUserProp={user.username} />;
+      </Suspense>
+    );
   } catch (error) {
     return <Error />;
   }
