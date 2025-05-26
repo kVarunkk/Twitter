@@ -5,12 +5,10 @@ Opensource Twitter built using Nextjs 15.2.2
 ## Features
 
 - Fully responsive
-- Sign up/ Sign in via JWT Token
-- Customize profile(avatar, banner, bio, etc)
-- Infinite Scrolling
-- Tweet
-- Comment
-- Retweet
+- Auth via JWT Token(httpOnly Cookies)
+- Publish Tweet
+- Publish Comment
+- Create Retweet
 - AI Tweet Generator
 - AI Comment Generator
 - Like, Edit & Delete tweets and comments
@@ -19,6 +17,8 @@ Opensource Twitter built using Nextjs 15.2.2
 - 280 character limit on tweets and comments
 - Semantic Search
 - Realtime End-To-End Encrypted Messaging
+- Customize profile(avatar, banner, bio, etc)
+- Infinite Scrolling
 
 ## Contribute
 
