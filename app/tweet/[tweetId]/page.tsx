@@ -8,6 +8,11 @@ import SingleTweetServer from "@/components/SingleTweetServer";
 import { Suspense } from "react";
 import AppLoader from "@/components/AppLoader";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
+import { connectToDatabase } from "lib/mongoose";
+import { verifyJwt } from "lib/auth";
+import { Tweet, User } from "utils/models/File";
+import { IPopulatedTweet } from "utils/types";
 
 export async function generateMetadata({
   params,
@@ -16,37 +21,53 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { tweetId } = await params;
+
+    await connectToDatabase();
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) throw new Error("Some error occured");
+
+    const decoded = await verifyJwt(token);
+    if (!decoded) throw new Error("Some error occured");
+
     const decodedTweetId = decodeURIComponent(tweetId);
-    const BASE_URL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://varuns-twitter-clone.vercel.app";
-    const res = await fetch(`${BASE_URL}/api/tweet/${decodedTweetId}`, {
-      next: { revalidate: 60 }, // cache for OG crawlers
-    });
 
-    if (!res.ok) throw new Error("Tweet not found");
+    const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
+      .populate("postedBy", "username avatar")
+      .populate("retweetedFrom", "postedTweetTime")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "postedBy",
+          select: "username avatar",
+        },
+      })
+      .lean<IPopulatedTweet>();
 
-    const data = await res.json();
-
-    console.log(data);
-
-    return {
-      title: `${data.tweet.postedBy.username} on Twitter Clone: "${data.tweet.content}"`,
-      description: data.tweet.content.slice(0, 160),
-      openGraph: {
-        title: `${data.tweet.postedBy.username} on Twitter Clone`,
-        description: data.tweet.content,
-        images: data.tweet.image ? [{ url: data.tweet.image }] : [],
-        type: "article",
-      },
-      twitter: {
-        card: data.tweet.image ? "summary_large_image" : "summary",
-        title: `${data.tweet.postedBy.username} on Twitter Clone`,
-        description: data.tweet.content,
-        images: data.tweet.image ? [data.tweet.image] : [],
-      },
-    };
+    if (tweet) {
+      return {
+        title: `${
+          tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+        } on Twitter Clone: "${tweet.content}"`,
+        description: tweet.content ? tweet.content.slice(0, 160) : "",
+        openGraph: {
+          title: `${
+            tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+          } on Twitter Clone`,
+          description: tweet.content,
+          images: tweet.image ? [{ url: tweet.image }] : [],
+          type: "article",
+        },
+        twitter: {
+          card: tweet.image ? "summary_large_image" : "summary",
+          title: `${
+            tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+          } on Twitter Clone`,
+          description: tweet.content,
+          images: tweet.image ? [tweet.image] : [],
+        },
+      };
+    } else throw new Error("tweet not found");
   } catch (error) {
     return {
       title: "Tweet not found",
