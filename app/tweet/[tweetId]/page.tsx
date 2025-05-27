@@ -16,11 +16,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { tweetId } = await params;
+    const decodedTweetId = decodeURIComponent(tweetId);
     const BASE_URL =
       process.env.NODE_ENV === "development"
         ? "http://localhost:3000"
         : "https://varuns-twitter-clone.vercel.app";
-    const res = await fetch(`${BASE_URL}/api/tweet/${tweetId}`, {
+    const res = await fetch(`${BASE_URL}/api/tweet/${decodedTweetId}`, {
       next: { revalidate: 60 }, // cache for OG crawlers
     });
 
