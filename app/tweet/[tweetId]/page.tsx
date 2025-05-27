@@ -29,6 +29,8 @@ export async function generateMetadata({
 
     const data = await res.json();
 
+    console.log(data);
+
     return {
       title: `${data.tweet.postedBy.username} on Twitter Clone: "${data.tweet.content}"`,
       description: data.tweet.content.slice(0, 160),
