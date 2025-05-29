@@ -101,7 +101,8 @@ function HomeBody() {
         });
 
         embedDocs();
-        setTimeout(() => router.push("/feed"), 600);
+        router.push("/feed");
+        // setTimeout(() => router.push("/feed"), 600);
       } else {
         // toast.error(data.message || "Invalid login credentials");
 
