@@ -21,6 +21,13 @@ export interface IUser {
   embeddingUpdatedAt: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
+  pushSubscription?: {
+    endpoint: string;
+    keys: {
+      auth: string;
+      p256dh: string;
+    };
+  };
 }
 
 export interface ISerealizedUser extends Omit<IUser, "_id"> {
@@ -116,4 +123,32 @@ export interface IPopulatedMessage
   _id: string;
   chat: IPopulatedChat;
   sender: ISerealizedUser;
+}
+
+// utils/types.ts
+
+export type NotificationType = "like" | "retweet" | "comment" | "message";
+
+export interface INotification {
+  recipient: Types.ObjectId; // User receiving the notification
+  sender: Types.ObjectId; // User who triggered it
+  type: NotificationType;
+  tweet?: Types.ObjectId; // if relevant
+  comment?: Types.ObjectId; // if relevant
+  message?: Types.ObjectId; // if relevant
+  chat?: Types.ObjectId; // for messages
+  isRead: boolean;
+  createdAt?: Date;
+}
+
+export interface IPopulatedNotification
+  extends Omit<INotification, "_id" | "tweet" | "sender"> {
+  _id: string;
+  sender: {
+    username: string;
+    avatar: string;
+  };
+  tweet?: {
+    postedTweetTime: string;
+  };
 }

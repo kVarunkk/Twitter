@@ -1,12 +1,20 @@
 import mongoose, { Model, Schema } from "mongoose";
 import moment from "moment";
-import { IChat, IComment, IMessage, ITweet, IUser } from "utils/types";
+import {
+  IChat,
+  IComment,
+  IMessage,
+  INotification,
+  ITweet,
+  IUser,
+} from "utils/types";
 
 export interface IUserDocument extends IUser, Document {}
 export interface IChatDocument extends IChat, Document {}
 export interface IMessageDocument extends IMessage, Document {}
 export interface ITweetDocument extends ITweet, Document {}
 export interface ICommentDocument extends IComment, Document {}
+export interface INotificationDocument extends INotification, Document {}
 
 const messageSchema = new mongoose.Schema<IMessageDocument>(
   {
@@ -66,6 +74,13 @@ const userSchema = new mongoose.Schema<IUserDocument>(
       type: Date,
       default: null,
     },
+    pushSubscription: {
+      endpoint: String,
+      keys: {
+        auth: String,
+        p256dh: String,
+      },
+    },
   },
   {
     timestamps: true,
@@ -113,6 +128,24 @@ const commentSchema = new mongoose.Schema<ICommentDocument>(
   { timestamps: true }
 );
 
+const notificationSchema = new Schema<INotificationDocument>(
+  {
+    recipient: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    sender: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    type: {
+      type: String,
+      enum: ["like", "retweet", "comment", "message"],
+      required: true,
+    },
+    tweet: { type: Schema.Types.ObjectId, ref: "Tweet" },
+    comment: { type: Schema.Types.ObjectId, ref: "Comment" },
+    message: { type: Schema.Types.ObjectId, ref: "Message" },
+    chat: { type: Schema.Types.ObjectId, ref: "Chat" },
+    isRead: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
+
 // Models
 export const Message: Model<IMessageDocument> =
   mongoose.models?.Message ||
@@ -127,3 +160,6 @@ export const Tweet: Model<ITweetDocument> =
 export const Comment: Model<ICommentDocument> =
   mongoose.models?.Comment ||
   mongoose.model<ICommentDocument>("Comment", commentSchema);
+export const Notification: Model<INotificationDocument> =
+  mongoose.models?.Notification ||
+  mongoose.model<INotificationDocument>("Notification", notificationSchema);

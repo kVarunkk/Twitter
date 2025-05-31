@@ -4,7 +4,9 @@ import moment from "moment";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
 import { connectToDatabase } from "lib/mongoose";
-import { Tweet } from "utils/models/File";
+import { Notification, Tweet, User } from "utils/models/File";
+import { sendPush } from "lib/push";
+import { ISerealizedUser } from "utils/types";
 
 export async function POST(
   req: NextRequest,
@@ -23,6 +25,13 @@ export async function POST(
       );
     }
 
+    if (!validationResponse.user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 401 }
+      );
+    }
+
     // Find the tweet by its unique identifier
     const tweet = await Tweet.findOne({ postedTweetTime: tweetId });
     if (!tweet) {
@@ -35,9 +44,6 @@ export async function POST(
     // Determine if the tweet is an original or a retweet
     const originalTweetId = tweet.retweetedFrom || tweet._id;
 
-    // Check if the user has already retweeted the original tweet
-    // const userIndex = tweet.retweets.indexOf(userName);
-
     // Check if the user already retweeted this tweet
     const existingRetweet = await Tweet.findOne({
       retweetedByUser: userName,
@@ -45,29 +51,6 @@ export async function POST(
     });
 
     if (!existingRetweet) {
-      // RETWEET: Only allowed if the tweet is an original tweet
-      // if (tweet.isRetweeted) {
-      //   return NextResponse.json(
-      //     {
-      //       status: "error",
-      //       message: "Cannot retweet a retweeted tweet",
-      //     },
-      //     { status: 400 }
-      //   );
-      // }
-
-      // Add the new retweet to the user's tweets
-      // const user = await User.findOne({ username: userName });
-      // if (user) {
-      //   user.tweets.unshift(newTweet._id);
-      //   await user.save();
-      // }
-
-      // Update the original tweet's retweets
-      // await Tweet.findByIdAndUpdate(originalTweetId, {
-      //   $push: { retweets: userName },
-      // });
-
       // Sync retweet state between original and all retweets
       await Tweet.updateMany(
         { $or: [{ _id: originalTweetId }, { retweetedFrom: originalTweetId }] },
@@ -77,7 +60,7 @@ export async function POST(
       );
 
       // Create a new retweet
-      await Tweet.create({
+      const retweet = await Tweet.create({
         content: tweet.content,
         image: tweet.image,
         tag: tweet.tag,
@@ -92,6 +75,33 @@ export async function POST(
         retweetedByUser: userName,
       });
 
+      if (tweet.postedBy !== validationResponse.user._id) {
+        const sender = validationResponse.user._id;
+        const recipientDB = await User.findById(tweet.postedBy);
+
+        if (sender && recipientDB && recipientDB._id) {
+          await Notification.create({
+            sender: sender,
+            recipient: recipientDB._id,
+            type: "retweet",
+            tweet: tweet._id,
+          });
+
+          // OPTIONAL: Send Web Push here if recipient has a valid pushSubscription
+          if (recipientDB.pushSubscription) {
+            try {
+              sendPush(recipientDB as unknown as ISerealizedUser, {
+                title: "New Retweet on Your Tweet",
+                body: `${userName} retweeted your tweet.`,
+                url: `/tweet/${retweet.postedTweetTime}`,
+              });
+            } catch (err) {
+              console.error("Web Push Error:", err);
+            }
+          }
+        }
+      }
+
       return NextResponse.json({
         status: "ok",
         retweetCount: tweet.retweets.length + 1,
@@ -103,28 +113,6 @@ export async function POST(
         retweetedFrom: originalTweetId,
         retweetedByUser: userName,
       });
-      // remove retweet from user's tweets
-      // await User.findOneAndUpdate(
-      //   {
-      //     username: userName,
-      //   },
-      //   {
-      //     $pull: { tweets: retweet._id },
-      //   },
-      //   {
-      //     new: true,
-      //   }
-      // );
-      // update original tweet's retweets
-      // await Tweet.findByIdAndUpdate(
-      //   originalTweetId,
-      //   {
-      //     $pull: { retweets: userName },
-      //   },
-      //   {
-      //     new: true,
-      //   }
-      // );
 
       await Tweet.updateMany(
         { $or: [{ _id: originalTweetId }, { retweetedFrom: originalTweetId }] },

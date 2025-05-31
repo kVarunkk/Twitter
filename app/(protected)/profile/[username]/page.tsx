@@ -1,7 +1,5 @@
 import AppLoader from "@/components/AppLoader";
-import Chat from "@/components/Chat";
 import Header from "@/components/Header";
-import ProfileBody from "@/components/ProfileBody";
 import ProfileBodyServer from "@/components/ProfileBodyServer";
 import ScrollToTop from "@/components/ScrollToTop";
 import Sidebar from "@/components/Sidebar";

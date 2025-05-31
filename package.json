@@ -48,6 +48,7 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
     "vaul": "^1.1.2",
+    "web-push": "^3.6.7",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -77,6 +78,7 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/web-push": "^3.6.4",
     "eslint": "^9.22.0",
     "eslint-config-next": "^15.2.2",
     "gh-pages": "^5.0.0",

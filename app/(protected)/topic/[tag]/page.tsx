@@ -1,10 +1,7 @@
 import AppLoader from "@/components/AppLoader";
-import Chat from "@/components/Chat";
 import Header from "@/components/Header";
-import ProfileBody from "@/components/ProfileBody";
 import ScrollToTop from "@/components/ScrollToTop";
 import Sidebar from "@/components/Sidebar";
-import TopicArea from "@/components/TopicArea";
 import TopicAreaServer from "@/components/TopicAreaServer";
 import { Suspense } from "react";
 

@@ -49,7 +49,7 @@
 }
 
 .App {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -431,6 +431,7 @@ input:focus {
 .sidebar-menu-items {
     display: flex;
     align-items: center;
+    margin-bottom: 4px;
     /* padding: 3px 0; */
 }
 
@@ -796,6 +797,10 @@ input:focus {
 
     .title a {
         font-size: 1.5rem !important;
+    }
+
+    .sidebar-menu-items {
+        margin-bottom: 0;
     }
 
     .sidebar-menu-items a,

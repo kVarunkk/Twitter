@@ -9,7 +9,7 @@ function Header({ title }: { title?: string }) {
   const router = useRouter();
 
   return (
-    <div className=" w-full !p-4 flex items-center gap-2 ">
+    <div className=" w-full !p-4 flex items-center gap-2 border-b ">
       <button
         onClick={() => {
           router.back();

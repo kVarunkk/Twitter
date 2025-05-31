@@ -1,4 +1,4 @@
-import SingleTweet from "@/app/tweet/[tweetId]/SingleTweet";
+import SingleTweet from "@/app/(protected)/tweet/[tweetId]/SingleTweet";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { verifyJwt } from "lib/auth";

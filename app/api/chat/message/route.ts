@@ -3,7 +3,9 @@ import mongoose, { connect } from "mongoose";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
 import { connectToDatabase } from "lib/mongoose";
-import { Message } from "utils/models/File";
+import { Message, Notification, User } from "utils/models/File";
+import { sendPush } from "lib/push";
+import { ISerealizedUser } from "utils/types";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,6 +19,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (!validationResponse.user) {
+      return NextResponse.json(
+        { status: "error", message: "User not found" },
+        { status: 401 }
+      );
+    }
+
+    const { message, nonActiveUserId } = await req.json();
+
     const {
       roomId,
       sender,
@@ -24,7 +35,7 @@ export async function POST(req: NextRequest) {
       encryptedAESKeyForSender,
       encryptedMessage,
       iv,
-    } = await req.json();
+    } = message;
 
     if (
       !roomId ||
@@ -40,7 +51,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const message = new Message({
+    const newMessage = new Message({
       chat: roomId,
       sender,
       encryptedAESKeyForSender,
@@ -50,9 +61,38 @@ export async function POST(req: NextRequest) {
       timestamp: new Date(),
     });
 
-    await message.save();
+    await newMessage.save();
 
-    return NextResponse.json({ status: "ok", message }, { status: 201 });
+    // 🔔 Create notification (don't notify user if they liked their own tweet)
+
+    const recipient = nonActiveUserId;
+    const recipientDB = await User.findOne({
+      _id: recipient,
+    });
+    if (sender && recipientDB && recipientDB._id) {
+      await Notification.create({
+        sender: sender,
+        recipient: recipientDB._id,
+        type: "message",
+        message: newMessage._id,
+        chat: roomId,
+      });
+
+      // OPTIONAL: Send Web Push here if recipient has a valid pushSubscription
+      if (recipientDB.pushSubscription) {
+        try {
+          sendPush(recipientDB as unknown as ISerealizedUser, {
+            title: "New Message received",
+            body: `${validationResponse.user.username} sent you a Message.`,
+            url: `/feed`,
+          });
+        } catch (err) {
+          console.error("Web Push Error:", err);
+        }
+      }
+    }
+
+    return NextResponse.json({ status: "ok", newMessage }, { status: 201 });
   } catch (err) {
     console.error("Error saving message:", err);
     return NextResponse.json(

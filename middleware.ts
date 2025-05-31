@@ -3,7 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 // import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  const protectedRoutes = ["/feed", "/profile", "/topic", "/search"];
+  const protectedRoutes = [
+    "/feed",
+    "/profile",
+    "/topic",
+    "/search",
+    "/tweet",
+    "/notifications",
+  ];
   const { pathname } = req.nextUrl;
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
@@ -25,5 +32,7 @@ export const config = {
     "/topic",
     "/topic/:path*",
     "/search",
+    "/tweet/:path*",
+    "/notifications",
   ],
 };

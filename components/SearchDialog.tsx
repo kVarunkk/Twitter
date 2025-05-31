@@ -18,6 +18,7 @@ type SearchDialogProps = {
   onClose: () => void;
   onUserSelect: (user: ISerealizedUser) => void;
   activeUser: ISerealizedUser | null;
+  userSelectLoading: boolean;
 };
 
 export default function SearchDialog({
@@ -25,6 +26,7 @@ export default function SearchDialog({
   onClose,
   onUserSelect,
   activeUser,
+  userSelectLoading,
 }: SearchDialogProps) {
   const [searchText, setSearchText] = useState("");
   const [users, setUsers] = useState<ISerealizedUser[]>([]);
@@ -38,14 +40,7 @@ export default function SearchDialog({
     setLoading(true);
 
     try {
-      const req = await fetch(
-        `${url}/api/search/${searchText}?skip=0&limit=0`,
-        {
-          headers: {
-            //"x-access-token": localStorage.getItem("token"),
-          },
-        }
-      );
+      const req = await fetch(`${url}/api/search/${searchText}?skip=0&limit=0`);
 
       const data = await req.json();
 
@@ -86,10 +81,10 @@ export default function SearchDialog({
           />
           <div className="flex items-center justify-between">
             <button
-              disabled={searchText.trim().length === 0}
+              disabled={searchText.trim().length === 0 || loading}
               onClick={handleSearch}
               className={`tweetBtn ${
-                searchText.trim().length === 0
+                searchText.trim().length === 0 || loading
                   ? "opacity-50 !cursor-default"
                   : ""
               } `}
@@ -113,7 +108,15 @@ export default function SearchDialog({
               </div>
             ) : (
               users.map((user) => (
-                <div key={user._id} onClick={() => onUserSelect(user)}>
+                <div
+                  key={user._id}
+                  onClick={() => {
+                    !userSelectLoading && onUserSelect(user);
+                  }}
+                  className={`${
+                    userSelectLoading && "opacity-65 !cursor-not-allowed"
+                  }`}
+                >
                   <Usercard
                     noLink
                     avatar={user.avatar}

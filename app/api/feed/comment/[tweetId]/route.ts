@@ -4,7 +4,9 @@ import moment from "moment";
 import { MONGODB_URI } from "utils/utils";
 import { validateToken } from "lib/auth";
 import { connectToDatabase } from "lib/mongoose";
-import { Comment, Tweet, User } from "utils/models/File";
+import { Comment, Notification, Tweet, User } from "utils/models/File";
+import { sendPush } from "lib/push";
+import { ISerealizedUser } from "utils/types";
 
 export async function POST(
   req: NextRequest,
@@ -90,6 +92,34 @@ export async function POST(
       "postedBy",
       "username avatar"
     );
+
+    if (tweet.postedBy !== user._id) {
+      const sender = user._id;
+      const recipientDB = await User.findById(tweet.postedBy);
+
+      if (sender && recipientDB && recipientDB._id) {
+        await Notification.create({
+          sender: sender,
+          recipient: recipientDB._id,
+          type: "comment",
+          tweet: originalTweet._id,
+          comment: newComment._id,
+        });
+
+        // OPTIONAL: Send Web Push here if recipient has a valid pushSubscription
+        if (recipientDB.pushSubscription) {
+          try {
+            sendPush(recipientDB as unknown as ISerealizedUser, {
+              title: "New Reply on Your Tweet",
+              body: `${user.username} replied to your tweet.`,
+              url: `/tweet/${originalTweet.postedTweetTime}`,
+            });
+          } catch (err) {
+            console.error("Web Push Error:", err);
+          }
+        }
+      }
+    }
 
     // Return the newly created comment and updated comment count
     return NextResponse.json({

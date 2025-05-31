@@ -1,9 +1,6 @@
-import Feed from "@/components/Feed";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
-import SingleTweet from "./SingleTweet";
 import ScrollToTop from "@/components/ScrollToTop";
-import Chat from "@/components/Chat";
 import SingleTweetServer from "@/components/SingleTweetServer";
 import { Suspense } from "react";
 import AppLoader from "@/components/AppLoader";
@@ -11,7 +8,7 @@ import { Metadata } from "next";
 import { cookies } from "next/headers";
 import { connectToDatabase } from "lib/mongoose";
 import { verifyJwt } from "lib/auth";
-import { Tweet, User } from "utils/models/File";
+import { Tweet } from "utils/models/File";
 import { IPopulatedTweet } from "utils/types";
 
 export async function generateMetadata({

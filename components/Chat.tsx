@@ -1,12 +1,11 @@
 "use client";
 
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useCallback, useContext, useEffect, useState } from "react";
 import { Drawer, DrawerContent, DrawerTitle } from "./components/ui/drawer";
 import ChatRoom from "./ChatRoom";
 import SearchDialog from "./SearchDialog";
 import { ArrowLeft, ChevronUp, Plus, X } from "lucide-react";
 import Link from "next/link";
-import jwtDecode from "jwt-decode";
 import { showToast } from "./ToastComponent";
 import { UrlContext } from "context/urlContext";
 import {
@@ -29,12 +28,12 @@ type ChatProps = {
 };
 
 export default function Chat(props: ChatProps) {
-  // const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeChat, setActiveChat] = useState<IPopulatedChat | null>(null);
   const [lastTextedUsers, setLastTextedUsers] = useState<IPopulatedChat[]>([]);
   const [activeUser, setActiveUser] = useState<ISerealizedUser | null>(null);
   const [loading, setLoading] = useState(false);
+  const [userSelectLoading, setUserSelectLoading] = useState(false);
   const url = useContext(UrlContext);
 
   const { user, loading: load } = useAuth();
@@ -45,72 +44,49 @@ export default function Chat(props: ChatProps) {
     }
   }, [load, user]);
 
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const res = await fetch(`${url}/api/profile/${(user as any).username}`, {
-  //       headers: {
-  //         //"x-access-token": localStorage.getItem("token") || "",
-  //       },
-  //     });
-  //     const data = await res.json();
-  //     if (data.status === "ok") {
-  //       setActiveUser(data);
-  //     } else {
-  //       console.error("Error fetching user profile");
-  //     }
-  //   };
-  //   if (!load && user) {
-  //     fetchUser();
-  //   }
-  // }, [user, load]);
+  const fetchLastTextedUsers = useCallback(async () => {
+    if (!activeUser) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        `/api/chat/getChats?userId=${activeUser._id}`,
+        {}
+      );
+
+      if (!res.ok) {
+        throw new Error(
+          `API request failed with status: ${res.status} - ${res.statusText}`
+        );
+      }
+
+      const data = await res.json();
+
+      if (data.status === "ok") {
+        setLastTextedUsers(
+          data.chats.filter((_: IPopulatedChat) => _.users.length > 1)
+        );
+      } else {
+        throw new Error(`API error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Error fetching last texted users:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [activeUser]);
 
   useEffect(() => {
-    const fetchLastTextedUsers = async () => {
-      if (!activeUser) return;
-
-      setLoading(true);
-
-      try {
-        const res = await fetch(`/api/chat/getChats?userId=${activeUser._id}`, {
-          headers: {
-            //"x-access-token": localStorage.getItem("token") || "",
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error(
-            `API request failed with status: ${res.status} - ${res.statusText}`
-          );
-        }
-
-        const data = await res.json();
-
-        if (data.status === "ok") {
-          setLastTextedUsers(
-            data.chats.filter((_: IPopulatedChat) => _.users.length > 1)
-          );
-        } else {
-          throw new Error(`API error: ${data.message}`);
-        }
-      } catch (error) {
-        console.error("Error fetching last texted users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLastTextedUsers();
-  }, [activeUser]);
+  }, [fetchLastTextedUsers]);
 
   const handleUserSelect = async (user: ISerealizedUser) => {
     try {
+      setUserSelectLoading(true);
       if (!activeUser) throw new Error("Active user not found");
       const res = await fetch("/api/chat/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          //"x-access-token": localStorage.getItem("token"),
-        },
         body: JSON.stringify({ user1: activeUser._id, user2: user._id }),
       });
 
@@ -129,6 +105,9 @@ export default function Chat(props: ChatProps) {
         message: "Failed to create chat",
         type: "error",
       });
+    } finally {
+      setUserSelectLoading(false);
+      fetchLastTextedUsers();
     }
   };
 
@@ -304,6 +283,7 @@ export default function Chat(props: ChatProps) {
         onClose={() => setIsDialogOpen(false)}
         onUserSelect={handleUserSelect}
         activeUser={activeUser}
+        userSelectLoading={userSelectLoading}
       />
     </div>
   );

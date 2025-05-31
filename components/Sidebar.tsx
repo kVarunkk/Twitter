@@ -12,7 +12,7 @@ import "reactjs-popup/dist/index.css";
 import "../app/globals.css";
 import { UrlContext } from "../context/urlContext";
 import { usePathname, useRouter } from "next/navigation";
-import { Mail, SendHorizonal, Wand, X } from "lucide-react";
+import { Bell, Mail, SendHorizonal, Wand, X } from "lucide-react";
 import Chat from "./Chat";
 import TweetDialog from "./TweetDialog";
 import { useAuth } from "hooks/useAuth";
@@ -88,6 +88,15 @@ function Sidebar() {
           >
             <BiHome />
             <div className="hidden sm:block">Home</div>
+          </Link>
+        </li>
+        <li className="sidebar-menu-items">
+          <Link
+            href="/notifications"
+            className={pathname === "/notifications" ? "sidebar-active" : ""}
+          >
+            <Bell size={18} />
+            <div className="hidden sm:block">Notifications</div>
           </Link>
         </li>
         <li className="sidebar-menu-items">
