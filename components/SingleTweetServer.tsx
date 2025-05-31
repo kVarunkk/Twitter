@@ -15,7 +15,6 @@ function serializeObject(obj: unknown) {
   return JSON.parse(JSON.stringify(obj)); // removes prototypes, ObjectIds, Dates
 }
 
-export const dynamic = "force-dynamic";
 export default async function SingleTweetServer({
   tweetId,
 }: {

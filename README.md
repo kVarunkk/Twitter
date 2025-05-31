@@ -16,7 +16,7 @@ Live version: [https://varuns-twitter-clone.vercel.app](https://varuns-twitter-c
 - Like, Edit & Delete tweets and comments
 - Tweets filtered according to "Topics"
 - Tweet images by easily adding Image URLs
-- 280 character limit on tweets and comments
+- Push Notifications
 - Semantic Search
 - Realtime End-To-End Encrypted Messaging
 - Customize profile(avatar, banner, bio, etc)

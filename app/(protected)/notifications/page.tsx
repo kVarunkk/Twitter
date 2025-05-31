@@ -5,7 +5,9 @@ import { Suspense } from "react";
 import AppLoader from "@/components/AppLoader";
 import NotificationServer from "@/components/NotificationServer";
 
-export default function FeedPage() {
+export const dynamic = "force-dynamic";
+
+export default function NotificationPage() {
   return (
     <div className="App">
       <Sidebar />

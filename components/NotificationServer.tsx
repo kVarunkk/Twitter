@@ -8,8 +8,6 @@ import { Notification, Tweet, User } from "utils/models/File";
 import { IPopulatedNotification, IPopulatedTweet, ITweet } from "utils/types";
 import NotificationComponent from "@/components/Notification";
 
-export const dynamic = "force-dynamic"; // This will make sure the page is always revalidated on every request
-
 export default async function NotificationServer() {
   try {
     await connectToDatabase();

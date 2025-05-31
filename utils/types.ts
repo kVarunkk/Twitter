@@ -116,6 +116,7 @@ export interface IMessage {
   timestamp: Date;
   createdAt?: Date;
   updatedAt?: Date;
+  isRead?: Boolean;
 }
 
 export interface IPopulatedMessage

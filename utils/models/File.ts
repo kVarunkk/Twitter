@@ -29,7 +29,10 @@ const messageSchema = new mongoose.Schema<IMessageDocument>(
     encryptedAESKeyForRecipient: { type: String, required: true },
     encryptedMessage: { type: String, required: true },
     iv: { type: String, required: true }, // Initialization Vector (IV) for AES-GCM
-
+    isRead: {
+      type: Boolean,
+      default: false,
+    },
     timestamp: { type: Date, default: Date.now },
   },
   { timestamps: true }

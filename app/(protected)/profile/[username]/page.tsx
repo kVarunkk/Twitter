@@ -5,6 +5,8 @@ import ScrollToTop from "@/components/ScrollToTop";
 import Sidebar from "@/components/Sidebar";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function UserProfile({
   params,
 }: {

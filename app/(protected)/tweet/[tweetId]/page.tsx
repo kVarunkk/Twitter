@@ -11,6 +11,8 @@ import { verifyJwt } from "lib/auth";
 import { Tweet } from "utils/models/File";
 import { IPopulatedTweet } from "utils/types";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {

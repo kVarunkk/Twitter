@@ -4,6 +4,8 @@ import FeedServer from "@/components/FeedServer";
 import { Suspense } from "react";
 import AppLoader from "@/components/AppLoader";
 
+export const dynamic = "force-dynamic";
+
 export default function FeedPage() {
   return (
     <div className="App">
