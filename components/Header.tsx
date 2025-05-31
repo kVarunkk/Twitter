@@ -29,7 +29,10 @@ function Header({ title }: { title?: string }) {
       </div>
       {pathname === "/notifications" &&
         Notification.permission !== "granted" && (
-          <button className="tweetBtn" onClick={enablePushNotifications}>
+          <button
+            className="text-xs sm:text-sm cursor-pointer !p-1 text-gray-600 underline"
+            onClick={enablePushNotifications}
+          >
             Enable Push Notifications
           </button>
         )}
