@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { UrlProvider } from "../context/urlContext";
 import "./globals.css";
 import { TooltipProvider } from "@/components/components/ui/tooltip";
+import { ActiveUserContextProvider } from "context/activeUserContext";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -23,12 +24,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={roboto.className + "!text-sm"}>
       <body className="!mt-20 md:!mt-0">
-        <UrlProvider>
-          <TooltipProvider>
-            <Toaster />
-            {children}
-          </TooltipProvider>
-        </UrlProvider>
+        <ActiveUserContextProvider>
+          <UrlProvider>
+            <TooltipProvider>
+              <Toaster />
+              {children}
+            </TooltipProvider>
+          </UrlProvider>
+        </ActiveUserContextProvider>
       </body>
     </html>
   );

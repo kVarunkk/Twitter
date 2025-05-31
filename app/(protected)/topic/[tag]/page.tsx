@@ -15,23 +15,17 @@ export default async function TagTopic({
   const { tag } = await params;
 
   return (
-    <div className="App">
-      <Sidebar />
-      <div className="HeaderAndFeed">
-        <Header title="Topics" />
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen w-full ">
-              <AppLoader size="md" color="blue" />
-            </div>
-          }
-        >
-          <TopicAreaServer tag={tag} />
-        </Suspense>
-      </div>
-
-      <ScrollToTop />
-      {/* <Chat /> */}
+    <div className="HeaderAndFeed">
+      <Header title="Topics" />
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-screen w-full ">
+            <AppLoader size="md" color="blue" />
+          </div>
+        }
+      >
+        <TopicAreaServer tag={tag} />
+      </Suspense>
     </div>
   );
 }

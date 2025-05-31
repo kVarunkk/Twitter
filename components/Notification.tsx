@@ -12,6 +12,7 @@ import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
 import { IPopulatedNotification, IPopulatedTweet } from "utils/types";
 import NotificationCard from "./NotificationCard";
+import { ActiveUserContext } from "context/activeUserContext";
 
 type NotificationProps = {
   initialNotifications: IPopulatedNotification[];
@@ -36,6 +37,7 @@ function Notification({
   const isFetching = useRef(false);
   const [hasMoreNotifications, setHasMoreNotifications] = useState(true);
   const [userId, setUserId] = useState(userIdProp || "");
+  const value = useContext(ActiveUserContext);
 
   async function populateNotifications() {
     try {
@@ -134,6 +136,7 @@ function Notification({
           : notification
       )
     );
+    value && value.setUnreadNotificationCount(0);
   }, []);
 
   return (

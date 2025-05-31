@@ -17,6 +17,7 @@ import Chat from "./Chat";
 import TweetDialog from "./TweetDialog";
 import { useAuth } from "hooks/useAuth";
 import { clearOldServiceWorkers } from "hooks/usePushSubscription";
+import { ActiveUserContext } from "context/activeUserContext";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -26,7 +27,7 @@ function Sidebar() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
   let lastScrollY = 10;
-  const { user, loading } = useAuth();
+  const value = useContext(ActiveUserContext);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -47,12 +48,6 @@ function Sidebar() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!loading && user) {
-      setActiveUser(user.username);
-    }
-  }, [user, loading]);
-
   const logout = async () => {
     fetch(url + "/api/logout", {
       method: "POST",
@@ -63,7 +58,7 @@ function Sidebar() {
 
     // Remove any local-only items
     localStorage.removeItem("privateKey");
-
+    localStorage.removeItem("isPushSubscribed");
     // Redirect user
     router.push("/");
   };
@@ -73,7 +68,6 @@ function Sidebar() {
     const subscription = await registration.pushManager.getSubscription();
     if (subscription) {
       await subscription.unsubscribe();
-      localStorage.removeItem("isPushSubscribed");
       await clearOldServiceWorkers();
     }
   }
@@ -108,7 +102,16 @@ function Sidebar() {
             href="/notifications"
             className={pathname === "/notifications" ? "sidebar-active" : ""}
           >
-            <Bell size={18} />
+            <div className="relative">
+              <Bell size={18} />
+              {value && value.unreadNotificationCount > 0 && (
+                <div className="text-white text-xs h-6 w-6 flex items-center justify-center !p-[1px] !rounded-full bg-[#1DA1F2] absolute -top-5 -right-3">
+                  {value.unreadNotificationCount > 9
+                    ? "9+"
+                    : value.unreadNotificationCount}
+                </div>
+              )}
+            </div>
             <div className="hidden sm:block">Notifications</div>
           </Link>
         </li>
@@ -121,12 +124,14 @@ function Sidebar() {
             <div className="hidden sm:block">Topics</div>
           </Link>
         </li>
-        {activeUser && (
+        {value && value.activeUser && (
           <li className="sidebar-menu-items">
             <Link
-              href={`/profile/${activeUser}`}
+              href={`/profile/${value.activeUser}`}
               className={
-                pathname === `/profile/${activeUser}` ? "sidebar-active" : ""
+                pathname === `/profile/${value.activeUser}`
+                  ? "sidebar-active"
+                  : ""
               }
             >
               <CgProfile />

@@ -4,6 +4,7 @@ import React, { useState, useContext } from "react";
 import Tweet from "@/components/Tweet";
 import ChatWrapper from "@/components/ChatWrapper";
 import { IPopulatedTweet } from "utils/types";
+import ScrollToTop from "@/components/ScrollToTop";
 
 function SingleTweet({
   tweetProp,
@@ -33,6 +34,7 @@ function SingleTweet({
         setTweet={setTweet}
         userId={userId}
       />
+      <ScrollToTop />
       <ChatWrapper
         isDrawerOpen={isDrawerOpen}
         setIsDrawerOpen={setIsDrawerOpen}

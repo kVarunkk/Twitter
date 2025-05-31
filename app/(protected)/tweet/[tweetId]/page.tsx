@@ -94,22 +94,17 @@ export default async function TweetPage({
   const { tweetId } = await params;
 
   return (
-    <div className="App">
-      <Sidebar />
-      <div className="HeaderAndFeed">
-        <Header title="Tweet" />
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center h-screen w-full">
-              <AppLoader size="md" color="blue" />
-            </div>
-          }
-        >
-          <SingleTweetServer tweetId={tweetId} />
-        </Suspense>
-      </div>
-      <ScrollToTop />
-      {/* <Chat /> */}
+    <div className="HeaderAndFeed">
+      <Header title="Tweet" />
+      <Suspense
+        fallback={
+          <div className="flex justify-center items-center h-screen w-full">
+            <AppLoader size="md" color="blue" />
+          </div>
+        }
+      >
+        <SingleTweetServer tweetId={tweetId} />
+      </Suspense>
     </div>
   );
 }

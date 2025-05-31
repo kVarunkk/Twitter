@@ -12,6 +12,7 @@ import Header from "./Header";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
 import { IPopulatedTweet } from "utils/types";
+import ScrollToTop from "./ScrollToTop";
 
 type TopicAreaProps = {
   tag: string;
@@ -142,7 +143,7 @@ function TopicArea({
       {tweets.length > 0 && !loading && hasMoreTweets && (
         <InfiniteScrolling addTweets={loadMoreTweets} />
       )}
-
+      <ScrollToTop />
       <ChatWrapper
         isDrawerOpen={isDrawerOpen}
         setIsDrawerOpen={setIsDrawerOpen}
