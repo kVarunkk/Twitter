@@ -16,6 +16,7 @@ import { Bell, Mail, SendHorizonal, Wand, X } from "lucide-react";
 import Chat from "./Chat";
 import TweetDialog from "./TweetDialog";
 import { useAuth } from "hooks/useAuth";
+import { clearOldServiceWorkers } from "hooks/usePushSubscription";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -58,12 +59,24 @@ function Sidebar() {
       credentials: "include",
     });
 
+    unsubscribePush();
+
     // Remove any local-only items
     localStorage.removeItem("privateKey");
 
     // Redirect user
     router.push("/");
   };
+
+  async function unsubscribePush() {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+      localStorage.removeItem("isPushSubscribed");
+      await clearOldServiceWorkers();
+    }
+  }
 
   return (
     <div

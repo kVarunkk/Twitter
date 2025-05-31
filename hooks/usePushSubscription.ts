@@ -5,8 +5,21 @@ import { useEffect } from "react";
 export function usePushSubscription() {
   useEffect(() => {
     const registerPush = async () => {
-      if (typeof window === "undefined") return;
-      if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+      if (
+        typeof window === "undefined" ||
+        !("serviceWorker" in navigator) ||
+        !("PushManager" in window)
+      )
+        return;
+
+      // Unregister old service workers on hostname mismatch
+      if (
+        location.hostname === "localhost" &&
+        location.origin !== "http://localhost:3000"
+      ) {
+        await clearOldServiceWorkers();
+        return;
+      }
 
       const alreadySubscribed = localStorage.getItem("isPushSubscribed");
       if (alreadySubscribed === "true") return;
@@ -51,4 +64,13 @@ function urlBase64ToUint8Array(base64String: string) {
     .replace(/_/g, "/");
   const rawData = atob(base64);
   return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+}
+
+export async function clearOldServiceWorkers() {
+  if ("serviceWorker" in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    for (const reg of registrations) {
+      await reg.unregister();
+    }
+  }
 }

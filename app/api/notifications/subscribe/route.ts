@@ -20,14 +20,9 @@ export async function POST(req: NextRequest) {
 
     if (!validationResponse.user) throw new Error("User not found.");
 
-    const user = await User.findById(validationResponse.user._id);
-
-    // Only update if pushSubscription doesn't already exist
-    if (!user?.pushSubscription || !user.pushSubscription.endpoint) {
-      await User.findByIdAndUpdate(validationResponse.user._id, {
-        pushSubscription: subscription,
-      });
-    }
+    await User.findByIdAndUpdate(validationResponse.user._id, {
+      pushSubscription: subscription,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

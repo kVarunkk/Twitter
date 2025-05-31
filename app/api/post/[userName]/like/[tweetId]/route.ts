@@ -59,13 +59,11 @@ export async function POST(
         ).username !== userName
       ) {
         const sender = validationResponse.user._id;
-        const recipient = tweet.isRetweeted
-          ? tweet.retweetedByUser
-          : (
-              tweet.postedBy as unknown as {
-                username: string;
-              }
-            ).username;
+        const recipient = (
+          tweet.postedBy as unknown as {
+            username: string;
+          }
+        ).username;
 
         const recipientDB = await User.findOne({
           username: recipient,
