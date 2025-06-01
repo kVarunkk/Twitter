@@ -13,78 +13,78 @@ import { IPopulatedTweet } from "utils/types";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ tweetId: string }>;
-}): Promise<Metadata> {
-  try {
-    const { tweetId } = await params;
+// export async function generateMetadata({
+//   params,
+// }: {
+//   params: Promise<{ tweetId: string }>;
+// }): Promise<Metadata> {
+//   try {
+//     const { tweetId } = await params;
 
-    await connectToDatabase();
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
-    if (!token) throw new Error("Some error occured");
+//     await connectToDatabase();
+//     const cookieStore = await cookies();
+//     const token = cookieStore.get("token")?.value;
+//     if (!token) throw new Error("Some error occured");
 
-    const decoded = await verifyJwt(token);
-    if (!decoded) throw new Error("Some error occured");
+//     const decoded = await verifyJwt(token);
+//     if (!decoded) throw new Error("Some error occured");
 
-    const decodedTweetId = decodeURIComponent(tweetId);
+//     const decodedTweetId = decodeURIComponent(tweetId);
 
-    const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
-      .populate("postedBy", "username avatar")
-      .populate("retweetedFrom", "postedTweetTime")
-      .populate({
-        path: "comments",
-        populate: {
-          path: "postedBy",
-          select: "username avatar",
-        },
-      })
-      .lean<IPopulatedTweet>();
+//     const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
+//       .populate("postedBy", "username avatar")
+//       .populate("retweetedFrom", "postedTweetTime")
+//       .populate({
+//         path: "comments",
+//         populate: {
+//           path: "postedBy",
+//           select: "username avatar",
+//         },
+//       })
+//       .lean<IPopulatedTweet>();
 
-    if (tweet) {
-      return {
-        title: `${
-          tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
-        } on Twitter Clone: "${tweet.content}"`,
-        description: tweet.content ? tweet.content.slice(0, 160) : "",
-        openGraph: {
-          title: `${
-            tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
-          } on Twitter Clone`,
-          description: tweet.content,
-          images: tweet.image ? [{ url: tweet.image }] : [],
-          type: "article",
-        },
-        twitter: {
-          card: tweet.image ? "summary_large_image" : "summary",
-          title: `${
-            tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
-          } on Twitter Clone`,
-          description: tweet.content,
-          images: tweet.image ? [tweet.image] : [],
-        },
-      };
-    } else throw new Error("tweet not found");
-  } catch (error) {
-    return {
-      title: "Tweet not found",
-      description: "This tweet may have been deleted or is not available.",
-      openGraph: {
-        title: "Tweet not found",
-        description: "This tweet may have been deleted or is not available.",
-        images: [],
-      },
-      twitter: {
-        card: "summary",
-        title: "Tweet not found",
-        description: "This tweet may have been deleted or is not available.",
-        images: [],
-      },
-    };
-  }
-}
+//     if (tweet) {
+//       return {
+//         title: `${
+//           tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+//         } on Twitter Clone: "${tweet.content}"`,
+//         description: tweet.content ? tweet.content.slice(0, 160) : "",
+//         openGraph: {
+//           title: `${
+//             tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+//           } on Twitter Clone`,
+//           description: tweet.content,
+//           images: tweet.image ? [{ url: tweet.image }] : [],
+//           type: "article",
+//         },
+//         twitter: {
+//           card: tweet.image ? "summary_large_image" : "summary",
+//           title: `${
+//             tweet.isRetweeted ? tweet.retweetedByUser : tweet.postedBy.username
+//           } on Twitter Clone`,
+//           description: tweet.content,
+//           images: tweet.image ? [tweet.image] : [],
+//         },
+//       };
+//     } else throw new Error("tweet not found");
+//   } catch (error) {
+//     return {
+//       title: "Tweet not found",
+//       description: "This tweet may have been deleted or is not available.",
+//       openGraph: {
+//         title: "Tweet not found",
+//         description: "This tweet may have been deleted or is not available.",
+//         images: [],
+//       },
+//       twitter: {
+//         card: "summary",
+//         title: "Tweet not found",
+//         description: "This tweet may have been deleted or is not available.",
+//         images: [],
+//       },
+//     };
+//   }
+// }
 
 export default async function TweetPage({
   params,

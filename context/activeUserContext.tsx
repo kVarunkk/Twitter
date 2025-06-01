@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { createContext, useState, useEffect } from "react";
 
 type TActiveUserContext = {
@@ -20,6 +21,7 @@ export const ActiveUserContextProvider = ({
   const [activeUserId, setActiveUserId] = useState("");
   const [activeUser, setActiveUser] = useState("");
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const pathname = usePathname();
 
   useEffect(() => {
     const getUnreadNotifs = async () => {
@@ -37,7 +39,7 @@ export const ActiveUserContextProvider = ({
     };
 
     getUnreadNotifs();
-  }, []);
+  }, [pathname]);
 
   return (
     <ActiveUserContext.Provider

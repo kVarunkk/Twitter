@@ -14,7 +14,7 @@ function Header({ title }: { title?: string }) {
   };
 
   return (
-    <div className=" w-full !p-4 flex items-center justify-between border-b ">
+    <div className=" w-full !p-4 !py-2 sm:!py-4 flex items-center justify-between border-b ">
       <div className="  flex items-center gap-2  ">
         <button
           onClick={() => {

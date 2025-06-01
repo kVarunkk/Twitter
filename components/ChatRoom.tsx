@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef, useContext, useCallback } from "react";
 import { useSocket } from "../hooks/useSocket";
 import { Info, SendHorizonal } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -19,23 +19,25 @@ import {
   ISerealizedUser,
   IUser,
 } from "utils/types";
+import MessageCard from "./MessageCard";
 
 type ChatRoomProps = {
   activeChat: IPopulatedChat;
   activeUser: ISerealizedUser | null;
 };
 
-type Message = {
+export type TChatMessage = {
   _id: string;
   sender: {
     _id: string;
   };
   createdAt: Date;
   content: string;
+  isRead?: boolean;
 };
 
 export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<TChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const { socket, joinRoom } = useSocket();
   const textareaRef = useRef(null);
@@ -43,6 +45,7 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
   const [nonActiveUser, setNonActiveUser] = useState<ISerealizedUser>();
   const [loading, setLoading] = useState(false);
   const scrollBottomRef = useRef<HTMLDivElement>(null);
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
     if (activeChat && activeUser) {
@@ -70,7 +73,7 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
         const data = await res.json();
 
         if (data.status === "ok") {
-          const decryptedMessages: Message[] = await Promise.all(
+          const decryptedMessages: TChatMessage[] = await Promise.all(
             data.messages.map(async (msg: IPopulatedMessage) => ({
               _id: msg._id,
               sender: msg.sender,
@@ -82,6 +85,7 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
                 msg.iv,
                 msg.sender._id === activeUser._id
               ),
+              isRead: msg.isRead,
             }))
           );
 
@@ -113,6 +117,7 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
           _id: message.id,
           sender: { _id: message.sender },
           content: decryptedText,
+          isRead: false,
           // todo: fix this
           createdAt: new Date(Date.now()),
         },
@@ -127,16 +132,15 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
   }, [socket, activeChat._id, setMessages, activeUser]);
 
   useEffect(() => {
-    let initialLoad = true;
     if (!activeUser || messages.length === 0) return;
     if (
       messages[messages.length - 1].sender._id === activeUser._id ||
-      initialLoad
+      initialLoadRef.current
     ) {
       if (scrollBottomRef.current) {
         scrollBottomRef.current.scrollIntoView({ behavior: "auto" });
       }
-      initialLoad = false;
+      initialLoadRef.current = false;
     }
   }, [messages, activeUser]);
 
@@ -178,6 +182,15 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
     }
   };
 
+  const updateMessageState = useCallback((id: string) => {
+    setMessages((prev) =>
+      prev.map((message) =>
+        message._id === id ? { ...message, isRead: true } : message
+      )
+    );
+    // value && value.setUnreadNotificationCount(0);
+  }, []);
+
   return (
     <>
       <div className="!p-4 !pb-20 relative h-full overflow-y-scroll">
@@ -215,24 +228,18 @@ export default function ChatRoom({ activeChat, activeUser }: ChatRoomProps) {
             messages?.map((msg) => (
               <div
                 key={msg._id}
-                className={`flex flex-col gap-1 !max-w-[75%] !w-fit ${
-                  msg.sender._id === activeUser?._id
-                    ? " self-end !ml-auto"
-                    : " self-start"
-                }`}
+                className={`${
+                  msg.isRead === false &&
+                  msg.sender._id !== activeUser?._id &&
+                  "bg-[#1DA1F2]/12"
+                } w-full !py-1`}
               >
-                <div
-                  className={` !px-4 !py-2 rounded-xl ${
-                    msg.sender._id === activeUser?._id
-                      ? "bg-[#1DA1F2] text-white "
-                      : "bg-gray-200 text-black "
-                  }`}
-                >
-                  {msg.content}
-                </div>
-                <div className="text-gray-500 text-xs">
-                  {msg.createdAt.toLocaleString()}
-                </div>
+                <MessageCard
+                  key={msg._id}
+                  msg={msg}
+                  activeUser={activeUser}
+                  updateMessageState={updateMessageState}
+                />
               </div>
             ))
           )}

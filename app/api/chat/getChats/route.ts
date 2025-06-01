@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import mongoose, { connect } from "mongoose";
-import { MONGODB_URI } from "utils/utils";
+import mongoose from "mongoose";
 import { validateToken } from "lib/auth";
 import { connectToDatabase } from "lib/mongoose";
 import { Chat } from "utils/models/File";
-import { IPopulatedChat } from "utils/types";
 
 export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
+
     // Validate the token
     const validationResponse = await validateToken(req);
     if (validationResponse.status !== "ok") {
@@ -17,6 +16,7 @@ export async function GET(req: NextRequest) {
         { status: 401 }
       );
     }
+
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
 
@@ -27,9 +27,50 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const chats = await Chat.find({ users: { $in: [userId] } })
-      .populate("users", "username avatar bio followers publicKey")
-      .sort({ updatedAt: -1 });
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+
+    const chats = await Chat.aggregate([
+      { $match: { users: objectUserId } },
+      {
+        $lookup: {
+          from: "messages",
+          let: { chatId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$chat", "$$chatId"] },
+                    { $eq: ["$isRead", false] },
+                    { $ne: ["$sender", objectUserId] }, // exclude messages sent by the current user
+                  ],
+                },
+              },
+            },
+          ],
+          as: "unreadMessages",
+        },
+      },
+      {
+        $addFields: {
+          unreadCount: { $size: "$unreadMessages" },
+        },
+      },
+      {
+        $project: {
+          unreadMessages: 0, // omit the unreadMessages array
+        },
+      },
+      {
+        $sort: { unreadCount: -1, createdAt: -1 },
+      },
+    ]);
+
+    // Optional: repopulate users (if needed for frontend display)
+    await Chat.populate(chats, {
+      path: "users",
+      select: "username avatar bio followers publicKey",
+    });
 
     return NextResponse.json({ status: "ok", chats }, { status: 200 });
   } catch (err) {

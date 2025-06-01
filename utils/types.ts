@@ -103,6 +103,7 @@ export interface IChat {
 export interface IPopulatedChat extends Omit<IChat, "_id" | "users"> {
   _id: string;
   users: ISerealizedUser[];
+  unreadCount: number;
 }
 
 export interface IMessage {

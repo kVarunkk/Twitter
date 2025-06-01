@@ -18,6 +18,7 @@ import TweetDialog from "./TweetDialog";
 import { useAuth } from "hooks/useAuth";
 import { clearOldServiceWorkers } from "hooks/usePushSubscription";
 import { ActiveUserContext } from "context/activeUserContext";
+import ChatWrapper from "./ChatWrapper";
 
 function Sidebar() {
   const [activeUser, setActiveUser] = useState("");
@@ -26,7 +27,7 @@ function Sidebar() {
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSidebarVisible, setIsSidebarVisible] = useState(true);
-  let lastScrollY = 10;
+  let lastScrollY = 0;
   const value = useContext(ActiveUserContext);
 
   useEffect(() => {
@@ -163,11 +164,14 @@ function Sidebar() {
             <div className="hidden sm:block">Logout</div>
           </Link>
         </li>
-        <li className="sidebar-menu-items tweet-list-item">
+        <li className="!hidden sm:!block sidebar-menu-items tweet-list-item">
           <TweetDialog />
         </li>
       </ul>
-      <Chat isDrawerOpen={isDrawerOpen} setIsDrawerOpen={setIsDrawerOpen} />
+      <ChatWrapper
+        isDrawerOpen={isDrawerOpen}
+        setIsDrawerOpen={setIsDrawerOpen}
+      />
     </div>
   );
 }

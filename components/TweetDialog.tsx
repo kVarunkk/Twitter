@@ -37,7 +37,7 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { usePathname, useRouter } from "next/navigation";
 import { showToast } from "./ToastComponent";
-import { Info, Mail, SendHorizonal, Wand, X } from "lucide-react";
+import { Info, Mail, Pencil, SendHorizonal, Wand, X } from "lucide-react";
 import Chat from "./Chat";
 import AppLoader from "./AppLoader";
 import { TagSelector } from "./TagSelector";
@@ -267,7 +267,12 @@ export default function TweetDialog() {
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger className="!mx-2 sm:!mx-0" asChild>
-        <button className="tweetBtn sidebar-menu-tweetBtn">Tweet</button>
+        <button className="rounded-full !p-4 sm:w-full hover:!bg-[#0b92e6] active:!bg-[#0b92e6] sm:text-[1.2rem] sm:rounded-[30px] sm:!px-5 sm:!py-2 cursor-pointer bg-[#1DA1F2] border-0 !text-white font-bold">
+          <span className="inline sm:hidden">
+            <Pencil size={20} />
+          </span>
+          <span className="hidden sm:block">Tweet</span>
+        </button>
       </DialogTrigger>
       <DialogContent className="!w-full !max-w-[95%] lg:!max-w-1/2 h-3/4  !p-4 flex flex-col">
         <DialogHeader>
@@ -333,7 +338,7 @@ export default function TweetDialog() {
                       disabled={tweetLoading || tweetGenLoading}
                       placeholder="Enter prompt to generate tweet"
                       value={prompt}
-                      className="disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="disabled:opacity-50 disabled:cursor-not-allowed !rounded-none !border-b !border-gray-300"
                       onChange={(e) => setPrompt(e.target.value)}
                     />
                     <div className="flex items-center gap-1">

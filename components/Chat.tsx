@@ -1,6 +1,14 @@
 "use client";
 
-import { FormEvent, useCallback, useContext, useEffect, useState } from "react";
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { Drawer, DrawerContent, DrawerTitle } from "./components/ui/drawer";
 import ChatRoom from "./ChatRoom";
 import SearchDialog from "./SearchDialog";
@@ -25,14 +33,18 @@ import { stopPropagation } from "utils/utils";
 type ChatProps = {
   isDrawerOpen: boolean;
   setIsDrawerOpen: (isOpen: boolean) => void;
+  lastTextedUsers: IPopulatedChat[];
+  setLastTextedUsers: Dispatch<SetStateAction<IPopulatedChat[]>>;
+  fetchLastTextedUsers: () => Promise<void>;
+  loading: boolean;
 };
 
 export default function Chat(props: ChatProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [activeChat, setActiveChat] = useState<IPopulatedChat | null>(null);
-  const [lastTextedUsers, setLastTextedUsers] = useState<IPopulatedChat[]>([]);
+  // const [lastTextedUsers, setLastTextedUsers] = useState<IPopulatedChat[]>([]);
   const [activeUser, setActiveUser] = useState<ISerealizedUser | null>(null);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [userSelectLoading, setUserSelectLoading] = useState(false);
   const url = useContext(UrlContext);
 
@@ -43,43 +55,6 @@ export default function Chat(props: ChatProps) {
       setActiveUser(user);
     }
   }, [load, user]);
-
-  const fetchLastTextedUsers = useCallback(async () => {
-    if (!activeUser) return;
-
-    setLoading(true);
-
-    try {
-      const res = await fetch(
-        `/api/chat/getChats?userId=${activeUser._id}`,
-        {}
-      );
-
-      if (!res.ok) {
-        throw new Error(
-          `API request failed with status: ${res.status} - ${res.statusText}`
-        );
-      }
-
-      const data = await res.json();
-
-      if (data.status === "ok") {
-        setLastTextedUsers(
-          data.chats.filter((_: IPopulatedChat) => _.users.length > 1)
-        );
-      } else {
-        throw new Error(`API error: ${data.message}`);
-      }
-    } catch (error) {
-      console.error("Error fetching last texted users:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeUser]);
-
-  useEffect(() => {
-    fetchLastTextedUsers();
-  }, [fetchLastTextedUsers]);
 
   const handleUserSelect = async (user: ISerealizedUser) => {
     try {
@@ -107,7 +82,7 @@ export default function Chat(props: ChatProps) {
       });
     } finally {
       setUserSelectLoading(false);
-      fetchLastTextedUsers();
+      props.fetchLastTextedUsers();
     }
   };
 
@@ -162,7 +137,10 @@ export default function Chat(props: ChatProps) {
             <div className="flex items-center gap-2 truncate">
               {activeChat && (
                 <button
-                  onClick={() => setActiveChat(null)}
+                  onClick={() => {
+                    setActiveChat(null);
+                    props.fetchLastTextedUsers();
+                  }}
                   className="!p-2 cursor-pointer"
                 >
                   <ArrowLeft />
@@ -207,11 +185,13 @@ export default function Chat(props: ChatProps) {
             <ChatRoom activeChat={activeChat} activeUser={activeUser} />
           ) : (
             <div className="overflow-y-auto h-full">
-              {lastTextedUsers.length > 0 ? (
-                lastTextedUsers.map((chat) => (
+              {props.lastTextedUsers.length > 0 ? (
+                props.lastTextedUsers.map((chat) => (
                   <button
                     key={chat._id}
-                    className="relative hover:bg-gray-100 active:bg-gray-100 !w-full  !p-4 !border-b cursor-pointer flex items-center gap-4"
+                    className={`relative hover:bg-gray-100 active:bg-gray-100 !w-full  !p-4 !border-b cursor-pointer flex items-center gap-4 ${
+                      chat.unreadCount > 0 && "bg-[#1DA1F2]/12"
+                    }`}
                     onClick={() => setActiveChat(chat)}
                   >
                     <Avatar
@@ -223,12 +203,20 @@ export default function Chat(props: ChatProps) {
                       alt="Avatar"
                     />
                     <div className="flex flex-col gap-1 items-start">
-                      <div className="font-semibold">
-                        {" "}
-                        {
-                          chat.users.find((u) => u._id !== activeUser?._id)
-                            ?.username
-                        }
+                      <div className="flex items-center gap-2">
+                        <div className="font-semibold">
+                          {" "}
+                          {
+                            chat.users.find((u) => u._id !== activeUser?._id)
+                              ?.username
+                          }
+                        </div>
+
+                        {chat.unreadCount > 0 ? (
+                          <div className="text-white text-sm h-6 w-6 flex items-center justify-center !p-[1px] !rounded-full bg-[#1DA1F2] ">
+                            {chat.unreadCount > 9 ? "9+" : chat.unreadCount}
+                          </div>
+                        ) : null}
                       </div>
                       <div className="text-gray-500 truncate">
                         {chat.lastMessage && chat.lastMessage.content}
@@ -264,7 +252,7 @@ export default function Chat(props: ChatProps) {
                     </DropdownMenu>
                   </button>
                 ))
-              ) : loading ? (
+              ) : props.loading ? (
                 <div className="text-center  !mt-20">
                   <AppLoader />
                 </div>
