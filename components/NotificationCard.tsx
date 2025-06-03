@@ -89,7 +89,7 @@ export default function NotificationCard({
         <Mail size={25} />
         <div>
           <Link
-            className="w-fit !mb-4 stop-link"
+            className="w-fit !mb-4 "
             onClick={(e) => e.stopPropagation()}
             href={"/profile/" + body.sender.username}
           >
@@ -126,14 +126,14 @@ export default function NotificationCard({
         )}
         <div>
           <Link
-            className="stop-link w-fit !mb-4"
+            className=" w-fit !mb-4"
             href={"/profile/" + body.sender.username}
           >
             <Avatar src={`${body.sender.avatar}`} alt="Avatar" size="md" />
           </Link>
           <div>
             <Link
-              className="stop-link font-semibold hover:underline underline-offset-2"
+              className=" font-semibold hover:underline underline-offset-2"
               href={"/profile/" + body.sender.username}
             >
               {body.sender.username}

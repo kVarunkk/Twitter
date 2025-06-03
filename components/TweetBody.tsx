@@ -27,7 +27,7 @@ export default function TweetBody(props: TweetBodyProps) {
             e.stopPropagation();
             router.push(`/profile/${props.body.postedBy?.username}`);
           }}
-          className="stop-link cursor-pointer shrink-0"
+          className=" cursor-pointer shrink-0"
         >
           <Avatar
             // className="w-16 h-16 rounded-full !p-2"
@@ -42,7 +42,7 @@ export default function TweetBody(props: TweetBodyProps) {
             e.stopPropagation();
             router.push(`/profile/${props.body.postedBy?.username}`);
           }}
-          className="stop-link cursor-pointer !p-2 group"
+          className=" cursor-pointer !p-2 group"
         >
           <div className="flex flex-col items-start">
             <div className="font-bold text-gray-800 group-hover:underline group-active:underline">
@@ -109,7 +109,7 @@ export default function TweetBody(props: TweetBodyProps) {
             e.stopPropagation();
             router.push(`/topic/${props.body.tag}`);
           }}
-          className="stop-link !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white  active:text-white active:bg-[#1DA1F2]"
+          className=" !px-2 !py-1 rounded-lg !mt-3 text-sm border border-border cursor-pointer  w-fit flex-1 shrink-0  focus-visible:z-10 hover:bg-[#1DA1F2] hover:text-white  active:text-white active:bg-[#1DA1F2]"
         >
           {props.body.tag}
         </button>
