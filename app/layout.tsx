@@ -10,11 +10,19 @@ const roboto = Roboto({
   weight: ["400", "700"],
 });
 
-export const metadata = {
-  title: "Twitter Clone",
-  description: "A Twitter clone built with Next.js",
-  viewport: "width=device-width, initial-scale=1",
-};
+// export const metadata = {
+//   title: "Twitter Clone",
+//   description: "A Twitter clone built with Next.js",
+//   viewport: "width=device-width, initial-scale=1",
+// };
+
+export function generateMetadata() {
+  return {
+    title: "Twitter Clone",
+    description: "A Twitter clone built with Next.js",
+    // viewport: "width=device-width, initial-scale=1",
+  };
+}
 
 export default function RootLayout({
   children,
