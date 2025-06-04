@@ -22,32 +22,48 @@ export async function generateMetadata({
     const { tweetId } = await params;
     const decodedTweetId = decodeURIComponent(tweetId);
 
-    await connectToDatabase();
-    const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
-      .populate("postedBy", "username avatar")
-      .populate("retweetedFrom", "postedTweetTime")
-      .lean();
+    // await connectToDatabase();
+    // const tweet = await Tweet.findOne({ postedTweetTime: decodedTweetId })
+    //   .populate("postedBy", "username avatar")
+    //   .populate("retweetedFrom", "postedTweetTime")
+    //   .lean();
 
-    if (!tweet) throw new Error("Tweet not found");
+    // if (!tweet) throw new Error("Tweet not found");
 
-    const displayName = tweet.isRetweeted
-      ? tweet.retweetedByUser
-      : (tweet as unknown as IPopulatedTweet).postedBy.username;
+    // const displayName = tweet.isRetweeted
+    //   ? tweet.retweetedByUser
+    //   : (tweet as unknown as IPopulatedTweet).postedBy.username;
+
+    // return {
+    //   title: `${displayName} on Twitter Clone: ${tweet.content}`,
+    //   description: tweet.content?.slice(0, 160) || "",
+    //   openGraph: {
+    //     title: `${displayName} on Twitter Clone`,
+    //     description: tweet.content,
+    //     images: tweet.image ? [{ url: tweet.image }] : [],
+    //     type: "article",
+    //   },
+    //   twitter: {
+    //     card: tweet.image ? "summary_large_image" : "summary",
+    //     title: `${displayName} on Twitter Clone`,
+    //     description: tweet.content,
+    //     images: tweet.image ? [tweet.image] : [],
+    //   },
+    // };
 
     return {
-      title: `${displayName} on Twitter Clone: ${tweet.content}`,
-      description: tweet.content?.slice(0, 160) || "",
+      title: "Tweet  found",
+      description: "This is test metadata",
       openGraph: {
-        title: `${displayName} on Twitter Clone`,
-        description: tweet.content,
-        images: tweet.image ? [{ url: tweet.image }] : [],
-        type: "article",
+        title: "Tweet  found",
+        description: "This is test metadata",
+        images: [],
       },
       twitter: {
-        card: tweet.image ? "summary_large_image" : "summary",
-        title: `${displayName} on Twitter Clone`,
-        description: tweet.content,
-        images: tweet.image ? [tweet.image] : [],
+        card: "summary",
+        title: "Tweet  found",
+        description: "This is test metadata",
+        images: [],
       },
     };
   } catch {
