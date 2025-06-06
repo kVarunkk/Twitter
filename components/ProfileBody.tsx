@@ -16,7 +16,7 @@ import {
   DialogTrigger,
 } from "./components/ui/dialog";
 import { showToast } from "./ToastComponent";
-import { encryptPrivateKey, formatContentWithLinks } from "utils/utils";
+import { formatContentWithLinks } from "utils/utils";
 import ChatWrapper from "./ChatWrapper";
 import InfiniteScrolling from "./InfiniteScrolling";
 import { useAuth } from "hooks/useAuth";

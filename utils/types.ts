@@ -14,7 +14,8 @@ export interface IUser {
   publicKey: string;
   encryptedPrivateKey: string;
   iv: string;
-  derivedKey: string;
+  salt: string;
+  derivedKey?: string;
   tweetGenCount: number;
   tweetReplyGenCount: number;
   embedding: number[];

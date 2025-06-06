@@ -8,14 +8,8 @@ const MONGODB_URI = process.env.MONGO_URI;
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
-    const {
-      username,
-      password,
-      publicKey,
-      encryptedPrivateKey,
-      iv,
-      derivedKey,
-    } = await req.json();
+    const { username, password, publicKey, encryptedPrivateKey, iv, salt } =
+      await req.json();
 
     const errors: { path: string; msg: string }[] = [];
 
@@ -67,7 +61,7 @@ export async function POST(req: Request) {
       avatar: `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_AWS_REGION}.amazonaws.com/avatars/initial-avatar.png`,
       publicKey,
       encryptedPrivateKey,
-      derivedKey,
+      salt,
       iv,
     });
 

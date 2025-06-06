@@ -10,12 +10,14 @@ import { UrlContext } from "../context/urlContext";
 import jwtDecode from "jwt-decode";
 import {
   arrayBufferToBase64,
+  base64ToArrayBuffer,
   deriveKeyFromPassword,
+  encryptPrivateKey,
   generateAESKey,
   generateKeyPair,
 } from "utils/cryptoHelpers";
-import { encryptPrivateKey } from "utils/utils";
 import { useAuth } from "hooks/useAuth";
+import { generateSaltAction } from "@/app/actions/generateSalt";
 
 function SignupBody() {
   const [userName, setUserName] = useState("");
@@ -48,13 +50,21 @@ function SignupBody() {
 
   async function signup(username: string, password: string) {
     const { publicKey, privateKey } = await generateKeyPair();
-    // const salt = window.crypto.getRandomValues(new Uint8Array(16));
-    // const derivedKey = await deriveKeyFromPassword(password, salt);
-    const derivedKey = await generateAESKey();
+    // Get salt from backend (or generate it here if server allows)
+    const saltBase64 = await generateSaltAction();
+    const salt = base64ToArrayBuffer(saltBase64);
+
+    const derivedKey = await deriveKeyFromPassword(password, salt);
 
     const encryptedPrivateKey = await encryptPrivateKey(privateKey, derivedKey);
 
-    return { publicKey, encryptedPrivateKey, derivedKey, privateKey };
+    return {
+      publicKey,
+      encryptedPrivateKey,
+      derivedKey,
+      privateKey,
+      saltBase64,
+    };
   }
 
   const handleSubmit = useCallback(
@@ -69,8 +79,13 @@ function SignupBody() {
         // // Store the private key securely (client-side)
         // localStorage.setItem("privateKey", privateKey);
 
-        const { publicKey, encryptedPrivateKey, derivedKey, privateKey } =
-          await signup(userName, password);
+        const {
+          publicKey,
+          encryptedPrivateKey,
+          derivedKey,
+          privateKey,
+          saltBase64,
+        } = await signup(userName, password);
 
         // todo: hash on the frontend
         // const hashedPassword = await bcrypt.hash(password, 10)
@@ -84,10 +99,10 @@ function SignupBody() {
             publicKey,
             encryptedPrivateKey: encryptedPrivateKey.encryptedPrivateKey,
             iv: encryptedPrivateKey.iv,
-            // salt: arrayBufferToBase64(salt.buffer),
-            derivedKey: arrayBufferToBase64(
-              await window.crypto.subtle.exportKey("raw", derivedKey)
-            ),
+            salt: saltBase64,
+            // derivedKey: arrayBufferToBase64(
+            //   await window.crypto.subtle.exportKey("raw", derivedKey)
+            // ),
           }),
         });
 

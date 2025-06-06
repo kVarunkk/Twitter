@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { Tweet, User } from "utils/models/File";
-import { JWT_SECRET, MONGODB_URI } from "utils/utils";
-import { setTokenCookie, signJwt } from "lib/auth";
+import crypto from "crypto";
 import { connectToDatabase } from "lib/mongoose";
+import { signJwt, setTokenCookie } from "lib/auth";
+import { User } from "utils/models/File";
 
 export async function POST(req: Request) {
   try {
     await connectToDatabase();
     const { username, password } = await req.json();
 
-    // Find the user by username
     const user = await User.findOne({ username });
     if (!user) {
       return NextResponse.json(
@@ -21,7 +18,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Compare the provided password with the hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return NextResponse.json(
@@ -30,15 +26,82 @@ export async function POST(req: Request) {
       );
     }
 
-    // Generate a JWT token
+    // 🧪 Legacy user: re-encrypt with new salt and IV
+    if (!user.salt && user.derivedKey) {
+      console.log(`🔁 Migrating legacy encryption for ${username}...`);
+
+      // Step 1: Decrypt using legacy derivedKey and existing IV
+      const derivedKeyRaw = Buffer.from(user.derivedKey, "base64"); // from DB
+      const ivRaw = Buffer.from(user.iv, "base64");
+      const encryptedPrivateKeyRaw = Buffer.from(
+        user.encryptedPrivateKey,
+        "base64"
+      );
+
+      const legacyKey = await crypto.webcrypto.subtle.importKey(
+        "raw",
+        derivedKeyRaw,
+        { name: "AES-GCM" },
+        false,
+        ["decrypt"]
+      );
+
+      const decryptedBuffer = await crypto.webcrypto.subtle.decrypt(
+        { name: "AES-GCM", iv: ivRaw },
+        legacyKey,
+        encryptedPrivateKeyRaw
+      );
+      const privateKey = new TextDecoder().decode(decryptedBuffer);
+
+      // Step 2: Generate new salt and derive new key
+      const newSalt = crypto.randomBytes(16);
+      const newIv = crypto.randomBytes(12);
+
+      const passwordBuffer = new TextEncoder().encode(password);
+      const keyMaterial = await crypto.webcrypto.subtle.importKey(
+        "raw",
+        passwordBuffer,
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+      );
+
+      const newKey = await crypto.webcrypto.subtle.deriveKey(
+        {
+          name: "PBKDF2",
+          salt: newSalt,
+          iterations: 100000,
+          hash: "SHA-256",
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        true,
+        ["encrypt", "decrypt"]
+      );
+
+      const encryptedNew = await crypto.webcrypto.subtle.encrypt(
+        { name: "AES-GCM", iv: newIv },
+        newKey,
+        new TextEncoder().encode(privateKey)
+      );
+
+      // Step 3: Update user fields
+      user.encryptedPrivateKey = Buffer.from(encryptedNew).toString("base64");
+      user.iv = newIv.toString("base64");
+      user.salt = newSalt.toString("base64");
+      user.derivedKey = undefined; // 🚫 no longer needed
+      await user.save();
+
+      console.log(`🔐 Migrated ${username} to new encryption format`);
+    }
+
+    // Create and return JWT
     const payload = { id: user._id.toString(), username: user.username };
     const token = await signJwt(payload);
 
-    // Return the token and success status
     const response = NextResponse.json({
       status: "ok",
-      // token,
-      user,
+      user, // includes salt, iv, encryptedPrivateKey
     });
     setTokenCookie(response, token);
     return response;

@@ -67,7 +67,8 @@ const userSchema = new mongoose.Schema<IUserDocument>(
     publicKey: { type: String, required: true }, // Store public RSA key
     encryptedPrivateKey: { type: String, required: true }, // Store AES-GCM encrypted private key (base64)
     iv: { type: String, required: true }, // Store IV for AES-GCM encryption (base64)
-    derivedKey: { type: String, required: true },
+    salt: { type: String, required: true }, // Salt for PBKDF2 key derivation (Base64)
+    derivedKey: { type: String },
     tweetGenCount: { type: Number, default: 0 },
     tweetReplyGenCount: { type: Number, default: 0 },
     embedding: {

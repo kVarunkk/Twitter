@@ -13,6 +13,7 @@ import { LoaderCircle } from "lucide-react";
 import { showToast } from "./ToastComponent";
 import {
   base64ToArrayBuffer,
+  decryptPrivateKey,
   deriveKeyFromPassword,
 } from "utils/cryptoHelpers";
 import { useAuth } from "hooks/useAuth";
@@ -33,41 +34,23 @@ function HomeBody() {
 
   async function signin(
     encryptedPrivateKey: string,
-    derivedKey: string,
-    iv: string
+    iv: string,
+    saltBase64: string
   ) {
     try {
-      const keyBuffer = base64ToArrayBuffer(derivedKey);
-      const importedDerivedKey = await window.crypto.subtle.importKey(
-        "raw",
-        keyBuffer,
-        { name: "AES-GCM", length: 256 },
-        false,
-        ["decrypt"]
-      );
+      const salt = base64ToArrayBuffer(saltBase64);
+      const derivedKey = await deriveKeyFromPassword(password, salt);
       const privateKey = await decryptPrivateKey(
         encryptedPrivateKey,
-        importedDerivedKey,
+        derivedKey,
         iv
       );
 
       localStorage.setItem("privateKey", privateKey);
     } catch (error) {
+      console.error(error);
       throw error;
     }
-  }
-
-  async function decryptPrivateKey(
-    encryptedPrivateKey: string,
-    derivedKey: CryptoKey,
-    iv: string
-  ) {
-    const decrypted = await window.crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: base64ToArrayBuffer(iv) },
-      derivedKey,
-      base64ToArrayBuffer(encryptedPrivateKey)
-    );
-    return new TextDecoder().decode(decrypted);
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -90,8 +73,8 @@ function HomeBody() {
         // localStorage.setItem("token", data.token);
         await signin(
           data.user.encryptedPrivateKey,
-          data.user.derivedKey,
-          data.user.iv
+          data.user.iv,
+          data.user.salt
         );
         // toast.success("Login successful");
         showToast({

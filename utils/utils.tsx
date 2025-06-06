@@ -23,22 +23,6 @@ export const formatContentWithLinks = (content: string) => {
   );
 };
 
-export async function encryptPrivateKey(
-  privateKey: string,
-  derivedKey: CryptoKey
-) {
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const encrypted = await window.crypto.subtle.encrypt(
-    { name: "AES-GCM", iv },
-    derivedKey,
-    new TextEncoder().encode(privateKey)
-  );
-  return {
-    encryptedPrivateKey: arrayBufferToBase64(encrypted),
-    iv: arrayBufferToBase64(iv.buffer),
-  };
-}
-
 export function serializeObject<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }

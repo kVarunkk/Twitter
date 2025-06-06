@@ -247,8 +247,41 @@ export async function deriveKeyFromPassword(
 
     return derivedKey;
   } catch (error) {
+    console.error("error inside derivekeyfrompassword", error);
     throw error;
   }
 }
 
-// Removed redundant functions (diagnosePrivateKey, diagnosticDecryption) for simplicity
+export async function decryptPrivateKey(
+  encryptedPrivateKey: string,
+  derivedKey: CryptoKey,
+  iv: string
+) {
+  try {
+    const decrypted = await window.crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: base64ToArrayBuffer(iv) },
+      derivedKey,
+      base64ToArrayBuffer(encryptedPrivateKey)
+    );
+    return new TextDecoder().decode(decrypted);
+  } catch (err) {
+    console.error("error inside decryptprivatekey", err);
+    throw err;
+  }
+}
+
+export async function encryptPrivateKey(
+  privateKey: string,
+  derivedKey: CryptoKey
+) {
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encrypted = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    derivedKey,
+    new TextEncoder().encode(privateKey)
+  );
+  return {
+    encryptedPrivateKey: arrayBufferToBase64(encrypted),
+    iv: arrayBufferToBase64(iv.buffer),
+  };
+}
